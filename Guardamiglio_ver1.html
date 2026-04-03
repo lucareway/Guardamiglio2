@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2025_007.002 A1 VIADOTTO GUARDAMIGLIO — Prospetto Cantieri</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
+  .app { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100vh; }
+  .header { padding: 1rem 1rem 0.75rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
+  .title { font-size: 20px; font-weight: 600; color: #1d1d1f; }
+  .subtitle { font-size: 13px; color: #6e6e73; margin-top: 2px; }
+  .sync-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #34c759; flex-shrink: 0; }
+  .sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
+  .sync-dot.error { background: #ff3b30; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .sync-label { font-size: 12px; color: #6e6e73; flex: 1; min-width: 100px; }
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+  .refresh-btn:active { background: #e8f0fe; }
+  .search-bar { padding: 10px 1rem; position: sticky; top: 0; background: #fff; z-index: 10; border-bottom: 1px solid #e5e5e5; }
+  .search-wrap { position: relative; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #8e8e93; pointer-events: none; }
+  .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
+  .search-bar input:focus { border-color: #007aff; background: #fff; }
+  .filter-row { display: flex; gap: 8px; padding: 10px 1rem; overflow-x: auto; scrollbar-width: none; background: #fff; border-bottom: 1px solid #e5e5e5; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; }
+  .chip.active { background: #007aff; color: #fff; border-color: #007aff; }
+  .chip.reso-chip.active { background: #ff3b30; border-color: #ff3b30; }
+  .chip.spostato-chip.active { background: #cc8800; border-color: #cc8800; }
+  .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; }
+  .cards { padding: 0.75rem 1rem 3rem; display: flex; flex-direction: column; gap: 10px; background: #f5f5f7; }
+  .card { background: #fff; border-radius: 12px; padding: 1rem; cursor: pointer; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; }
+  .card:active { opacity: 0.85; }
+  .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
+  .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; line-height: 1.4; flex: 1; }
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
+  .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+  .stato-badge.reso { background: #ff3b30; color: #fff; }
+  .stato-badge.spostato { background: #ffcc00; color: #7a5c00; }
+  .card-meta { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .meta-row { display: flex; gap: 8px; font-size: 13px; }
+  .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
+  .meta-value { color: #3c3c43; word-break: break-all; }
+  .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
+  .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
+
+  /* ── MODAL principale ── */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  .modal-handle-wrap { display: flex; justify-content: center; padding: 12px 0 8px; }
+  .modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
+  .modal-badge-row { margin-bottom: 0.75rem; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 1.25rem; color: #1d1d1f; line-height: 1.3; }
+  .modal-field { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f2f2f7; }
+  .modal-field:last-of-type { border-bottom: none; }
+  .modal-field label { display: block; font-size: 11px; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .modal-field .val { font-size: 15px; color: #1d1d1f; line-height: 1.5; }
+  .modal-field .val.empty-val { color: #c7c7cc; font-style: italic; }
+  .stato-section { margin: 1.25rem 0 0.5rem; border-top: 1px solid #f2f2f7; padding-top: 1.25rem; }
+  .stato-label { font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; margin-bottom: 10px; }
+  .stato-btns { display: flex; gap: 10px; }
+  .btn-stato { flex: 1; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
+  .btn-stato:active { opacity: 0.85; transform: scale(0.97); }
+  .btn-reso { background: #ff3b30; color: #fff; }
+  .btn-reso.attivo { box-shadow: 0 0 0 3px rgba(255,59,48,0.35); }
+  .btn-spostato { background: #ffcc00; color: #7a5c00; }
+  .btn-spostato.attivo { box-shadow: 0 0 0 3px rgba(255,204,0,0.45); }
+  .btn-reset { flex: 0.5; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; }
+  .close-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #007aff; margin-top: 0.75rem; }
+  .close-btn:active { background: #e5e5ea; }
+
+  /* ── PANEL SPOSTATO ── */
+  .spostato-panel { display: none; margin-top: 1rem; padding: 1rem; background: #fffbea; border: 1px solid #ffe58a; border-radius: 12px; }
+  .spostato-panel.open { display: block; }
+  .spostato-panel-label { font-size: 12px; color: #7a5c00; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
+  .spostato-options-list { max-height: 280px; overflow-y: auto; }
+  .spostato-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; color: #1d1d1f; border: 1.5px solid transparent; margin-bottom: 6px; background: #fff; -webkit-tap-highlight-color: transparent; }
+  .spostato-option:last-child { margin-bottom: 0; }
+  .spostato-option input[type=radio] { accent-color: #cc8800; width: 18px; height: 18px; flex-shrink: 0; }
+  .spostato-option.selected { border-color: #ffcc00; background: #fff8e1; font-weight: 600; }
+  .spostato-libera-wrap { margin-top: 8px; }
+  .spostato-libera-wrap input { width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #ffe58a; font-size:14px; color:#1d1d1f; background:#fff8e1; outline:none; display:block; }
+  .spostato-confirm { width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: #ffcc00; color: #7a5c00; -webkit-tap-highlight-color: transparent; }
+  .spostato-confirm:active { opacity: 0.8; }
+  .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; }
+
+  /* ── BOTTONI HEADER ── */
+  .export-btn { font-size: 13px; font-weight: 700; color: #fff; background: #34c759; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
+  .export-btn:active { opacity: 0.8; }
+  .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
+  .insert-btn { font-size: 13px; font-weight: 700; color: #fff; background: #007aff; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
+  .insert-btn:active { opacity: 0.8; }
+  .insert-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; }
+  .toast.show { opacity: 1; }
+
+  /* ── MODAL AGGIUNGI MEZZO ── */
+  .ins-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; justify-content: center; }
+  .ins-modal-bg.open { display: flex; }
+  .ins-modal { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; }
+  .ins-modal-header { display: flex; justify-content: center; padding: 12px 0 4px; }
+  .ins-modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
+  .ins-modal-title { font-size: 18px; font-weight: 700; color: #1d1d1f; margin-bottom: 1.25rem; padding-top: 4px; }
+  .ins-field { margin-bottom: 0.9rem; position: relative; }
+  .ins-field label { display: block; font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 5px; }
+  .ins-field input { width: 100%; padding: 11px 13px; font-size: 15px; border: 1.5px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
+  .ins-field input:focus { border-color: #007aff; background: #fff; }
+  .ins-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1.5px solid #d1d1d6; border-radius: 10px; z-index: 300; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.12); margin-top: 2px; }
+  .ins-autocomplete-item { padding: 10px 13px; font-size: 14px; cursor: pointer; color: #1d1d1f; border-bottom: 1px solid #f2f2f7; }
+  .ins-autocomplete-item:last-child { border-bottom: none; }
+  .ins-autocomplete-item:hover, .ins-autocomplete-item.hovered { background: #f0f5ff; }
+  .ins-autocomplete-empty { padding: 10px 13px; font-size: 13px; color: #8e8e93; font-style: italic; }
+  .ins-submit { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
+  .ins-submit:active { opacity: 0.85; }
+  .ins-submit:disabled { background: #aaa; cursor: not-allowed; }
+  .ins-cancel { width: 100%; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; margin-top: 0.5rem; }
+  .ins-cancel:active { background: #e5e5ea; }
+  .ins-required { color: #ff3b30; }
+  .ins-hint { font-size: 11px; color: #aaa; margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title">2025_007.002 A1 VIADOTTO GUARDAMIGLIO</div>
+    <div class="subtitle">Prospetto Cantieri</div>
+    <div class="sync-row">
+      <div class="sync-dot loading" id="sync-dot"></div>
+      <span class="sync-label" id="sync-label">Connessione in corso...</span>
+      <div class="btn-group">
+        <button class="insert-btn" id="insert-btn" onclick="openInsertModal()">+ AGGIUNGI</button>
+        <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA</button>
+        <button class="refresh-btn" onclick="loadData()">↻</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="search" id="search" placeholder="Cerca marca, targa, tipologia, proprietario..." oninput="render()">
+    </div>
+  </div>
+
+  <div class="filter-row" id="filters"></div>
+  <div class="count" id="count"></div>
+  <div class="cards" id="cards">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════ MODAL DETTAGLIO MEZZO ═══════════════ -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-badge-row" id="modal-badge"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div class="stato-section">
+      <div class="stato-label">Cambia stato mezzo</div>
+      <div class="stato-btns">
+        <button class="btn-stato btn-reso" id="btn-reso" onclick="setStato('reso')">RESO AL NOLEGGIATORE</button>
+        <button class="btn-stato btn-spostato" id="btn-spostato" onclick="openSpostatoPanel()">SPOSTATO IN</button>
+        <button class="btn-reset" onclick="setStato(null)">Ripristina</button>
+      </div>
+      <div class="spostato-panel" id="spostato-panel">
+        <div class="spostato-panel-label">📍 Seleziona destinazione</div>
+        <input type="text" class="dest-search" id="dest-search" placeholder="Cerca cantiere…" oninput="renderDestOptions()">
+        <div class="spostato-options-list" id="spostato-options-list">
+          <!-- opzioni caricate dinamicamente da CODICI_COMMESSA -->
+        </div>
+        <div class="spostato-libera-wrap">
+          <label class="spostato-option" id="opt-altro" onclick="document.getElementById('dest-libera').focus()">
+            <input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> Altra destinazione…
+          </label>
+          <input type="text" id="dest-libera" placeholder="Scrivi destinazione libera…"
+            oninput="if(this.value.trim()){document.getElementById('radio-altro').checked=true;document.querySelectorAll('.spostato-option').forEach(o=>o.classList.remove('selected'));document.getElementById('opt-altro').classList.add('selected');}"
+            style="width:100%;margin-top:2px;padding:10px 12px;border-radius:10px;border:1.5px solid #ffe58a;font-size:14px;color:#1d1d1f;background:#fff8e1;outline:none;display:block;">
+        </div>
+        <button class="spostato-confirm" onclick="confirmSpostato()">Conferma spostamento</button>
+      </div>
+    </div>
+    <button class="close-btn" onclick="closeModal()">Chiudi</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL AGGIUNGI MEZZO ═══════════════ -->
+<div class="ins-modal-bg" id="ins-modal-bg" onclick="if(event.target===this)closeInsertModal()">
+  <div class="ins-modal">
+    <div class="ins-modal-header"><div class="ins-modal-handle"></div></div>
+    <div class="ins-modal-title">➕ Aggiungi nuovo mezzo</div>
+
+    <div class="ins-field" id="field-tipologia">
+      <label>Tipologia <span class="ins-required">*</span></label>
+      <input type="text" id="ins-tipologia" placeholder="es. PIATTAFORMA" autocomplete="off"
+        oninput="handleTipologiaInput()" onfocus="handleTipologiaInput()">
+      <div class="ins-autocomplete" id="ac-tipologia" style="display:none"></div>
+    </div>
+
+    <div class="ins-field" id="field-marca">
+      <label>Marca e Modello <span class="ins-required">*</span></label>
+      <input type="text" id="ins-marca" placeholder="es. Manitou MT 1840" autocomplete="off"
+        oninput="handleMarcaInput()" onfocus="handleMarcaInput()">
+      <div class="ins-autocomplete" id="ac-marca" style="display:none"></div>
+    </div>
+
+    <div class="ins-field" id="field-matricola">
+      <label>Matricola / Targa <span class="ins-required">*</span></label>
+      <input type="text" id="ins-matricola" placeholder="es. AB123CD" autocomplete="off"
+        oninput="handleMatricolaInput()" onfocus="handleMatricolaInput()">
+      <div class="ins-autocomplete" id="ac-matricola" style="display:none"></div>
+    </div>
+
+    <p class="ins-hint" style="margin-bottom:1rem;padding:0 2px">
+      Seleziona i valori dai menu a tendina o scrivi liberamente. Il pulsante INVIA aprirà una mail pre-compilata con la richiesta di inserimento.
+    </p>
+
+    <button class="ins-submit" id="ins-submit-btn" onclick="submitAggiungiMezzo()">📧 INVIA</button>
+    <button class="ins-cancel" onclick="closeInsertModal()">Annulla</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+//  CONFIGURAZIONE
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Codice commessa del cantiere (filtro sulla colonna B)
+const CANTIERE_COMMESSA = '2025_007.002';
+const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
+
+// ID del Google Sheet (condiviso pubblicamente con accesso in lettura)
+const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
+
+// URL CSV foglio PROSPETTO_CANTIERI_DEF
+// gid del foglio va identificato — usiamo il nome del foglio come parametro
+const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
+const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
+const CSV_DB_MEZZI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=DB_MEZZI_LINKED`;
+
+// Google Apps Script URL per ESPORTA (colonna AF)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkJO7wTRaFbaxpgVq4jl8MJJdnSy4VA7SkHUYn0AV1rdi8QZHYv_XIsWvqjhxiLPhA/exec';
+
+// Mail destinatari
+const MAIL_TO = 'a.argilla@rewaygroup.com;l.buselli@mga-aulla.it;e.tedeschi@rewaygroup.com';
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  STATO GLOBALE
+// ══════════════════════════════════════════════════════════════════════════════
+let data        = [];   // mezzi del cantiere
+let codiciCommessa = []; // [{codice, desc}] da CODICI_COMMESSA
+let dbMezzi     = [];   // righe da DB_MEZZI_LINKED
+let stati       = {};   // matricola → 'reso' | 'spostato'
+let destinazioni= {};   // matricola → stringa destinazione
+let activeFilter= 'Tutti';
+let currentId   = null;
+
+const STORAGE_KEY_STATI = 'stati_guardamiglio_v1';
+const STORAGE_KEY_DEST  = 'dest_guardamiglio_v1';
+
+try { stati       = JSON.parse(localStorage.getItem(STORAGE_KEY_STATI) || '{}'); } catch(e) {}
+try { destinazioni= JSON.parse(localStorage.getItem(STORAGE_KEY_DEST)  || '{}'); } catch(e) {}
+
+function saveStati() {
+  try { localStorage.setItem(STORAGE_KEY_STATI, JSON.stringify(stati)); } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY_DEST,  JSON.stringify(destinazioni)); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  BADGE COLORS
+// ══════════════════════════════════════════════════════════════════════════════
+const BADGE_COLORS = {
+  PIATTAFORMA:     { bg:'#e8f0fe', fg:'#1a56db' },
+  GENERATORE:      { bg:'#fef3c7', fg:'#92400e' },
+  SOLLEVATORE:     { bg:'#d1fae5', fg:'#065f46' },
+  ESCAVATORE:      { bg:'#fee2e2', fg:'#991b1b' },
+  COMPRESSORE:     { bg:'#f3f4f6', fg:'#374151' },
+  MONOBLOCCO:      { bg:'#f3f4f6', fg:'#374151' },
+  CAMION:          { bg:'#ede9fe', fg:'#5b21b6' },
+  CISTERNA:        { bg:'#e0f2fe', fg:'#0c4a6e' },
+  INTONACATRICE:   { bg:'#fce7f3', fg:'#831843' },
+  WC:              { bg:'#f3f4f6', fg:'#374151' },
+  VASCA:           { bg:'#e0f2fe', fg:'#0c4a6e' },
+  IDRODEMOLIZIONE: { bg:'#fee2e2', fg:'#991b1b' },
+  GRU:             { bg:'#fef3c7', fg:'#78350f' },
+  DEFAULT:         { bg:'#f3f4f6', fg:'#374151' },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PARSE CSV ROBUSTO
+// ══════════════════════════════════════════════════════════════════════════════
+function parseCSVRaw(text) {
+  const lines = text.trim().split('\n');
+  return lines.map(line => {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  CARICAMENTO DATI
+// ══════════════════════════════════════════════════════════════════════════════
+async function fetchCSV(url) {
+  const res = await fetch(url + '&nocache=' + Date.now());
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.text();
+}
+
+function parseProspetto(text) {
+  const rows = parseCSVRaw(text);
+  // Riga 0 = header (skip)
+  return rows.slice(1)
+    .filter(cols => (cols[1] || '').trim() === CANTIERE_COMMESSA)
+    .map(cols => {
+      // A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8 J=9 K=10 L=11 ... N=13 ... AF=31
+      const colB  = cols[1]  || '';  // commessa
+      const colE  = cols[4]  || '';  // tipologia
+      const colF  = cols[5]  || '';  // matricola/targa
+      const colG  = cols[6]  || '';  // marca e modello
+      const colH  = cols[7]  || '';  // proprietà/noleggio
+      const colI  = cols[8]  || '';  // proprietario
+      const colJ  = cols[9]  || '';  // canone J
+      const colK  = cols[10] || '';  // canone K
+      const colL  = cols[11] || '';  // canone L
+      const colN  = cols[13] || '';  // data inizio noleggio
+      const colAF = cols[31] || '';  // stato esportato
+
+      // Il canone è il primo tra J,K,L non vuoto
+      const canone = [colJ, colK, colL].find(v => v && v.trim()) || '';
+
+      // Stato dal foglio
+      const statoRaw = colAF.trim().toLowerCase();
+      const statoSheet = statoRaw.includes('reso') ? 'reso'
+                       : statoRaw.includes('spostato') ? 'spostato'
+                       : null;
+
+      return {
+        commessa: colB,
+        tipo:     colE.toUpperCase(),
+        codice:   colF,   // matricola = chiave stabile
+        marca:    colG,
+        propNol:  colH,
+        proprietario: colI,
+        canone,
+        dataInizio: colN,
+        statoSheet,
+        statoAF:  colAF,
+        destinazioneAF: statoRaw.includes('spostato in') ? colAF.replace(/^spostato in\s*/i, '').trim() : '',
+      };
+    })
+    .filter(d => d.codice); // scarta righe senza matricola
+}
+
+function parseCodiciCommessa(text) {
+  const rows = parseCSVRaw(text);
+  return rows.slice(1)
+    .map(cols => ({ codice: (cols[1]||'').trim(), desc: (cols[2]||'').trim() }))
+    .filter(c => c.codice);
+}
+
+function parseDbMezzi(text) {
+  const rows = parseCSVRaw(text);
+  // D=3 tipologia, E=4 matricola, F=5 marca/modello
+  return rows.slice(1).map(cols => ({
+    tipologia: (cols[3] || '').trim(),
+    matricola: (cols[4] || '').trim(),
+    marca:     (cols[5] || '').trim(),
+  })).filter(r => r.matricola || r.marca);
+}
+
+async function loadData() {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot loading';
+  lbl.textContent = 'Aggiornamento...';
+  try {
+    const [txtPros, txtCod, txtDb] = await Promise.all([
+      fetchCSV(CSV_PROSPETTO),
+      fetchCSV(CSV_CODICI),
+      fetchCSV(CSV_DB_MEZZI),
+    ]);
+
+    data = parseProspetto(txtPros);
+    codiciCommessa = parseCodiciCommessa(txtCod);
+    dbMezzi = parseDbMezzi(txtDb);
+
+    // Applica stato dal foglio (fonte di verità)
+    stati = {};
+    data.forEach(d => {
+      if (d.statoSheet) {
+        stati[d.codice] = d.statoSheet;
+        if (d.statoSheet === 'spostato' && d.destinazioneAF) {
+          destinazioni[d.codice] = d.destinazioneAF;
+        }
+      }
+    });
+    saveStati();
+
+    const now = new Date().toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
+    dot.className = 'sync-dot';
+    lbl.textContent = `Aggiornato alle ${now} · ${data.length} mezzi`;
+    renderFilters();
+    render();
+  } catch(e) {
+    dot.className = 'sync-dot error';
+    lbl.textContent = 'Errore di connessione';
+    document.getElementById('cards').innerHTML = '<div class="empty">Impossibile caricare i dati.<br>Verifica la connessione e riprova.</div>';
+    console.error(e);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  FILTRI E RENDER
+// ══════════════════════════════════════════════════════════════════════════════
+function getTypes() {
+  const types = ['Tutti', ...new Set(data.map(d => d.tipo).filter(Boolean))].sort((a,b) => a === 'Tutti' ? -1 : a.localeCompare(b));
+  types.push('RESO', 'SPOSTATO IN');
+  return types;
+}
+
+function renderFilters() {
+  document.getElementById('filters').innerHTML = getTypes().map(t => {
+    const extra = t === 'RESO' ? 'reso-chip' : t === 'SPOSTATO IN' ? 'spostato-chip' : '';
+    return `<span class="chip ${extra} ${t===activeFilter?'active':''}" onclick="setFilter('${t}')">${t}</span>`;
+  }).join('');
+}
+
+function setFilter(t) { activeFilter = t; renderFilters(); render(); }
+
+function filtered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  return data.filter(d => {
+    let mF;
+    if      (activeFilter === 'Tutti')       mF = true;
+    else if (activeFilter === 'RESO')        mF = stati[d.codice] === 'reso';
+    else if (activeFilter === 'SPOSTATO IN') mF = stati[d.codice] === 'spostato';
+    else                                     mF = d.tipo === activeFilter;
+    const mQ = !q || [d.tipo, d.marca, d.propNol, d.proprietario, d.codice].join(' ').toLowerCase().includes(q);
+    return mF && mQ;
+  });
+}
+
+function fmtCanone(val) {
+  if (!val) return '—';
+  // prova a formattare come valuta se numerico
+  const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g,''));
+  if (!isNaN(n) && n > 0) {
+    return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
+  }
+  return val;
+}
+
+function render() {
+  const items = filtered();
+  document.getElementById('count').textContent = items.length + (items.length === 1 ? ' mezzo trovato' : ' mezzi trovati');
+  if (!items.length) {
+    document.getElementById('cards').innerHTML = '<div class="empty">Nessun risultato trovato.<br>Prova a cambiare il filtro o la ricerca.</div>';
+    return;
+  }
+  document.getElementById('cards').innerHTML = items.map(d => {
+    const c = BADGE_COLORS[d.tipo] || BADGE_COLORS.DEFAULT;
+    const stato = stati[d.codice];
+    const statoClass = stato ? 'stato-' + stato : '';
+    const statoBadge = stato === 'reso'
+      ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>'
+      : stato === 'spostato'
+      ? `<span class="stato-badge spostato">SPOSTATO IN ${destinazioni[d.codice] || ''}</span>`
+      : '';
+    return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}" onclick="openModal(this.dataset.codice)">
+      <div class="card-top">
+        <div class="card-title">${esc(d.marca) || '—'}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="badge" style="background:${c.bg};color:${c.fg}">${d.tipo || '—'}</span>
+          ${statoBadge}
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="meta-row"><span class="meta-label">Matricola</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
+        ${d.canone ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(fmtCanone(d.canone))}</span></div>` : ''}
+        ${d.dataInizio ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(d.dataInizio)}</span></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  MODAL DETTAGLIO
+// ══════════════════════════════════════════════════════════════════════════════
+function openModal(codice) {
+  currentId = codice;
+  const d = data.find(x => x.codice === codice);
+  if (!d) return;
+  const c = BADGE_COLORS[d.tipo] || BADGE_COLORS.DEFAULT;
+  const stato = stati[codice];
+
+  document.getElementById('modal-badge').innerHTML =
+    `<span class="badge" style="background:${c.bg};color:${c.fg};display:inline-block">${d.tipo || '—'}</span>`
+    + (stato === 'reso'     ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>' : '')
+    + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
+
+  document.getElementById('modal-title').textContent = d.marca || 'Dettaglio mezzo';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field"><label>Marca e Modello</label><div class="val">${esc(d.marca) || '—'}</div></div>
+    <div class="modal-field"><label>Matricola / Targa</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'Non specificata'}</div></div>
+    <div class="modal-field"><label>Tipologia</label><div class="val">${esc(d.tipo) || '—'}</div></div>
+    <div class="modal-field"><label>Proprietà / Noleggio</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'Non specificato'}</div></div>
+    <div class="modal-field"><label>Proprietario</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'Non specificato'}</div></div>
+    <div class="modal-field"><label>Canone</label><div class="val ${!d.canone?'empty-val':''}">${esc(fmtCanone(d.canone))}</div></div>
+    <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!d.dataInizio?'empty-val':''}">${esc(d.dataInizio) || 'Non specificata'}</div></div>
+  `;
+
+  document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
+  document.getElementById('btn-spostato').className = 'btn-stato btn-spostato' + (stato === 'spostato' ? ' attivo' : '');
+  document.getElementById('spostato-panel').classList.remove('open');
+  document.getElementById('modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PANEL SPOSTATO — destinazioni da CODICI_COMMESSA
+// ══════════════════════════════════════════════════════════════════════════════
+function renderDestOptions() {
+  const q = (document.getElementById('dest-search').value || '').toLowerCase();
+  const list = document.getElementById('spostato-options-list');
+  const opzioni = codiciCommessa
+    .filter(c => c.codice !== CANTIERE_COMMESSA) // escludi il cantiere corrente
+    .filter(c => !q || (c.codice + ' ' + c.desc).toLowerCase().includes(q));
+
+  list.innerHTML = opzioni.map((c, i) => {
+    const val = `${c.codice} ${c.desc}`.trim();
+    return `<label class="spostato-option" id="opt-dest-${i}" onclick="selezionaDestOption(this)">
+      <input type="radio" name="spostato-dest" value="${esc(val)}"> ${esc(val)}
+    </label>`;
+  }).join('');
+
+  // re-bind change handlers
+  list.querySelectorAll('input[type=radio]').forEach(r => {
+    r.onchange = () => {
+      document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
+      r.closest('.spostato-option').classList.add('selected');
+    };
+  });
+}
+
+function selezionaDestOption(el) {
+  document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function openSpostatoPanel() {
+  const panel = document.getElementById('spostato-panel');
+  panel.classList.toggle('open');
+  document.getElementById('dest-search').value = '';
+  document.getElementById('dest-libera').value = '';
+  renderDestOptions();
+}
+
+function confirmSpostato() {
+  const selected = document.querySelector('input[name="spostato-dest"]:checked');
+  if (!selected) { showToast('⚠️ Seleziona una destinazione'); return; }
+  let dest = selected.value;
+  if (dest === '__altro__') {
+    dest = document.getElementById('dest-libera').value.trim();
+    if (!dest) { showToast('⚠️ Scrivi una destinazione'); return; }
+  }
+  setStato('spostato', dest);
+  document.getElementById('spostato-panel').classList.remove('open');
+}
+
+function setStato(valore, destinazione) {
+  if (currentId === null) return;
+  if (valore === null) {
+    delete stati[currentId];
+    delete destinazioni[currentId];
+    document.getElementById('spostato-panel').classList.remove('open');
+  } else {
+    stati[currentId] = valore;
+    if (destinazione) destinazioni[currentId] = destinazione;
+  }
+  saveStati();
+  render();
+  openModal(currentId);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════════════════════════
+function showToast(msg, duration = 3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  ESPORTA → colonna AF foglio
+// ══════════════════════════════════════════════════════════════════════════════
+async function openExport() {
+  const btn = document.getElementById('export-btn');
+  const conStato = data.filter(d => stati[d.codice]);
+
+  if (!conStato.length) {
+    showToast('⚠️ Nessun mezzo ha uno stato assegnato.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Esportazione...';
+
+  const payload = conStato.map(d => ({
+    matricola: d.codice.trim(),
+    stato: stati[d.codice] === 'reso' ? 'RESO AL NOLEGGIATORE' : 'SPOSTATO IN ' + (destinazioni[d.codice] || ''),
+    destinazione: destinazioni[d.codice] || ''
+  }));
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.status === 'ok') {
+      const msg = json.aggiornati > 0
+        ? `✅ ${json.aggiornati} mezzi scritti sul foglio!` + (json.nonTrovati > 0 ? ` (${json.nonTrovati} matricole non trovate)` : '')
+        : `⚠️ Nessuna matricola trovata nel foglio. Verifica i codici.`;
+      showToast(msg, 5000);
+    } else {
+      showToast('❌ Errore: ' + (json.error || 'risposta non valida'), 5000);
+    }
+  } catch(e) {
+    showToast('❌ Connessione fallita: ' + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ESPORTA';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  MODAL AGGIUNGI MEZZO — con autocomplete da DB_MEZZI_LINKED
+// ══════════════════════════════════════════════════════════════════════════════
+let selTipologia = '';
+let selMarca     = '';
+
+function openInsertModal() {
+  document.getElementById('ins-tipologia').value = '';
+  document.getElementById('ins-marca').value = '';
+  document.getElementById('ins-matricola').value = '';
+  selTipologia = ''; selMarca = '';
+  hideAC('ac-tipologia');
+  hideAC('ac-marca');
+  hideAC('ac-matricola');
+  document.getElementById('ins-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('ins-tipologia').focus(), 300);
+}
+
+function closeInsertModal() {
+  document.getElementById('ins-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function hideAC(id) { document.getElementById(id).style.display = 'none'; }
+function showAC(id, items, onSelect) {
+  const el = document.getElementById(id);
+  if (!items.length) { el.innerHTML = '<div class="ins-autocomplete-empty">Nessun risultato</div>'; }
+  else {
+    el.innerHTML = items.slice(0,30).map((it, i) =>
+      `<div class="ins-autocomplete-item" data-idx="${i}" onmousedown="event.preventDefault()" onclick="(${onSelect.toString()})(${JSON.stringify(it)})">${esc(it)}</div>`
+    ).join('');
+  }
+  el.style.display = 'block';
+}
+
+// Tipologie uniche da DB_MEZZI
+function handleTipologiaInput() {
+  const q = document.getElementById('ins-tipologia').value.toLowerCase();
+  const opts = [...new Set(dbMezzi.map(r => r.tipologia).filter(Boolean))].sort();
+  const filtered = q ? opts.filter(t => t.toLowerCase().includes(q)) : opts;
+  showAC('ac-tipologia', filtered, (val) => {
+    document.getElementById('ins-tipologia').value = val;
+    selTipologia = val;
+    hideAC('ac-tipologia');
+    // reset dipendenti
+    document.getElementById('ins-marca').value = '';
+    document.getElementById('ins-matricola').value = '';
+    selMarca = '';
+    hideAC('ac-marca');
+    hideAC('ac-matricola');
+  });
+}
+
+// Marche filtrate per tipologia
+function handleMarcaInput() {
+  selTipologia = document.getElementById('ins-tipologia').value.trim();
+  const q = document.getElementById('ins-marca').value.toLowerCase();
+  let rows = dbMezzi;
+  if (selTipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === selTipologia.toLowerCase());
+  const opts = [...new Set(rows.map(r => r.marca).filter(Boolean))].sort();
+  const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
+  showAC('ac-marca', filtered, (val) => {
+    document.getElementById('ins-marca').value = val;
+    selMarca = val;
+    hideAC('ac-marca');
+    // reset matricola
+    document.getElementById('ins-matricola').value = '';
+    hideAC('ac-matricola');
+    handleMatricolaInput();
+  });
+}
+
+// Matricole filtrate per tipologia + marca
+function handleMatricolaInput() {
+  selTipologia = document.getElementById('ins-tipologia').value.trim();
+  selMarca     = document.getElementById('ins-marca').value.trim();
+  const q = document.getElementById('ins-matricola').value.toLowerCase();
+  let rows = dbMezzi;
+  if (selTipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === selTipologia.toLowerCase());
+  if (selMarca)     rows = rows.filter(r => r.marca.toLowerCase() === selMarca.toLowerCase());
+  const opts = [...new Set(rows.map(r => r.matricola).filter(Boolean))].sort();
+  const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
+  showAC('ac-matricola', filtered, (val) => {
+    document.getElementById('ins-matricola').value = val;
+    hideAC('ac-matricola');
+  });
+}
+
+// Chiudi autocomplete cliccando fuori
+document.addEventListener('click', e => {
+  if (!e.target.closest('#field-tipologia')) hideAC('ac-tipologia');
+  if (!e.target.closest('#field-marca'))     hideAC('ac-marca');
+  if (!e.target.closest('#field-matricola')) hideAC('ac-matricola');
+});
+
+function submitAggiungiMezzo() {
+  const tipologia = document.getElementById('ins-tipologia').value.trim();
+  const marca     = document.getElementById('ins-marca').value.trim();
+  const matricola = document.getElementById('ins-matricola').value.trim();
+
+  if (!tipologia) { showToast('⚠️ Inserisci la Tipologia'); return; }
+  if (!marca)     { showToast('⚠️ Inserisci Marca e Modello'); return; }
+  if (!matricola) { showToast('⚠️ Inserisci Matricola / Targa'); return; }
+
+  const subject = encodeURIComponent(`Richiesta aggiunta nuovo mezzo – ${tipologia} ${marca}`);
+  const body    = encodeURIComponent(
+    `Gentili,\n\nsi prega di aggiungere il seguente nuovo mezzo al sistema:\n\n` +
+    `TIPOLOGIA:        ${tipologia}\n` +
+    `MARCA E MODELLO:  ${marca}\n` +
+    `MATRICOLA / TARGA: ${matricola}\n\n` +
+    `Cantiere: ${CANTIERE_COMMESSA} – ${CANTIERE_NOME}\n\n` +
+    `Grazie.`
+  );
+  const mailTo = encodeURIComponent(MAIL_TO.split(';')[0]);
+  const cc     = encodeURIComponent(MAIL_TO.split(';').slice(1).join(';'));
+  window.location.href = `mailto:${mailTo}?cc=${cc}&subject=${subject}&body=${body}`;
+  closeInsertModal();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════════════════
+loadData();
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
