@@ -114,10 +114,21 @@
   .ins-field label { display: block; font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 5px; }
   .ins-field input { width: 100%; padding: 11px 13px; font-size: 15px; border: 1.5px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
   .ins-field input:focus { border-color: #007aff; background: #fff; }
-  .ins-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1.5px solid #d1d1d6; border-radius: 10px; z-index: 300; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.12); margin-top: 2px; }
-  .ins-autocomplete-item { padding: 10px 13px; font-size: 14px; cursor: pointer; color: #1d1d1f; border-bottom: 1px solid #f2f2f7; }
+  .ins-autocomplete {
+    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+    background: #fff; border: 1.5px solid #d1d1d6; border-radius: 10px;
+    z-index: 9999; max-height: 220px; overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    display: none;
+  }
+  .ins-autocomplete-item {
+    padding: 11px 13px; font-size: 14px; cursor: pointer;
+    color: #1d1d1f; border-bottom: 1px solid #f2f2f7;
+    user-select: none; -webkit-user-select: none;
+  }
   .ins-autocomplete-item:last-child { border-bottom: none; }
-  .ins-autocomplete-item:hover, .ins-autocomplete-item.hovered { background: #f0f5ff; }
+  .ins-autocomplete-item:hover,
+  .ins-autocomplete-item.hovered { background: #f0f5ff; }
   .ins-autocomplete-empty { padding: 10px 13px; font-size: 13px; color: #8e8e93; font-style: italic; }
   .ins-submit { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
   .ins-submit:active { opacity: 0.85; }
@@ -181,9 +192,7 @@
       <div class="spostato-panel" id="spostato-panel">
         <div class="spostato-panel-label">📍 Seleziona destinazione</div>
         <input type="text" class="dest-search" id="dest-search" placeholder="Cerca cantiere…" oninput="renderDestOptions()">
-        <div class="spostato-options-list" id="spostato-options-list">
-          <!-- opzioni caricate dinamicamente da CODICI_COMMESSA -->
-        </div>
+        <div class="spostato-options-list" id="spostato-options-list"></div>
         <div class="spostato-libera-wrap">
           <label class="spostato-option" id="opt-altro" onclick="document.getElementById('dest-libera').focus()">
             <input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> Altra destinazione…
@@ -207,23 +216,20 @@
 
     <div class="ins-field" id="field-tipologia">
       <label>Tipologia <span class="ins-required">*</span></label>
-      <input type="text" id="ins-tipologia" placeholder="es. PIATTAFORMA" autocomplete="off"
-        oninput="handleTipologiaInput()" onfocus="handleTipologiaInput()">
-      <div class="ins-autocomplete" id="ac-tipologia" style="display:none"></div>
+      <input type="text" id="ins-tipologia" placeholder="es. PIATTAFORMA" autocomplete="off">
+      <div class="ins-autocomplete" id="ac-tipologia"></div>
     </div>
 
     <div class="ins-field" id="field-marca">
       <label>Marca e Modello <span class="ins-required">*</span></label>
-      <input type="text" id="ins-marca" placeholder="es. Manitou MT 1840" autocomplete="off"
-        oninput="handleMarcaInput()" onfocus="handleMarcaInput()">
-      <div class="ins-autocomplete" id="ac-marca" style="display:none"></div>
+      <input type="text" id="ins-marca" placeholder="es. Manitou MT 1840" autocomplete="off">
+      <div class="ins-autocomplete" id="ac-marca"></div>
     </div>
 
     <div class="ins-field" id="field-matricola">
       <label>Matricola / Targa <span class="ins-required">*</span></label>
-      <input type="text" id="ins-matricola" placeholder="es. AB123CD" autocomplete="off"
-        oninput="handleMatricolaInput()" onfocus="handleMatricolaInput()">
-      <div class="ins-autocomplete" id="ac-matricola" style="display:none"></div>
+      <input type="text" id="ins-matricola" placeholder="es. AB123CD" autocomplete="off">
+      <div class="ins-autocomplete" id="ac-matricola"></div>
     </div>
 
     <p class="ins-hint" style="margin-bottom:1rem;padding:0 2px">
@@ -239,36 +245,25 @@
 // ══════════════════════════════════════════════════════════════════════════════
 //  CONFIGURAZIONE
 // ══════════════════════════════════════════════════════════════════════════════
-
-// Codice commessa del cantiere (filtro sulla colonna B)
 const CANTIERE_COMMESSA = '2025_007.002';
 const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
-
-// ID del Google Sheet (condiviso pubblicamente con accesso in lettura)
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
-
-// URL CSV foglio PROSPETTO_CANTIERI_DEF
-// gid del foglio va identificato — usiamo il nome del foglio come parametro
 const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
 const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
 const CSV_DB_MEZZI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=DB_MEZZI_LINKED`;
-
-// Google Apps Script URL per ESPORTA (colonna AF)
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkJO7wTRaFbaxpgVq4jl8MJJdnSy4VA7SkHUYn0AV1rdi8QZHYv_XIsWvqjhxiLPhA/exec';
-
-// Mail destinatari
 const MAIL_TO = 'a.argilla@rewaygroup.com;l.buselli@mga-aulla.it;e.tedeschi@rewaygroup.com';
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  STATO GLOBALE
 // ══════════════════════════════════════════════════════════════════════════════
-let data        = [];   // mezzi del cantiere
-let codiciCommessa = []; // [{codice, desc}] da CODICI_COMMESSA
-let dbMezzi     = [];   // righe da DB_MEZZI_LINKED
-let stati       = {};   // matricola → 'reso' | 'spostato'
-let destinazioni= {};   // matricola → stringa destinazione
-let activeFilter= 'Tutti';
-let currentId   = null;
+let data           = [];
+let codiciCommessa = [];
+let dbMezzi        = [];
+let stati          = {};
+let destinazioni   = {};
+let activeFilter   = 'Tutti';
+let currentId      = null;
 
 const STORAGE_KEY_STATI = 'stati_guardamiglio_v1';
 const STORAGE_KEY_DEST  = 'dest_guardamiglio_v1';
@@ -330,47 +325,33 @@ async function fetchCSV(url) {
 
 function parseProspetto(text) {
   const rows = parseCSVRaw(text);
-  // Riga 0 = header (skip)
   return rows.slice(1)
     .filter(cols => (cols[1] || '').trim() === CANTIERE_COMMESSA)
     .map(cols => {
-      // A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8 J=9 K=10 L=11 ... N=13 ... AF=31
-      const colB  = cols[1]  || '';  // commessa
-      const colE  = cols[4]  || '';  // tipologia
-      const colF  = cols[5]  || '';  // matricola/targa
-      const colG  = cols[6]  || '';  // marca e modello
-      const colH  = cols[7]  || '';  // proprietà/noleggio
-      const colI  = cols[8]  || '';  // proprietario
-      const colJ  = cols[9]  || '';  // canone J
-      const colK  = cols[10] || '';  // canone K
-      const colL  = cols[11] || '';  // canone L
-      const colN  = cols[13] || '';  // data inizio noleggio
-      const colAF = cols[31] || '';  // stato esportato
-
-      // Il canone è il primo tra J,K,L non vuoto
+      const colB  = cols[1]  || '';
+      const colE  = cols[4]  || '';
+      const colF  = cols[5]  || '';
+      const colG  = cols[6]  || '';
+      const colH  = cols[7]  || '';
+      const colI  = cols[8]  || '';
+      const colJ  = cols[9]  || '';
+      const colK  = cols[10] || '';
+      const colL  = cols[11] || '';
+      const colN  = cols[13] || '';
+      const colAF = cols[31] || '';
       const canone = [colJ, colK, colL].find(v => v && v.trim()) || '';
-
-      // Stato dal foglio
       const statoRaw = colAF.trim().toLowerCase();
       const statoSheet = statoRaw.includes('reso') ? 'reso'
                        : statoRaw.includes('spostato') ? 'spostato'
                        : null;
-
       return {
-        commessa: colB,
-        tipo:     colE.toUpperCase(),
-        codice:   colF,   // matricola = chiave stabile
-        marca:    colG,
-        propNol:  colH,
-        proprietario: colI,
-        canone,
-        dataInizio: colN,
-        statoSheet,
-        statoAF:  colAF,
+        commessa: colB, tipo: colE.toUpperCase(), codice: colF,
+        marca: colG, propNol: colH, proprietario: colI, canone,
+        dataInizio: colN, statoSheet, statoAF: colAF,
         destinazioneAF: statoRaw.includes('spostato in') ? colAF.replace(/^spostato in\s*/i, '').trim() : '',
       };
     })
-    .filter(d => d.codice); // scarta righe senza matricola
+    .filter(d => d.codice);
 }
 
 function parseCodiciCommessa(text) {
@@ -382,12 +363,13 @@ function parseCodiciCommessa(text) {
 
 function parseDbMezzi(text) {
   const rows = parseCSVRaw(text);
-  // D=3 tipologia, E=4 matricola, F=5 marca/modello
+  // Colonne: D=3 tipologia, E=4 matricola, F=5 marca/modello
+  // Legge TUTTE le righe non vuote per avere tutti i valori del foglio
   return rows.slice(1).map(cols => ({
     tipologia: (cols[3] || '').trim(),
     matricola: (cols[4] || '').trim(),
     marca:     (cols[5] || '').trim(),
-  })).filter(r => r.matricola || r.marca);
+  })).filter(r => r.tipologia || r.matricola || r.marca);
 }
 
 async function loadData() {
@@ -401,12 +383,10 @@ async function loadData() {
       fetchCSV(CSV_CODICI),
       fetchCSV(CSV_DB_MEZZI),
     ]);
-
     data = parseProspetto(txtPros);
     codiciCommessa = parseCodiciCommessa(txtCod);
     dbMezzi = parseDbMezzi(txtDb);
 
-    // Applica stato dal foglio (fonte di verità)
     stati = {};
     data.forEach(d => {
       if (d.statoSheet) {
@@ -464,7 +444,6 @@ function filtered() {
 
 function fmtCanone(val) {
   if (!val) return '—';
-  // prova a formattare come valuta se numerico
   const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g,''));
   if (!isNaN(n) && n > 0) {
     return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
@@ -520,12 +499,10 @@ function openModal(codice) {
   if (!d) return;
   const c = BADGE_COLORS[d.tipo] || BADGE_COLORS.DEFAULT;
   const stato = stati[codice];
-
   document.getElementById('modal-badge').innerHTML =
     `<span class="badge" style="background:${c.bg};color:${c.fg};display:inline-block">${d.tipo || '—'}</span>`
     + (stato === 'reso'     ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>' : '')
     + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
-
   document.getElementById('modal-title').textContent = d.marca || 'Dettaglio mezzo';
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><label>Marca e Modello</label><div class="val">${esc(d.marca) || '—'}</div></div>
@@ -536,7 +513,6 @@ function openModal(codice) {
     <div class="modal-field"><label>Canone</label><div class="val ${!d.canone?'empty-val':''}">${esc(fmtCanone(d.canone))}</div></div>
     <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!d.dataInizio?'empty-val':''}">${esc(d.dataInizio) || 'Non specificata'}</div></div>
   `;
-
   document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
   document.getElementById('btn-spostato').className = 'btn-stato btn-spostato' + (stato === 'spostato' ? ' attivo' : '');
   document.getElementById('spostato-panel').classList.remove('open');
@@ -550,34 +526,36 @@ function closeModal() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PANEL SPOSTATO — destinazioni da CODICI_COMMESSA
+//  PANEL SPOSTATO
 // ══════════════════════════════════════════════════════════════════════════════
 function renderDestOptions() {
   const q = (document.getElementById('dest-search').value || '').toLowerCase();
   const list = document.getElementById('spostato-options-list');
   const opzioni = codiciCommessa
-    .filter(c => c.codice !== CANTIERE_COMMESSA) // escludi il cantiere corrente
+    .filter(c => c.codice !== CANTIERE_COMMESSA)
     .filter(c => !q || (c.codice + ' ' + c.desc).toLowerCase().includes(q));
 
   list.innerHTML = opzioni.map((c, i) => {
     const val = `${c.codice} ${c.desc}`.trim();
-    return `<label class="spostato-option" id="opt-dest-${i}" onclick="selezionaDestOption(this)">
+    return `<label class="spostato-option" id="opt-dest-${i}">
       <input type="radio" name="spostato-dest" value="${esc(val)}"> ${esc(val)}
     </label>`;
   }).join('');
 
-  // re-bind change handlers
   list.querySelectorAll('input[type=radio]').forEach(r => {
-    r.onchange = () => {
+    r.addEventListener('change', () => {
       document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
       r.closest('.spostato-option').classList.add('selected');
-    };
+    });
   });
-}
-
-function selezionaDestOption(el) {
-  document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
+  list.querySelectorAll('.spostato-option').forEach(lbl => {
+    lbl.addEventListener('click', () => {
+      document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
+      lbl.classList.add('selected');
+      const radio = lbl.querySelector('input[type=radio]');
+      if (radio) radio.checked = true;
+    });
+  });
 }
 
 function openSpostatoPanel() {
@@ -626,26 +604,19 @@ function showToast(msg, duration = 3500) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  ESPORTA → colonna AF foglio
+//  ESPORTA
 // ══════════════════════════════════════════════════════════════════════════════
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
-
-  if (!conStato.length) {
-    showToast('⚠️ Nessun mezzo ha uno stato assegnato.');
-    return;
-  }
-
+  if (!conStato.length) { showToast('⚠️ Nessun mezzo ha uno stato assegnato.'); return; }
   btn.disabled = true;
   btn.textContent = 'Esportazione...';
-
   const payload = conStato.map(d => ({
     matricola: d.codice.trim(),
     stato: stati[d.codice] === 'reso' ? 'RESO AL NOLEGGIATORE' : 'SPOSTATO IN ' + (destinazioni[d.codice] || ''),
     destinazione: destinazioni[d.codice] || ''
   }));
-
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -670,118 +641,178 @@ async function openExport() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  MODAL AGGIUNGI MEZZO — con autocomplete da DB_MEZZI_LINKED
+//  MODAL AGGIUNGI MEZZO — AUTOCOMPLETE CORRETTO
 // ══════════════════════════════════════════════════════════════════════════════
-let selTipologia = '';
-let selMarca     = '';
+
+// Stato per tracciare quale dropdown è aperto
+let activeAC = null;
+
+function hideAC(id) {
+  const el = document.getElementById(id);
+  el.style.display = 'none';
+  el.innerHTML = '';
+  if (activeAC === id) activeAC = null;
+}
+
+function hideAllAC() {
+  ['ac-tipologia', 'ac-marca', 'ac-matricola'].forEach(hideAC);
+}
+
+/**
+ * Mostra il dropdown di autocomplete.
+ * CORREZIONE PRINCIPALE: usa addEventListener con closure invece di
+ * onclick con toString() che non funzionava per caratteri speciali e scope.
+ */
+function showAC(id, items, onSelect) {
+  const el = document.getElementById(id);
+
+  if (!items.length) {
+    el.innerHTML = '<div class="ins-autocomplete-empty">Nessun risultato</div>';
+  } else {
+    el.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    items.slice(0, 40).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'ins-autocomplete-item';
+      div.textContent = item;
+
+      // mousedown con preventDefault impedisce che il blur dell'input
+      // chiuda il dropdown prima che il click venga registrato
+      div.addEventListener('mousedown', e => e.preventDefault());
+
+      // touchstart per mobile: stessa logica
+      div.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+
+      div.addEventListener('click', () => {
+        onSelect(item);
+        hideAC(id);
+      });
+
+      // touch end per mobile
+      div.addEventListener('touchend', e => {
+        e.preventDefault();
+        onSelect(item);
+        hideAC(id);
+      });
+
+      fragment.appendChild(div);
+    });
+    el.appendChild(fragment);
+  }
+
+  el.style.display = 'block';
+  activeAC = id;
+}
 
 function openInsertModal() {
   document.getElementById('ins-tipologia').value = '';
   document.getElementById('ins-marca').value = '';
   document.getElementById('ins-matricola').value = '';
-  selTipologia = ''; selMarca = '';
-  hideAC('ac-tipologia');
-  hideAC('ac-marca');
-  hideAC('ac-matricola');
+  hideAllAC();
   document.getElementById('ins-modal-bg').classList.add('open');
   document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('ins-tipologia').focus(), 300);
 }
 
 function closeInsertModal() {
+  hideAllAC();
   document.getElementById('ins-modal-bg').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-function hideAC(id) { document.getElementById(id).style.display = 'none'; }
-function showAC(id, items, onSelect) {
-  const el = document.getElementById(id);
-  if (!items.length) { el.innerHTML = '<div class="ins-autocomplete-empty">Nessun risultato</div>'; }
-  else {
-    el.innerHTML = items.slice(0,30).map((it, i) =>
-      `<div class="ins-autocomplete-item" data-idx="${i}" onmousedown="event.preventDefault()" onclick="(${onSelect.toString()})(${JSON.stringify(it)})">${esc(it)}</div>`
-    ).join('');
-  }
-  el.style.display = 'block';
-}
-
-// Tipologie uniche da DB_MEZZI
+// ── Tipologia ──────────────────────────────────────────────────────────────
 function handleTipologiaInput() {
-  const q = document.getElementById('ins-tipologia').value.toLowerCase();
+  const q = document.getElementById('ins-tipologia').value.toLowerCase().trim();
+  // Tutti i valori unici di tipologia presenti nel DB
   const opts = [...new Set(dbMezzi.map(r => r.tipologia).filter(Boolean))].sort();
   const filtered = q ? opts.filter(t => t.toLowerCase().includes(q)) : opts;
-  showAC('ac-tipologia', filtered, (val) => {
+  if (filtered.length === 0 && !q) { hideAC('ac-tipologia'); return; }
+  showAC('ac-tipologia', filtered, val => {
     document.getElementById('ins-tipologia').value = val;
-    selTipologia = val;
-    hideAC('ac-tipologia');
-    // reset dipendenti
+    // Reset campi dipendenti
     document.getElementById('ins-marca').value = '';
     document.getElementById('ins-matricola').value = '';
-    selMarca = '';
     hideAC('ac-marca');
     hideAC('ac-matricola');
   });
 }
 
-// Marche filtrate per tipologia
+// ── Marca e Modello ────────────────────────────────────────────────────────
 function handleMarcaInput() {
-  selTipologia = document.getElementById('ins-tipologia').value.trim();
-  const q = document.getElementById('ins-marca').value.toLowerCase();
+  const tipologia = document.getElementById('ins-tipologia').value.trim().toLowerCase();
+  const q = document.getElementById('ins-marca').value.toLowerCase().trim();
   let rows = dbMezzi;
-  if (selTipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === selTipologia.toLowerCase());
+  if (tipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === tipologia);
   const opts = [...new Set(rows.map(r => r.marca).filter(Boolean))].sort();
   const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
-  showAC('ac-marca', filtered, (val) => {
+  if (filtered.length === 0 && !q) { hideAC('ac-marca'); return; }
+  showAC('ac-marca', filtered, val => {
     document.getElementById('ins-marca').value = val;
-    selMarca = val;
-    hideAC('ac-marca');
-    // reset matricola
+    // Reset matricola e mostra suggerimenti
     document.getElementById('ins-matricola').value = '';
     hideAC('ac-matricola');
+    // Precompila subito i suggerimenti matricola per la combo selezionata
     handleMatricolaInput();
   });
 }
 
-// Matricole filtrate per tipologia + marca
+// ── Matricola / Targa ──────────────────────────────────────────────────────
 function handleMatricolaInput() {
-  selTipologia = document.getElementById('ins-tipologia').value.trim();
-  selMarca     = document.getElementById('ins-marca').value.trim();
-  const q = document.getElementById('ins-matricola').value.toLowerCase();
+  const tipologia = document.getElementById('ins-tipologia').value.trim().toLowerCase();
+  const marca     = document.getElementById('ins-marca').value.trim().toLowerCase();
+  const q = document.getElementById('ins-matricola').value.toLowerCase().trim();
   let rows = dbMezzi;
-  if (selTipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === selTipologia.toLowerCase());
-  if (selMarca)     rows = rows.filter(r => r.marca.toLowerCase() === selMarca.toLowerCase());
+  if (tipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === tipologia);
+  if (marca)     rows = rows.filter(r => r.marca.toLowerCase() === marca);
   const opts = [...new Set(rows.map(r => r.matricola).filter(Boolean))].sort();
   const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
-  showAC('ac-matricola', filtered, (val) => {
+  if (filtered.length === 0 && !q) { hideAC('ac-matricola'); return; }
+  showAC('ac-matricola', filtered, val => {
     document.getElementById('ins-matricola').value = val;
-    hideAC('ac-matricola');
   });
 }
 
-// Chiudi autocomplete cliccando fuori
+// ── Binding eventi input ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const insTip = document.getElementById('ins-tipologia');
+  const insMar = document.getElementById('ins-marca');
+  const insMat = document.getElementById('ins-matricola');
+
+  insTip.addEventListener('input',  handleTipologiaInput);
+  insTip.addEventListener('focus',  handleTipologiaInput);
+  insTip.addEventListener('blur',   () => setTimeout(() => hideAC('ac-tipologia'), 150));
+
+  insMar.addEventListener('input',  handleMarcaInput);
+  insMar.addEventListener('focus',  handleMarcaInput);
+  insMar.addEventListener('blur',   () => setTimeout(() => hideAC('ac-marca'), 150));
+
+  insMat.addEventListener('input',  handleMatricolaInput);
+  insMat.addEventListener('focus',  handleMatricolaInput);
+  insMat.addEventListener('blur',   () => setTimeout(() => hideAC('ac-matricola'), 150));
+});
+
+// ── Chiudi dropdown cliccando fuori ───────────────────────────────────────
 document.addEventListener('click', e => {
   if (!e.target.closest('#field-tipologia')) hideAC('ac-tipologia');
   if (!e.target.closest('#field-marca'))     hideAC('ac-marca');
   if (!e.target.closest('#field-matricola')) hideAC('ac-matricola');
 });
 
+// ── Submit ─────────────────────────────────────────────────────────────────
 function submitAggiungiMezzo() {
   const tipologia = document.getElementById('ins-tipologia').value.trim();
   const marca     = document.getElementById('ins-marca').value.trim();
   const matricola = document.getElementById('ins-matricola').value.trim();
-
   if (!tipologia) { showToast('⚠️ Inserisci la Tipologia'); return; }
   if (!marca)     { showToast('⚠️ Inserisci Marca e Modello'); return; }
   if (!matricola) { showToast('⚠️ Inserisci Matricola / Targa'); return; }
-
   const subject = encodeURIComponent(`Richiesta aggiunta nuovo mezzo – ${tipologia} ${marca}`);
   const body    = encodeURIComponent(
     `Gentili,\n\nsi prega di aggiungere il seguente nuovo mezzo al sistema:\n\n` +
     `TIPOLOGIA:        ${tipologia}\n` +
     `MARCA E MODELLO:  ${marca}\n` +
     `MATRICOLA / TARGA: ${matricola}\n\n` +
-    `Cantiere: ${CANTIERE_COMMESSA} – ${CANTIERE_NOME}\n\n` +
-    `Grazie.`
+    `Cantiere: ${CANTIERE_COMMESSA} – ${CANTIERE_NOME}\n\nGrazie.`
   );
   const mailTo = encodeURIComponent(MAIL_TO.split(';')[0]);
   const cc     = encodeURIComponent(MAIL_TO.split(';').slice(1).join(';'));
