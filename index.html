@@ -95,48 +95,13 @@
   .export-btn { font-size: 13px; font-weight: 700; color: #fff; background: #34c759; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
   .export-btn:active { opacity: 0.8; }
   .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
-  .insert-btn { font-size: 13px; font-weight: 700; color: #fff; background: #007aff; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
-  .insert-btn:active { opacity: 0.8; }
-  .insert-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
 
   /* ── TOAST ── */
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; }
   .toast.show { opacity: 1; }
 
-  /* ── MODAL AGGIUNGI MEZZO ── */
-  .ins-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; justify-content: center; }
-  .ins-modal-bg.open { display: flex; }
-  .ins-modal { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; }
-  .ins-modal-header { display: flex; justify-content: center; padding: 12px 0 4px; }
-  .ins-modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
-  .ins-modal-title { font-size: 18px; font-weight: 700; color: #1d1d1f; margin-bottom: 1.25rem; padding-top: 4px; }
-  .ins-field { margin-bottom: 0.9rem; position: relative; }
-  .ins-field label { display: block; font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 5px; }
-  .ins-field input { width: 100%; padding: 11px 13px; font-size: 15px; border: 1.5px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
-  .ins-field input:focus { border-color: #007aff; background: #fff; }
-  .ins-autocomplete {
-    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
-    background: #fff; border: 1.5px solid #d1d1d6; border-radius: 10px;
-    z-index: 9999; max-height: 220px; overflow-y: auto;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    display: none;
-  }
-  .ins-autocomplete-item {
-    padding: 11px 13px; font-size: 14px; cursor: pointer;
-    color: #1d1d1f; border-bottom: 1px solid #f2f2f7;
-    user-select: none; -webkit-user-select: none;
-  }
-  .ins-autocomplete-item:last-child { border-bottom: none; }
-  .ins-autocomplete-item:hover,
-  .ins-autocomplete-item.hovered { background: #f0f5ff; }
-  .ins-autocomplete-empty { padding: 10px 13px; font-size: 13px; color: #8e8e93; font-style: italic; }
-  .ins-submit { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
-  .ins-submit:active { opacity: 0.85; }
-  .ins-submit:disabled { background: #aaa; cursor: not-allowed; }
-  .ins-cancel { width: 100%; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; margin-top: 0.5rem; }
-  .ins-cancel:active { background: #e5e5ea; }
-  .ins-required { color: #ff3b30; }
-  .ins-hint { font-size: 11px; color: #aaa; margin-top: 3px; }
+
+
 </style>
 </head>
 <body>
@@ -148,8 +113,7 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Connessione in corso...</span>
       <div class="btn-group">
-        <button class="insert-btn" id="insert-btn" onclick="openInsertModal()">+ AGGIUNGI</button>
-        <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA</button>
+        <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
         <button class="refresh-btn" onclick="loadData()">↻</button>
       </div>
     </div>
@@ -208,38 +172,7 @@
   </div>
 </div>
 
-<!-- ═══════════════ MODAL AGGIUNGI MEZZO ═══════════════ -->
-<div class="ins-modal-bg" id="ins-modal-bg" onclick="if(event.target===this)closeInsertModal()">
-  <div class="ins-modal">
-    <div class="ins-modal-header"><div class="ins-modal-handle"></div></div>
-    <div class="ins-modal-title">➕ Aggiungi nuovo mezzo</div>
 
-    <div class="ins-field" id="field-tipologia">
-      <label>Tipologia <span class="ins-required">*</span></label>
-      <input type="text" id="ins-tipologia" placeholder="es. PIATTAFORMA" autocomplete="off">
-      <div class="ins-autocomplete" id="ac-tipologia"></div>
-    </div>
-
-    <div class="ins-field" id="field-marca">
-      <label>Marca e Modello <span class="ins-required">*</span></label>
-      <input type="text" id="ins-marca" placeholder="es. Manitou MT 1840" autocomplete="off">
-      <div class="ins-autocomplete" id="ac-marca"></div>
-    </div>
-
-    <div class="ins-field" id="field-matricola">
-      <label>Matricola / Targa <span class="ins-required">*</span></label>
-      <input type="text" id="ins-matricola" placeholder="es. AB123CD" autocomplete="off">
-      <div class="ins-autocomplete" id="ac-matricola"></div>
-    </div>
-
-    <p class="ins-hint" style="margin-bottom:1rem;padding:0 2px">
-      Seleziona i valori dai menu a tendina o scrivi liberamente. Il pulsante INVIA aprirà una mail pre-compilata con la richiesta di inserimento.
-    </p>
-
-    <button class="ins-submit" id="ins-submit-btn" onclick="submitAggiungiMezzo()">📧 INVIA</button>
-    <button class="ins-cancel" onclick="closeInsertModal()">Annulla</button>
-  </div>
-</div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
@@ -250,16 +183,14 @@ const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
 const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
 const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
-const CSV_DB_MEZZI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=DB_MEZZI_LINKED`;
+// Google Apps Script URL — cerca matricola in col. F, scrive stato in col. AF
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkJO7wTRaFbaxpgVq4jl8MJJdnSy4VA7SkHUYn0AV1rdi8QZHYv_XIsWvqjhxiLPhA/exec';
-const MAIL_TO = 'a.argilla@rewaygroup.com;l.buselli@mga-aulla.it;e.tedeschi@rewaygroup.com';
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  STATO GLOBALE
 // ══════════════════════════════════════════════════════════════════════════════
 let data           = [];
 let codiciCommessa = [];
-let dbMezzi        = [];
 let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
@@ -361,31 +292,18 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
-function parseDbMezzi(text) {
-  const rows = parseCSVRaw(text);
-  // Colonne: D=3 tipologia, E=4 matricola, F=5 marca/modello
-  // Legge TUTTE le righe non vuote per avere tutti i valori del foglio
-  return rows.slice(1).map(cols => ({
-    tipologia: (cols[3] || '').trim(),
-    matricola: (cols[4] || '').trim(),
-    marca:     (cols[5] || '').trim(),
-  })).filter(r => r.tipologia || r.matricola || r.marca);
-}
-
 async function loadData() {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
   dot.className = 'sync-dot loading';
   lbl.textContent = 'Aggiornamento...';
   try {
-    const [txtPros, txtCod, txtDb] = await Promise.all([
+    const [txtPros, txtCod] = await Promise.all([
       fetchCSV(CSV_PROSPETTO),
       fetchCSV(CSV_CODICI),
-      fetchCSV(CSV_DB_MEZZI),
     ]);
     data = parseProspetto(txtPros);
     codiciCommessa = parseCodiciCommessa(txtCod);
-    dbMezzi = parseDbMezzi(txtDb);
 
     stati = {};
     data.forEach(d => {
@@ -604,19 +522,45 @@ function showToast(msg, duration = 3500) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  ESPORTA
+//  ESPORTA VARIAZIONI
+//  Cerca ogni matricola in colonna F del foglio PROSPETTO_CANTIERI_DEF
+//  e scrive il valore dello stato (RESO AL NOLEGGIATORE / SPOSTATO IN ...)
+//  nella colonna AF della stessa riga.
 // ══════════════════════════════════════════════════════════════════════════════
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
-  if (!conStato.length) { showToast('⚠️ Nessun mezzo ha uno stato assegnato.'); return; }
+
+  if (!conStato.length) {
+    showToast('⚠️ Nessun mezzo ha uno stato assegnato.');
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Esportazione...';
-  const payload = conStato.map(d => ({
-    matricola: d.codice.trim(),
-    stato: stati[d.codice] === 'reso' ? 'RESO AL NOLEGGIATORE' : 'SPOSTATO IN ' + (destinazioni[d.codice] || ''),
-    destinazione: destinazioni[d.codice] || ''
-  }));
+
+  // Costruisce il payload:
+  //   foglio          → nome del foglio di destinazione
+  //   colonna_chiave  → colonna F: dove cercare la matricola
+  //   colonna_output  → colonna AF: dove scrivere il valore dello stato
+  //   commessa        → filtra le righe per evitare match su altri cantieri
+  const payload = {
+    foglio: 'PROSPETTO_CANTIERI_DEF',
+    colonna_chiave: 'F',    // cerca la matricola qui
+    colonna_output: 'AF',   // scrivi il valore dello stato qui
+    commessa: CANTIERE_COMMESSA,
+    variazioni: conStato.map(d => {
+      const s = stati[d.codice];
+      const valore = s === 'reso'
+        ? 'RESO AL NOLEGGIATORE'
+        : 'SPOSTATO IN ' + (destinazioni[d.codice] || '').trim();
+      return {
+        matricola: d.codice.trim(),   // cerca questa stringa in colonna F
+        valore                        // scrivi questo in colonna AF della stessa riga
+      };
+    })
+  };
+
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -626,8 +570,9 @@ async function openExport() {
     const json = await res.json();
     if (json.status === 'ok') {
       const msg = json.aggiornati > 0
-        ? `✅ ${json.aggiornati} mezzi scritti sul foglio!` + (json.nonTrovati > 0 ? ` (${json.nonTrovati} matricole non trovate)` : '')
-        : `⚠️ Nessuna matricola trovata nel foglio. Verifica i codici.`;
+        ? `✅ ${json.aggiornati} variazioni scritte sul foglio!`
+          + (json.nonTrovati > 0 ? `\n⚠️ ${json.nonTrovati} matricole non trovate.` : '')
+        : '⚠️ Nessuna matricola trovata nel foglio. Verifica i codici.';
       showToast(msg, 5000);
     } else {
       showToast('❌ Errore: ' + (json.error || 'risposta non valida'), 5000);
@@ -636,189 +581,10 @@ async function openExport() {
     showToast('❌ Connessione fallita: ' + e.message, 5000);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'ESPORTA';
+    btn.textContent = 'ESPORTA VARIAZIONI';
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  MODAL AGGIUNGI MEZZO — AUTOCOMPLETE CORRETTO
-// ══════════════════════════════════════════════════════════════════════════════
-
-// Stato per tracciare quale dropdown è aperto
-let activeAC = null;
-
-function hideAC(id) {
-  const el = document.getElementById(id);
-  el.style.display = 'none';
-  el.innerHTML = '';
-  if (activeAC === id) activeAC = null;
-}
-
-function hideAllAC() {
-  ['ac-tipologia', 'ac-marca', 'ac-matricola'].forEach(hideAC);
-}
-
-/**
- * Mostra il dropdown di autocomplete.
- * CORREZIONE PRINCIPALE: usa addEventListener con closure invece di
- * onclick con toString() che non funzionava per caratteri speciali e scope.
- */
-function showAC(id, items, onSelect) {
-  const el = document.getElementById(id);
-
-  if (!items.length) {
-    el.innerHTML = '<div class="ins-autocomplete-empty">Nessun risultato</div>';
-  } else {
-    el.innerHTML = '';
-    const fragment = document.createDocumentFragment();
-    items.slice(0, 40).forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'ins-autocomplete-item';
-      div.textContent = item;
-
-      // mousedown con preventDefault impedisce che il blur dell'input
-      // chiuda il dropdown prima che il click venga registrato
-      div.addEventListener('mousedown', e => e.preventDefault());
-
-      // touchstart per mobile: stessa logica
-      div.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-
-      div.addEventListener('click', () => {
-        onSelect(item);
-        hideAC(id);
-      });
-
-      // touch end per mobile
-      div.addEventListener('touchend', e => {
-        e.preventDefault();
-        onSelect(item);
-        hideAC(id);
-      });
-
-      fragment.appendChild(div);
-    });
-    el.appendChild(fragment);
-  }
-
-  el.style.display = 'block';
-  activeAC = id;
-}
-
-function openInsertModal() {
-  document.getElementById('ins-tipologia').value = '';
-  document.getElementById('ins-marca').value = '';
-  document.getElementById('ins-matricola').value = '';
-  hideAllAC();
-  document.getElementById('ins-modal-bg').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('ins-tipologia').focus(), 300);
-}
-
-function closeInsertModal() {
-  hideAllAC();
-  document.getElementById('ins-modal-bg').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ── Tipologia ──────────────────────────────────────────────────────────────
-function handleTipologiaInput() {
-  const q = document.getElementById('ins-tipologia').value.toLowerCase().trim();
-  // Tutti i valori unici di tipologia presenti nel DB
-  const opts = [...new Set(dbMezzi.map(r => r.tipologia).filter(Boolean))].sort();
-  const filtered = q ? opts.filter(t => t.toLowerCase().includes(q)) : opts;
-  if (filtered.length === 0 && !q) { hideAC('ac-tipologia'); return; }
-  showAC('ac-tipologia', filtered, val => {
-    document.getElementById('ins-tipologia').value = val;
-    // Reset campi dipendenti
-    document.getElementById('ins-marca').value = '';
-    document.getElementById('ins-matricola').value = '';
-    hideAC('ac-marca');
-    hideAC('ac-matricola');
-  });
-}
-
-// ── Marca e Modello ────────────────────────────────────────────────────────
-function handleMarcaInput() {
-  const tipologia = document.getElementById('ins-tipologia').value.trim().toLowerCase();
-  const q = document.getElementById('ins-marca').value.toLowerCase().trim();
-  let rows = dbMezzi;
-  if (tipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === tipologia);
-  const opts = [...new Set(rows.map(r => r.marca).filter(Boolean))].sort();
-  const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
-  if (filtered.length === 0 && !q) { hideAC('ac-marca'); return; }
-  showAC('ac-marca', filtered, val => {
-    document.getElementById('ins-marca').value = val;
-    // Reset matricola e mostra suggerimenti
-    document.getElementById('ins-matricola').value = '';
-    hideAC('ac-matricola');
-    // Precompila subito i suggerimenti matricola per la combo selezionata
-    handleMatricolaInput();
-  });
-}
-
-// ── Matricola / Targa ──────────────────────────────────────────────────────
-function handleMatricolaInput() {
-  const tipologia = document.getElementById('ins-tipologia').value.trim().toLowerCase();
-  const marca     = document.getElementById('ins-marca').value.trim().toLowerCase();
-  const q = document.getElementById('ins-matricola').value.toLowerCase().trim();
-  let rows = dbMezzi;
-  if (tipologia) rows = rows.filter(r => r.tipologia.toLowerCase() === tipologia);
-  if (marca)     rows = rows.filter(r => r.marca.toLowerCase() === marca);
-  const opts = [...new Set(rows.map(r => r.matricola).filter(Boolean))].sort();
-  const filtered = q ? opts.filter(m => m.toLowerCase().includes(q)) : opts;
-  if (filtered.length === 0 && !q) { hideAC('ac-matricola'); return; }
-  showAC('ac-matricola', filtered, val => {
-    document.getElementById('ins-matricola').value = val;
-  });
-}
-
-// ── Binding eventi input ───────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const insTip = document.getElementById('ins-tipologia');
-  const insMar = document.getElementById('ins-marca');
-  const insMat = document.getElementById('ins-matricola');
-
-  insTip.addEventListener('input',  handleTipologiaInput);
-  insTip.addEventListener('focus',  handleTipologiaInput);
-  insTip.addEventListener('blur',   () => setTimeout(() => hideAC('ac-tipologia'), 150));
-
-  insMar.addEventListener('input',  handleMarcaInput);
-  insMar.addEventListener('focus',  handleMarcaInput);
-  insMar.addEventListener('blur',   () => setTimeout(() => hideAC('ac-marca'), 150));
-
-  insMat.addEventListener('input',  handleMatricolaInput);
-  insMat.addEventListener('focus',  handleMatricolaInput);
-  insMat.addEventListener('blur',   () => setTimeout(() => hideAC('ac-matricola'), 150));
-});
-
-// ── Chiudi dropdown cliccando fuori ───────────────────────────────────────
-document.addEventListener('click', e => {
-  if (!e.target.closest('#field-tipologia')) hideAC('ac-tipologia');
-  if (!e.target.closest('#field-marca'))     hideAC('ac-marca');
-  if (!e.target.closest('#field-matricola')) hideAC('ac-matricola');
-});
-
-// ── Submit ─────────────────────────────────────────────────────────────────
-function submitAggiungiMezzo() {
-  const tipologia = document.getElementById('ins-tipologia').value.trim();
-  const marca     = document.getElementById('ins-marca').value.trim();
-  const matricola = document.getElementById('ins-matricola').value.trim();
-  if (!tipologia) { showToast('⚠️ Inserisci la Tipologia'); return; }
-  if (!marca)     { showToast('⚠️ Inserisci Marca e Modello'); return; }
-  if (!matricola) { showToast('⚠️ Inserisci Matricola / Targa'); return; }
-  const subject = encodeURIComponent(`Richiesta aggiunta nuovo mezzo – ${tipologia} ${marca}`);
-  const body    = encodeURIComponent(
-    `Gentili,\n\nsi prega di aggiungere il seguente nuovo mezzo al sistema:\n\n` +
-    `TIPOLOGIA:        ${tipologia}\n` +
-    `MARCA E MODELLO:  ${marca}\n` +
-    `MATRICOLA / TARGA: ${matricola}\n\n` +
-    `Cantiere: ${CANTIERE_COMMESSA} – ${CANTIERE_NOME}\n\nGrazie.`
-  );
-  const mailTo = encodeURIComponent(MAIL_TO.split(';')[0]);
-  const cc     = encodeURIComponent(MAIL_TO.split(';').slice(1).join(';'));
-  window.location.href = `mailto:${mailTo}?cc=${cc}&subject=${subject}&body=${body}`;
-  closeInsertModal();
-}
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  INIT
