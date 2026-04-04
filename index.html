@@ -99,9 +99,6 @@
   /* ── TOAST ── */
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; }
   .toast.show { opacity: 1; }
-
-
-
 </style>
 </head>
 <body>
@@ -172,8 +169,6 @@
   </div>
 </div>
 
-
-
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
 //  CONFIGURAZIONE
@@ -183,8 +178,8 @@ const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
 const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
 const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
-// Google Apps Script URL — cerca matricola in col. F, scrive stato in col. AF
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkJO7wTRaFbaxpgVq4jl8MJJdnSy4VA7SkHUYn0AV1rdi8QZHYv_XIsWvqjhxiLPhA/exec';
+// URL corretto del deploy della Web App Apps Script
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  STATO GLOBALE
@@ -539,15 +534,10 @@ async function openExport() {
   btn.disabled = true;
   btn.textContent = 'Esportazione...';
 
-  // Costruisce il payload:
-  //   foglio          → nome del foglio di destinazione
-  //   colonna_chiave  → colonna F: dove cercare la matricola
-  //   colonna_output  → colonna AF: dove scrivere il valore dello stato
-  //   commessa        → filtra le righe per evitare match su altri cantieri
   const payload = {
     foglio: 'PROSPETTO_CANTIERI_DEF',
-    colonna_chiave: 'F',    // cerca la matricola qui
-    colonna_output: 'AF',   // scrivi il valore dello stato qui
+    colonna_chiave: 'F',
+    colonna_output: 'AF',
     commessa: CANTIERE_COMMESSA,
     variazioni: conStato.map(d => {
       const s = stati[d.codice];
@@ -555,8 +545,8 @@ async function openExport() {
         ? 'RESO AL NOLEGGIATORE'
         : 'SPOSTATO IN ' + (destinazioni[d.codice] || '').trim();
       return {
-        matricola: d.codice.trim(),   // cerca questa stringa in colonna F
-        valore                        // scrivi questo in colonna AF della stessa riga
+        matricola: d.codice.trim(),
+        valore
       };
     })
   };
@@ -584,7 +574,6 @@ async function openExport() {
     btn.textContent = 'ESPORTA VARIAZIONI';
   }
 }
-
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  INIT
