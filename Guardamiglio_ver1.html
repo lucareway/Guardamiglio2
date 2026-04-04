@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>2025_007.002 A1 VIADOTTO GUARDAMIGLIO — Prospetto Cantieri</title>
 <style>
+
+ .ins-autocomplete-item {
+    cursor: pointer; /* Fa apparire la manina */
+    transition: background 0.2s;
+}
+
+.ins-autocomplete-item:hover {
+    background: #007aff !important; /* Colore blu al passaggio del mouse */
+    color: white !important;
+}
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
   .app { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100vh; }
@@ -789,6 +800,64 @@ function submitAggiungiMezzo() {
   closeInsertModal();
 }
 
+// Funzione universale per selezionare una voce dall'autocompletamento
+function selectACItem(fieldId, value) {
+    const input = document.getElementById('ins-' + fieldId);
+    const acDiv = document.getElementById('ac-' + fieldId);
+    
+    // Imposta il valore nell'input
+    input.value = value;
+    
+    // Nasconde il menu a tendina
+    acDiv.style.display = 'none';
+    
+    // Se selezioni la tipologia, potresti voler filtrare i suggerimenti successivi (opzionale)
+    console.log(`Selezionato per ${fieldId}: ${value}`);
+}
+
+// Modifica le tue funzioni di "handle" esistenti (o aggiungile se mancano)
+// per fare in modo che gli elementi generati siano cliccabili
+function renderACList(fieldId, list) {
+    const acDiv = document.getElementById('ac-' + fieldId);
+    if (list.length === 0) {
+        acDiv.style.display = 'none';
+        return;
+    }
+
+    acDiv.innerHTML = list.map(item => `
+        <div class="ins-autocomplete-item" 
+             onclick="selectACItem('${fieldId}', '${item.replace(/'/g, "\\'")}')">
+            ${item}
+        </div>
+    `).join('');
+    
+    acDiv.style.display = 'block';
+}
+
+// Esempio di come dovrebbero apparire le tue funzioni di input (da integrare con i tuoi dati)
+function handleTipologiaInput() {
+    const val = document.getElementById('ins-tipologia').value.toUpperCase();
+    const suggerimenti = [...new Set(dbMezzi.map(m => m.tipologia))]
+        .filter(t => t.includes(val));
+    renderACList('tipologia', suggerimenti);
+}
+
+function handleMarcaInput() {
+    const val = document.getElementById('ins-marca').value.toUpperCase();
+    const suggerimenti = [...new Set(dbMezzi.map(m => m.marca))]
+        .filter(m => m.includes(val));
+    renderACList('marca e modello', suggerimenti);
+}
+
+function handleMatricolaInput() {
+    const val = document.getElementById('ins-matricola').value.toUpperCase();
+    const suggerimenti = [...new Set(dbMezzi.map(m => m.matricola))]
+        .filter(m => m.includes(val));
+    renderACList('matricola / targa', suggerimenti);
+}
+
+
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════════════════════════
