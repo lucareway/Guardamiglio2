@@ -72,7 +72,7 @@
     transform: scale(0.97);
   }
   
-  /* NUOVO PULSANTE RICHIEDI MEZZI */
+  /* PULSANTE RICHIEDI MEZZI (stessa dimensione del pulsante export) */
   .richiesta-mezzi-btn {
     background-color: #20b2aa; /* turchese */
     color: white;
@@ -165,7 +165,7 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Connessione in corso...</span>
       <div class="btn-group">
-        <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI E ATTREZZATURE ➕📝</button>
+        <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI E ATTREZZATURE📝</button>
         <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
         <button class="refresh-btn" onclick="loadData()">↻</button>
       </div>
@@ -262,7 +262,7 @@
         <label>Note (opzionali)</label>
         <textarea id="richiesta_note" rows="3" placeholder="Eventuali informazioni aggiuntive... (es. luogo esatto, contatti, istruzioni per il ritiro)"></textarea>
       </div>
-      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA 📩</button>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA ALL'UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">Annulla</button>
   </div>
@@ -274,7 +274,6 @@
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
     <h3 style="margin-bottom: 1rem; font-size: 20px;">📦 Richiesta Mezzi e Attrezzature</h3>
     <div id="richiesta-mezzi-form-content">
-      <!-- precompilati -->
       <div class="form-group">
         <label>Codice Commessa</label>
         <input type="text" id="mezzi_commessa" class="readonly-field" readonly>
@@ -322,7 +321,7 @@
         <label>Note (opzionali)</label>
         <textarea id="mezzi_note" rows="3" placeholder="Eventuali ulteriori informazioni"></textarea>
       </div>
-      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI E ATTREZZATURE 📩</button>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top: 1rem;" onclick="closeRichiestaMezziModal()">Annulla</button>
   </div>
@@ -352,7 +351,7 @@ const DESTINATARI_EMAIL = [
 let data           = [];
 let codiciCommessa = [];
 let cantieri       = [];        // array di stringhe per compatibilità esistente
-let cantieriDetails = [];       // array di oggetti { nome, cig, unitaLocale }
+let cantieriDetails = [];       // array di oggetti { commessa, nome, cig, unitaLocale }
 let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
@@ -504,17 +503,19 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
+// MODIFICATA: legge anche la colonna A (commessa) e colonna D (CIG), colonna E (unità locale)
 function parseCantieriDetails(text) {
   const rows = parseCSVRaw(text);
   const result = [];
   for (let i = 1; i < rows.length; i++) {
-    const colB = (rows[i][1] || '').trim();
-    const colC = (rows[i][2] || '').trim();
+    const colA = (rows[i][0] || '').trim(); // commessa
+    const colB = (rows[i][1] || '').trim(); // nome cantiere (prima parte)
+    const colC = (rows[i][2] || '').trim(); // descrizione (seconda parte)
     const colD = (rows[i][3] || '').trim(); // CIG
     const colE = (rows[i][4] || '').trim(); // Unità Locale
     if (colB.length > 0 || colC.length > 0) {
       const nome = colB + (colC ? ' ' + colC : '');
-      result.push({ nome, cig: colD, unitaLocale: colE });
+      result.push({ commessa: colA, nome, cig: colD, unitaLocale: colE });
     }
   }
   return result;
@@ -800,17 +801,17 @@ function inviaRichiestaRestituzione() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  NUOVA FUNZIONE: RICHIESTA MEZZI E ATTREZZATURE
+//  NUOVA FUNZIONE: RICHIESTA MEZZI E ATTREZZATURE (con ricerca per commessa)
 // ══════════════════════════════════════════════════════════════════════════════
 function openRichiestaMezziModal() {
-  // precompila i dati del cantiere corrente
-  const cantiereInfo = cantieriDetails.find(c => c.nome === CANTIERE_NOME);
+  // Trova i dati del cantiere in base al codice commessa
+  const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
   document.getElementById('mezzi_commessa').value = CANTIERE_COMMESSA;
   document.getElementById('mezzi_cantiere').value = CANTIERE_NOME;
   document.getElementById('mezzi_cig').value = cantiereInfo ? cantiereInfo.cig : '';
   document.getElementById('mezzi_unita_locale').value = cantiereInfo ? cantiereInfo.unitaLocale : '';
   
-  // resetta campi modulo
+  // Resetta campi modulo
   document.getElementById('mezzi_nominativo').value = '';
   document.getElementById('mezzi_descrizione').value = '';
   document.getElementById('mezzi_datetime_consegna').value = '';
@@ -818,7 +819,7 @@ function openRichiestaMezziModal() {
   document.getElementById('mezzi_luogo').value = '';
   document.getElementById('mezzi_note').value = '';
   
-  // nasconde errori
+  // Nasconde errori
   document.querySelectorAll('#richiesta-mezzi-form-content .error-msg').forEach(el => el.style.display = 'none');
   
   document.getElementById('richiesta-mezzi-modal-bg').classList.add('open');
@@ -853,11 +854,11 @@ function inviaRichiestaMezzi() {
   if (!isValid) return;
   
   const dataOraConsegna = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
+  const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
   
   const oggetto = `RICHIESTA MEZZI E ATTREZZATURE - ${CANTIERE_NOME} (${CANTIERE_COMMESSA})`;
   let corpo = `Richiesta mezzi e attrezzature per il cantiere ${CANTIERE_NOME}\n`;
   corpo += `Codice Commessa: ${CANTIERE_COMMESSA}\n`;
-  const cantiereInfo = cantieriDetails.find(c => c.nome === CANTIERE_NOME);
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `Unità Locale: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n`;
