@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>2025_007.002 — Prospetto Cantieri</title>
+<title>2025_007.002 — PROSPETTO CANTIERI</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -13,7 +13,7 @@
     min-height: 100vh;
     position: relative;
   }
-  /* Sfondo con logo Reway group (opaco e centrato) */
+  /* SFONDO CON LOGO REWAY GROUP (OPACO E CENTRATO) */
   body::before {
     content: "";
     position: fixed;
@@ -39,43 +39,44 @@
     backdrop-filter: blur(0px);
   }
   .header { padding: 1rem 1rem 0.75rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
-  .title { font-size: 20px; font-weight: 600; color: #1d1d1f; }
-  .subtitle { font-size: 15px; font-weight: 500; color: #3a3a44; margin-top: 4px; }
+  .title { font-size: 20px; font-weight: 600; color: #1d1d1f; text-transform: uppercase; }
+  .subtitle { font-size: 20px; font-weight: 600; color: #3a3a44; margin-top: 4px; text-transform: uppercase; }
   .sync-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #34c759; flex-shrink: 0; }
   .sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
   .sync-dot.error { background: #ff3b30; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .sync-label { font-size: 12px; color: #6e6e73; flex: 1; min-width: 100px; }
+  .sync-label { font-size: 12px; color: #6e6e73; flex: 1; min-width: 100px; text-transform: uppercase; }
   .btn-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+  .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; text-transform: uppercase; font-weight: 600; }
   .refresh-btn:active { background: #e8f0fe; }
   .search-bar { padding: 10px 1rem; position: sticky; top: 0; background: #fff; z-index: 10; border-bottom: 1px solid #e5e5e5; }
   .search-wrap { position: relative; }
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #8e8e93; pointer-events: none; }
   .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
   .search-bar input:focus { border-color: #007aff; background: #fff; }
+  .search-bar input::placeholder { text-transform: uppercase; color: #8e8e93; }
   
-  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; align-items: center; }
   
-  .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; }
+  .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; text-transform: uppercase; }
   .chip.active { background: #007aff; color: #fff; border-color: #007aff; }
   .chip.reso-chip.active { background: #ff3b30; border-color: #ff3b30; }
   .chip.spostato-chip.active { background: #cc8800; border-color: #cc8800; }
-  .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; }
+  .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; text-transform: uppercase; font-weight: 600; }
   .cards { padding: 0.75rem 1rem 3rem; display: flex; flex-direction: column; gap: 10px; background: #f5f5f7; }
   .card { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
   .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
   .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; cursor: pointer; }
-  .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; line-height: 1.4; flex: 1; }
-  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
-  .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+  .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; line-height: 1.4; flex: 1; text-transform: uppercase; }
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: 600; text-transform: uppercase; }
+  .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
   .stato-badge.reso { background: #ff3b30; color: #fff; }
   .stato-badge.spostato { background: #ffcc00; color: #7a5c00; }
   .card-meta { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
   .meta-row { display: flex; gap: 8px; font-size: 13px; }
-  .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
+  .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; text-transform: uppercase; font-weight: 600; }
   .meta-value { color: #3c3c43; word-break: break-all; }
   
   .btn-richiesta-restituzione {
@@ -95,6 +96,7 @@
     width: 100%;
     transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
+    text-transform: uppercase;
   }
   .btn-richiesta-restituzione:active {
     background-color: #dc2626;
@@ -114,12 +116,13 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    text-transform: uppercase;
   }
   .richiesta-mezzi-btn:active {
     opacity: 0.8;
   }
   
-  .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
+  .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; text-transform: uppercase; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
@@ -128,80 +131,73 @@
   .modal-handle-wrap { display: flex; justify-content: center; padding: 12px 0 8px; }
   .modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
   .modal-badge-row { margin-bottom: 0.75rem; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 1.25rem; color: #1d1d1f; line-height: 1.3; }
+  .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 1.25rem; color: #1d1d1f; line-height: 1.3; text-transform: uppercase; }
   .modal-field { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f2f2f7; }
   .modal-field:last-of-type { border-bottom: none; }
-  .modal-field label { display: block; font-size: 11px; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .modal-field label { display: block; font-size: 11px; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
   .modal-field .val { font-size: 15px; color: #1d1d1f; line-height: 1.5; }
   .modal-field .val.empty-val { color: #c7c7cc; font-style: italic; }
   .stato-section { margin: 1.25rem 0 0.5rem; border-top: 1px solid #f2f2f7; padding-top: 1.25rem; }
-  .stato-label { font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; margin-bottom: 10px; }
+  .stato-label { font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
   .stato-btns { display: flex; gap: 10px; }
-  .btn-stato { flex: 1; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
+  .btn-stato { flex: 1; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; text-transform: uppercase; }
   .btn-stato:active { opacity: 0.85; transform: scale(0.97); }
   .btn-reso { background: #ff3b30; color: #fff; }
   .btn-reso.attivo { box-shadow: 0 0 0 3px rgba(255,59,48,0.35); }
   .btn-spostato { background: #ffcc00; color: #7a5c00; }
   .btn-spostato.attivo { box-shadow: 0 0 0 3px rgba(255,204,0,0.45); }
-  .btn-reset { flex: 0.5; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; }
-  .close-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #007aff; margin-top: 0.75rem; }
+  .btn-reset { flex: 0.5; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; text-transform: uppercase; }
+  .close-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #007aff; margin-top: 0.75rem; text-transform: uppercase; }
   .close-btn:active { background: #e5e5ea; }
 
   .spostato-panel { display: none; margin-top: 1rem; padding: 1rem; background: #fffbea; border: 1px solid #ffe58a; border-radius: 12px; }
   .spostato-panel.open { display: block; }
   .spostato-panel-label { font-size: 12px; color: #7a5c00; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
   .spostato-options-list { max-height: 280px; overflow-y: auto; }
-  .spostato-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; color: #1d1d1f; border: 1.5px solid transparent; margin-bottom: 6px; background: #fff; -webkit-tap-highlight-color: transparent; }
+  .spostato-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; color: #1d1d1f; border: 1.5px solid transparent; margin-bottom: 6px; background: #fff; -webkit-tap-highlight-color: transparent; text-transform: uppercase; }
   .spostato-option:last-child { margin-bottom: 0; }
   .spostato-option input[type=radio] { accent-color: #cc8800; width: 18px; height: 18px; flex-shrink: 0; }
   .spostato-option.selected { border-color: #ffcc00; background: #fff8e1; font-weight: 600; }
   .spostato-libera-wrap { margin-top: 8px; }
-  .spostato-libera-wrap input { width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #ffe58a; font-size:14px; color:#1d1d1f; background:#fff8e1; outline:none; display:block; }
-  .spostato-confirm { width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: #ffcc00; color: #7a5c00; -webkit-tap-highlight-color: transparent; }
+  .spostato-libera-wrap input { width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #ffe58a; font-size:14px; color:#1d1d1f; background:#fff8e1; outline:none; display:block; text-transform: uppercase; }
+  .spostato-confirm { width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: #ffcc00; color: #7a5c00; -webkit-tap-highlight-color: transparent; text-transform: uppercase; }
   .spostato-confirm:active { opacity: 0.8; }
-  .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; }
+  .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; text-transform: uppercase; }
+  .dest-search::placeholder { text-transform: uppercase; }
 
-  /* Modali esistenti e nuova */
+  /* MODALI RICHIESTA */
   .modal-richiesta, .modal-richiesta-mezzi { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
   .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; text-transform: uppercase; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; font-family: inherit; }
   .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #007aff; background: #fff; }
   .form-group input.readonly-field { background: #f2f2f7; color: #3a3a44; font-weight: 500; border-color: #e5e5ea; }
   .required-star { color: #ff3b30; margin-left: 2px; }
-  .error-msg { color: #ff3b30; font-size: 11px; margin-top: 4px; display: none; }
-  .btn-invia-richiesta { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; }
+  .error-msg { color: #ff3b30; font-size: 11px; margin-top: 4px; display: none; text-transform: uppercase; }
+  .btn-invia-richiesta { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; text-transform: uppercase; }
   .btn-invia-richiesta:active { opacity: 0.85; transform: scale(0.97); }
   .divider { height: 1px; background: #e5e5ea; margin: 1rem 0; }
 
-  /* MAIUSCOLO per il modulo Richiesta Mezzi */
-  #richiesta-mezzi-form-content input,
-  #richiesta-mezzi-form-content textarea {
-    text-transform: uppercase;
-  }
-  #richiesta-mezzi-form-content input::placeholder,
-  #richiesta-mezzi-form-content textarea::placeholder {
-    text-transform: none;
-  }
-
-  .export-btn { font-size: 13px; font-weight: 700; color: #fff; background: #34c759; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
+  .export-btn { font-size: 13px; font-weight: 700; color: #fff; background: #34c759; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; text-transform: uppercase; }
   .export-btn:active { opacity: 0.8; }
   .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
 
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; text-transform: uppercase; }
   .toast.show { opacity: 1; }
+
+  h3, .modal-richiesta h3, .modal-richiesta-mezzi h3 { text-transform: uppercase; }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <!-- Prima riga: codice commessa -->
+    <!-- PRIMA RIGA: CODICE COMMESSA -->
     <div class="title" id="commessa-title">2025_007.002</div>
-    <!-- Seconda riga: nome cantiere -->
+    <!-- SECONDA RIGA: NOME CANTIERE (STESSA GRANDEZZA) -->
     <div class="subtitle" id="cantiere-name">A1 VIADOTTO GUARDAMIGLIO</div>
     <div class="sync-row">
       <div class="sync-dot loading" id="sync-dot"></div>
-      <span class="sync-label" id="sync-label">Connessione in corso...</span>
+      <span class="sync-label" id="sync-label">CONNESSIONE IN CORSO...</span>
       <div class="btn-group">
         <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI E ATTREZZATURE📝</button>
         <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
@@ -213,11 +209,14 @@
   <div class="search-bar">
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input type="search" id="search" placeholder="Cerca marca, targa, tipologia, proprietario..." oninput="render()">
+      <input type="search" id="search" placeholder="CERCA MARCA, TARGA, TIPOLOGIA, PROPRIETARIO..." oninput="render()">
     </div>
   </div>
 
-  <div class="filter-row" id="filters"></div>
+  <div class="filter-row" id="filters">
+    <!-- EMOJI 🔍 INSERITA ALL'INIZIO -->
+    <span style="font-size: 18px; margin-right: 4px;">🔍</span>
+  </div>
   <div class="count" id="count"></div>
   <div class="cards" id="cards">
     <div class="skeleton"></div>
@@ -238,28 +237,28 @@
     <div class="modal-title" id="modal-title"></div>
     <div id="modal-body"></div>
     <div class="stato-section">
-      <div class="stato-label">Cambia stato mezzo</div>
+      <div class="stato-label">CAMBIA STATO MEZZO</div>
       <div class="stato-btns">
         <button class="btn-stato btn-reso" id="btn-reso" onclick="setStato('reso')">RESO AL NOLEGGIATORE</button>
         <button class="btn-stato btn-spostato" id="btn-spostato" onclick="openSpostatoPanel()">SPOSTATO IN</button>
-        <button class="btn-reset" onclick="setStato(null)">Ripristina</button>
+        <button class="btn-reset" onclick="setStato(null)">RIPRISTINA</button>
       </div>
       <div class="spostato-panel" id="spostato-panel">
-        <div class="spostato-panel-label">📍 Seleziona destinazione (dal foglio CODICI_CANTIERI)</div>
-        <input type="text" class="dest-search" id="dest-search" placeholder="Cerca cantiere…" oninput="renderDestOptions()">
+        <div class="spostato-panel-label">📍 SELEZIONA DESTINAZIONE (DAL FOGLIO CODICI_CANTIERI)</div>
+        <input type="text" class="dest-search" id="dest-search" placeholder="CERCA CANTIERE…" oninput="renderDestOptions()">
         <div class="spostato-options-list" id="spostato-options-list"></div>
         <div class="spostato-libera-wrap">
           <label class="spostato-option" id="opt-altro" onclick="document.getElementById('dest-libera').focus()">
-            <input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> Altra destinazione…
+            <input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> ALTRA DESTINAZIONE…
           </label>
-          <input type="text" id="dest-libera" placeholder="Scrivi destinazione libera…"
+          <input type="text" id="dest-libera" placeholder="SCRIVI DESTINAZIONE LIBERA…"
             oninput="if(this.value.trim()){document.getElementById('radio-altro').checked=true;document.querySelectorAll('.spostato-option').forEach(o=>o.classList.remove('selected'));document.getElementById('opt-altro').classList.add('selected');}"
             style="width:100%;margin-top:2px;padding:10px 12px;border-radius:10px;border:1.5px solid #ffe58a;font-size:14px;color:#1d1d1f;background:#fff8e1;outline:none;display:block;">
         </div>
-        <button class="spostato-confirm" onclick="confirmSpostato()">Conferma spostamento</button>
+        <button class="spostato-confirm" onclick="confirmSpostato()">CONFERMA SPOSTAMENTO</button>
       </div>
     </div>
-    <button class="close-btn" onclick="closeModal()">Chiudi</button>
+    <button class="close-btn" onclick="closeModal()">CHIUDI</button>
   </div>
 </div>
 
@@ -267,42 +266,42 @@
 <div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()">
   <div class="modal-richiesta">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <h3 style="margin-bottom: 1rem; font-size: 20px;">✉️ Richiedi Restituzione</h3>
+    <h3 style="margin-bottom: 1rem; font-size: 20px;">✉️ RICHIEDI RESTITUZIONE</h3>
     <div id="restituzione-form-content">
       <div class="form-group">
-        <label>Codice Commessa</label>
+        <label>CODICE COMMESSA</label>
         <input type="text" id="richiesta_commessa" class="readonly-field" readonly>
       </div>
       <div class="form-group">
-        <label>Cantiere di partenza</label>
+        <label>CANTIERE DI PARTENZA</label>
         <input type="text" id="richiesta_cantiere" class="readonly-field" readonly>
       </div>
       <div class="form-group">
-        <label>Marca e Modello</label>
+        <label>MARCA E MODELLO</label>
         <input type="text" id="richiesta_marca_modello" class="readonly-field" readonly>
       </div>
       <div class="form-group">
-        <label>Matricola / Targa</label>
+        <label>MATRICOLA / TARGA</label>
         <input type="text" id="richiesta_matricola" class="readonly-field" readonly>
       </div>
       <div class="divider"></div>
       <div class="form-group">
-        <label>Nominativo richiedente <span class="required-star">*</span></label>
-        <input type="text" id="richiesta_nominativo" placeholder="Nome e Cognome / Ragione Sociale">
-        <div class="error-msg" id="error_nominativo">Campo obbligatorio</div>
+        <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
+        <input type="text" id="richiesta_nominativo" placeholder="NOME E COGNOME / RAGIONE SOCIALE">
+        <div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Data e ora entro cui effettuare il ritiro <span class="required-star">*</span></label>
+        <label>DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO <span class="required-star">*</span></label>
         <input type="datetime-local" id="richiesta_datetime">
-        <div class="error-msg" id="error_datetime">Campo obbligatorio</div>
+        <div class="error-msg" id="error_datetime">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Note (opzionali)</label>
-        <textarea id="richiesta_note" rows="3" placeholder="Eventuali informazioni aggiuntive... (es. luogo esatto, contatti, istruzioni per il ritiro)"></textarea>
+        <label>NOTE (OPZIONALI)</label>
+        <textarea id="richiesta_note" rows="3" placeholder="EVENTUALI INFORMAZIONI AGGIUNTIVE... (ES. LUOGO ESATTO, CONTATTI, ISTRUZIONI PER IL RITIRO)"></textarea>
       </div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA 📩</button>
     </div>
-    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">Annulla</button>
+    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">ANNULLA</button>
   </div>
 </div>
 
@@ -310,14 +309,14 @@
 <div class="modal-bg" id="richiesta-mezzi-modal-bg" onclick="if(event.target===this)closeRichiestaMezziModal()">
   <div class="modal-richiesta-mezzi">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <h3 style="margin-bottom: 1rem; font-size: 20px;">📦 Richiesta Mezzi e Attrezzature</h3>
+    <h3 style="margin-bottom: 1rem; font-size: 20px;">📦 RICHIESTA MEZZI E ATTREZZATURE</h3>
     <div id="richiesta-mezzi-form-content">
       <div class="form-group">
-        <label>Codice Commessa</label>
+        <label>CODICE COMMESSA</label>
         <input type="text" id="mezzi_commessa" class="readonly-field" readonly>
       </div>
       <div class="form-group">
-        <label>Cantiere di partenza</label>
+        <label>CANTIERE DI PARTENZA</label>
         <input type="text" id="mezzi_cantiere" class="readonly-field" readonly>
       </div>
       <div class="form-group">
@@ -325,42 +324,42 @@
         <input type="text" id="mezzi_cig" class="readonly-field" readonly>
       </div>
       <div class="form-group">
-        <label>Unità Locale</label>
+        <label>UNITÀ LOCALE</label>
         <input type="text" id="mezzi_unita_locale" class="readonly-field" readonly>
       </div>
       <div class="divider"></div>
       <div class="form-group">
-        <label>Nominativo richiedente <span class="required-star">*</span></label>
-        <input type="text" id="mezzi_nominativo" placeholder="Nome e Cognome / Ragione Sociale">
-        <div class="error-msg" id="error_mezzi_nominativo">Campo obbligatorio</div>
+        <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
+        <input type="text" id="mezzi_nominativo" placeholder="NOME E COGNOME / RAGIONE SOCIALE">
+        <div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Descrizione con caratteristiche e quantità dei mezzi richiesti <span class="required-star">*</span></label>
-        <textarea id="mezzi_descrizione" rows="4" placeholder="Es. Piattaforma aerea 24m, n.2, motore diesel..."></textarea>
-        <div class="error-msg" id="error_mezzi_descrizione">Campo obbligatorio</div>
+        <label>DESCRIZIONE CON CARATTERISTICHE E QUANTITÀ DEI MEZZI RICHIESTI <span class="required-star">*</span></label>
+        <textarea id="mezzi_descrizione" rows="4" placeholder="ES. PIATTAFORMA AEREA 24M, N.2, MOTORE DIESEL..."></textarea>
+        <div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Data e ora in cui devono essere consegnati in cantiere <span class="required-star">*</span></label>
+        <label>DATA E ORA IN CUI DEVONO ESSERE CONSEGNATI IN CANTIERE <span class="required-star">*</span></label>
         <input type="datetime-local" id="mezzi_datetime_consegna">
-        <div class="error-msg" id="error_mezzi_datetime">Campo obbligatorio</div>
+        <div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Periodi di impiego previsto <span class="required-star">*</span></label>
-        <textarea id="mezzi_periodi" rows="2" placeholder="Es. dal 10/05 al 20/05, oppure 2 settimane a partire dal..."></textarea>
-        <div class="error-msg" id="error_mezzi_periodi">Campo obbligatorio</div>
+        <label>PERIODI DI IMPIEGO PREVISTO <span class="required-star">*</span></label>
+        <textarea id="mezzi_periodi" rows="2" placeholder="ES. DAL 10/05 AL 20/05, OPPURE 2 SETTIMANE A PARTIRE DAL..."></textarea>
+        <div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Luogo di consegna <span class="required-star">*</span></label>
-        <input type="text" id="mezzi_luogo" placeholder="Indirizzo specifico, punto di riferimento...">
-        <div class="error-msg" id="error_mezzi_luogo">Campo obbligatorio</div>
+        <label>LUOGO DI CONSEGNA <span class="required-star">*</span></label>
+        <input type="text" id="mezzi_luogo" placeholder="INDIRIZZO SPECIFICO, PUNTO DI RIFERIMENTO...">
+        <div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>Note (opzionali)</label>
-        <textarea id="mezzi_note" rows="3" placeholder="Eventuali ulteriori informazioni"></textarea>
+        <label>NOTE (OPZIONALI)</label>
+        <textarea id="mezzi_note" rows="3" placeholder="EVENTUALI ULTERIORI INFORMAZIONI"></textarea>
       </div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI E ATTREZZATURE 📩</button>
     </div>
-    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRichiestaMezziModal()">Annulla</button>
+    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRichiestaMezziModal()">ANNULLA</button>
   </div>
 </div>
 
@@ -406,22 +405,22 @@ function saveStati() {
   try { localStorage.setItem(STORAGE_KEY_DEST,  JSON.stringify(destinazioni)); } catch(e) {}
 }
 
-// Colori distinti per ogni tipologia di mezzo (testo su sfondo pastello)
+// COLORI DISTINTI PER OGNI TIPOLOGIA DI MEZZO (TESTO SU SFONDO PASTELLO)
 const BADGE_COLORS = {
-  PIATTAFORMA:     { bg: '#E3F2FD', fg: '#0D47A1' },   // Blu chiaro
-  GENERATORE:      { bg: '#FFF3E0', fg: '#E65100' },   // Arancio pastello
-  SOLLEVATORE:     { bg: '#E8F5E9', fg: '#1B5E20' },   // Verde scuro
-  ESCAVATORE:      { bg: '#FFEBEE', fg: '#B71C1C' },   // Rosso intenso
-  COMPRESSORE:     { bg: '#F3E5F5', fg: '#4A148C' },   // Viola
-  MONOBLOCCO:      { bg: '#F1F8E9', fg: '#33691E' },   // Verde oliva
-  CAMION:          { bg: '#E0F7FA', fg: '#006064' },   // Ciano scuro
-  CISTERNA:        { bg: '#FFF9C4', fg: '#F57F17' },   // Giallo senape
-  INTONACATRICE:   { bg: '#FCE4EC', fg: '#880E4F' },   // Rosa intenso
-  WC:              { bg: '#ECEFF1', fg: '#37474F' },   // Grigio bluastro
-  VASCA:           { bg: '#E8EAF6', fg: '#1A237E' },   // Indaco
-  IDRODEMOLIZIONE: { bg: '#FBE9E7', fg: '#BF360C' },   // Terracotta
-  GRU:             { bg: '#EFEBE9', fg: '#4E342E' },   // Marrone
-  DEFAULT:         { bg: '#F5F5F5', fg: '#616161' }    // Neutro
+  PIATTAFORMA:     { bg: '#E3F2FD', fg: '#0D47A1' },
+  GENERATORE:      { bg: '#FFF3E0', fg: '#E65100' },
+  SOLLEVATORE:     { bg: '#E8F5E9', fg: '#1B5E20' },
+  ESCAVATORE:      { bg: '#FFEBEE', fg: '#B71C1C' },
+  COMPRESSORE:     { bg: '#F3E5F5', fg: '#4A148C' },
+  MONOBLOCCO:      { bg: '#F1F8E9', fg: '#33691E' },
+  CAMION:          { bg: '#E0F7FA', fg: '#006064' },
+  CISTERNA:        { bg: '#FFF9C4', fg: '#F57F17' },
+  INTONACATRICE:   { bg: '#FCE4EC', fg: '#880E4F' },
+  WC:              { bg: '#ECEFF1', fg: '#37474F' },
+  VASCA:           { bg: '#E8EAF6', fg: '#1A237E' },
+  IDRODEMOLIZIONE: { bg: '#FBE9E7', fg: '#BF360C' },
+  GRU:             { bg: '#EFEBE9', fg: '#4E342E' },
+  DEFAULT:         { bg: '#F5F5F5', fg: '#616161' }
 };
 
 function parseCSVRaw(text) {
@@ -468,7 +467,7 @@ function formatDate(raw) {
   return trimmed;
 }
 
-// Sostituzione "Canone" con "Tariffa"
+// FUNZIONE AGGIORNATA: "CANONE MENSILE", "CANONE GIORNALIERO", "CANONE ORARIO"
 function formatCanone(val, tipo) {
   if (!val || val === '') return null;
   const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g, ''));
@@ -477,9 +476,9 @@ function formatCanone(val, tipo) {
     valoreFormattato = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
   }
   let tipoLabel = '';
-  if (tipo === 'mensile') tipoLabel = 'Tariffa mensile';
-  else if (tipo === 'giornaliero') tipoLabel = 'Tariffa giornaliera';
-  else if (tipo === 'orario') tipoLabel = 'Tariffa oraria';
+  if (tipo === 'mensile') tipoLabel = 'CANONE MENSILE';
+  else if (tipo === 'giornaliero') tipoLabel = 'CANONE GIORNALIERO';
+  else if (tipo === 'orario') tipoLabel = 'CANONE ORARIO';
   else return valoreFormattato;
   return `${tipoLabel}: ${valoreFormattato}`;
 }
@@ -563,7 +562,7 @@ async function loadData() {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
   dot.className = 'sync-dot loading';
-  lbl.textContent = 'Aggiornamento...';
+  lbl.textContent = 'AGGIORNAMENTO...';
   try {
     const [txtPros, txtCod, txtCantieri] = await Promise.all([
       fetchCSV(CSV_PROSPETTO),
@@ -588,13 +587,13 @@ async function loadData() {
 
     const now = new Date().toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
     dot.className = 'sync-dot';
-    lbl.textContent = `Aggiornato alle ${now} · ${data.length} mezzi · ${cantieri.length} cantieri`;
+    lbl.textContent = `AGGIORNATO ALLE ${now} · ${data.length} MEZZI · ${cantieri.length} CANTIERI`;
     renderFilters();
     render();
   } catch(e) {
     dot.className = 'sync-dot error';
-    lbl.textContent = 'Errore di connessione';
-    document.getElementById('cards').innerHTML = '<div class="empty">Impossibile caricare i dati.<br>Verifica la connessione e riprova.</div>';
+    lbl.textContent = 'ERRORE DI CONNESSIONE';
+    document.getElementById('cards').innerHTML = '<div class="empty">IMPOSSIBILE CARICARE I DATI.<br>VERIFICA LA CONNESSIONE E RIPROVA.</div>';
     console.error(e);
   }
 }
@@ -606,10 +605,13 @@ function getTypes() {
 }
 
 function renderFilters() {
-  document.getElementById('filters').innerHTML = getTypes().map(t => {
-    const extra = t === 'RESO' ? 'reso-chip' : t === 'SPOSTATO IN' ? 'spostato-chip' : '';
-    return `<span class="chip ${extra} ${t===activeFilter?'active':''}" onclick="setFilter('${t}')">${t}</span>`;
-  }).join('');
+  const filterContainer = document.getElementById('filters');
+  // Mantiene l'emoji 🔍 all'inizio
+  filterContainer.innerHTML = `<span style="font-size: 18px; margin-right: 4px;">🔍</span>` +
+    getTypes().map(t => {
+      const extra = t === 'RESO' ? 'reso-chip' : t === 'SPOSTATO IN' ? 'spostato-chip' : '';
+      return `<span class="chip ${extra} ${t===activeFilter?'active':''}" onclick="setFilter('${t}')">${t}</span>`;
+    }).join('');
 }
 
 function setFilter(t) { activeFilter = t; renderFilters(); render(); }
@@ -629,9 +631,9 @@ function filtered() {
 
 function render() {
   const items = filtered();
-  document.getElementById('count').textContent = items.length + (items.length === 1 ? ' mezzo trovato' : ' mezzi trovati');
+  document.getElementById('count').textContent = items.length + (items.length === 1 ? ' MEZZO TROVATO' : ' MEZZI TROVATI');
   if (!items.length) {
-    document.getElementById('cards').innerHTML = '<div class="empty">Nessun risultato trovato.<br>Prova a cambiare il filtro o la ricerca.</div>';
+    document.getElementById('cards').innerHTML = '<div class="empty">NESSUN RISULTATO TROVATO.<br>PROVA A CAMBIARE IL FILTRO O LA RICERCA.</div>';
     return;
   }
   document.getElementById('cards').innerHTML = items.map(d => {
@@ -654,11 +656,11 @@ function render() {
         </div>
       </div>
       <div class="card-meta" onclick="openModal('${esc(d.codice)}')">
-        <div class="meta-row"><span class="meta-label">Matricola</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
-        <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
-        <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
-        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Tariffa</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
-        ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
+        <div class="meta-row"><span class="meta-label">MATRICOLA</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">PROPRIETÀ</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">PROPRIETARIO</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
+        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">CANONE</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
+        ${dataFormattata ? `<div class="meta-row"><span class="meta-label">INIZIO NOLEGGIO</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
       <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE ↩️</button>
     </div>`;
@@ -679,17 +681,17 @@ function openModal(codice) {
     `<span class="badge" style="background:${c.bg};color:${c.fg};display:inline-block">${d.tipo || '—'}</span>`
     + (stato === 'reso'     ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>' : '')
     + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
-  document.getElementById('modal-title').textContent = d.marca || 'Dettaglio mezzo';
+  document.getElementById('modal-title').textContent = d.marca || 'DETTAGLIO MEZZO';
   const dataFormattata = formatDate(d.dataInizio);
   const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
   document.getElementById('modal-body').innerHTML = `
-    <div class="modal-field"><label>Marca e Modello</label><div class="val">${esc(d.marca) || '—'}</div></div>
-    <div class="modal-field"><label>Matricola / Targa</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'Non specificata'}</div></div>
-    <div class="modal-field"><label>Tipologia</label><div class="val">${esc(d.tipo) || '—'}</div></div>
-    <div class="modal-field"><label>Proprietà / Noleggio</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'Non specificato'}</div></div>
-    <div class="modal-field"><label>Proprietario</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'Non specificato'}</div></div>
-    <div class="modal-field"><label>Tariffa</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'Non specificato'}</div></div>
-    <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'Non specificata'}</div></div>
+    <div class="modal-field"><label>MARCA E MODELLO</label><div class="val">${esc(d.marca) || '—'}</div></div>
+    <div class="modal-field"><label>MATRICOLA / TARGA</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'NON SPECIFICATA'}</div></div>
+    <div class="modal-field"><label>TIPOLOGIA</label><div class="val">${esc(d.tipo) || '—'}</div></div>
+    <div class="modal-field"><label>PROPRIETÀ / NOLEGGIO</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>PROPRIETARIO</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>CANONE</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>DATA INIZIO NOLEGGIO</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'NON SPECIFICATA'}</div></div>
   `;
   document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
   document.getElementById('btn-spostato').className = 'btn-stato btn-spostato' + (stato === 'spostato' ? ' attivo' : '');
@@ -740,11 +742,11 @@ function openSpostatoPanel() {
 
 function confirmSpostato() {
   const selected = document.querySelector('input[name="spostato-dest"]:checked');
-  if (!selected) { showToast('⚠️ Seleziona una destinazione'); return; }
+  if (!selected) { showToast('⚠️ SELEZIONA UNA DESTINAZIONE'); return; }
   let dest = selected.value;
   if (dest === '__altro__') {
     dest = document.getElementById('dest-libera').value.trim();
-    if (!dest) { showToast('⚠️ Scrivi una destinazione'); return; }
+    if (!dest) { showToast('⚠️ SCRIVI UNA DESTINAZIONE'); return; }
   }
   setStato('spostato', dest);
   document.getElementById('spostato-panel').classList.remove('open');
@@ -772,8 +774,8 @@ function openRestituzioneModal(codiceMezzo) {
   
   document.getElementById('richiesta_commessa').value = CANTIERE_COMMESSA;
   document.getElementById('richiesta_cantiere').value = CANTIERE_NOME;
-  document.getElementById('richiesta_marca_modello').value = mezzo.marca || 'Non specificato';
-  document.getElementById('richiesta_matricola').value = mezzo.codice || 'Non specificata';
+  document.getElementById('richiesta_marca_modello').value = mezzo.marca || 'NON SPECIFICATO';
+  document.getElementById('richiesta_matricola').value = mezzo.codice || 'NON SPECIFICATA';
   
   document.getElementById('richiesta_nominativo').value = '';
   document.getElementById('richiesta_datetime').value = '';
@@ -817,22 +819,22 @@ function inviaRichiestaRestituzione() {
   
   const dataOraLeggibile = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
   
-  const oggetto = `RICHIESTA RESTITUZIONE - Mezzo ${mezzo.codice} - ${mezzo.marca}`;
-  let corpo = `Richiesta restituzione mezzo dal cantiere ${CANTIERE_NOME} (Commessa ${CANTIERE_COMMESSA})\n\n`;
+  const oggetto = `RICHIESTA RESTITUZIONE - MEZZO ${mezzo.codice} - ${mezzo.marca}`;
+  let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n`;
-  corpo += `- Marca/Modello: ${mezzo.marca || 'N/D'}\n`;
-  corpo += `- Matricola/Targa: ${mezzo.codice || 'N/D'}\n`;
-  corpo += `- Tipologia: ${mezzo.tipo || 'N/D'}\n\n`;
+  corpo += `- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n`;
+  corpo += `- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n`;
+  corpo += `- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n`;
-  corpo += `- Nominativo richiedente: ${nominativo}\n`;
-  corpo += `- Data e ora entro cui effettuare il ritiro: ${dataOraLeggibile}\n`;
-  corpo += `- Note: ${note || '(nessuna nota)'}\n`;
+  corpo += `- NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
+  corpo += `- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n`;
+  corpo += `- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
   
   const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   
   window.location.href = mailtoLink;
-  showToast('📧 Apertura programma email... Controlla e invia.', 3000);
+  showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
   closeRestituzioneModal();
 }
 
@@ -887,23 +889,23 @@ function inviaRichiestaMezzi() {
   const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
   
   const oggetto = `RICHIESTA MEZZI E ATTREZZATURE - ${CANTIERE_NOME} (${CANTIERE_COMMESSA})`;
-  let corpo = `Richiesta mezzi e attrezzature per il cantiere ${CANTIERE_NOME}\n`;
-  corpo += `Codice Commessa: ${CANTIERE_COMMESSA}\n`;
+  let corpo = `RICHIESTA MEZZI E ATTREZZATURE PER IL CANTIERE ${CANTIERE_NOME}\n`;
+  corpo += `CODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
-  if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `Unità Locale: ${cantiereInfo.unitaLocale}\n`;
+  if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n`;
-  corpo += `- Nominativo richiedente: ${nominativo}\n`;
-  corpo += `- Descrizione e quantità mezzi: ${descrizione}\n`;
-  corpo += `- Data e ora consegna in cantiere: ${dataOraConsegna}\n`;
-  corpo += `- Periodi di impiego previsto: ${periodi}\n`;
-  corpo += `- Luogo di consegna: ${luogo}\n`;
-  corpo += `- Note: ${note || '(nessuna nota)'}\n`;
+  corpo += `- NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
+  corpo += `- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n`;
+  corpo += `- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n`;
+  corpo += `- PERIODI DI IMPIEGO PREVISTO: ${periodi}\n`;
+  corpo += `- LUOGO DI CONSEGNA: ${luogo}\n`;
+  corpo += `- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
   
   const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   
   window.location.href = mailtoLink;
-  showToast('📧 Apertura programma email... Controlla e invia.', 3000);
+  showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
   closeRichiestaMezziModal();
 }
 
@@ -919,12 +921,12 @@ async function openExport() {
   const conStato = data.filter(d => stati[d.codice]);
 
   if (!conStato.length) {
-    showToast('⚠️ Nessun mezzo ha uno stato assegnato.');
+    showToast('⚠️ NESSUN MEZZO HA UNO STATO ASSEGNATO.');
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = 'Esportazione...';
+  btn.textContent = 'ESPORTAZIONE...';
 
   const payload = {
     foglio: 'PROSPETTO_CANTIERI_DEF',
@@ -952,15 +954,15 @@ async function openExport() {
     const json = await res.json();
     if (json.status === 'ok') {
       const msg = json.aggiornati > 0
-        ? `✅ ${json.aggiornati} variazioni scritte sul foglio!`
-          + (json.nonTrovati > 0 ? `\n⚠️ ${json.nonTrovati} matricole non trovate.` : '')
-        : '⚠️ Nessuna matricola trovata nel foglio. Verifica i codici.';
+        ? `✅ ${json.aggiornati} VARIAZIONI SCRITTE SUL FOGLIO!`
+          + (json.nonTrovati > 0 ? `\n⚠️ ${json.nonTrovati} MATRICOLE NON TROVATE.` : '')
+        : '⚠️ NESSUNA MATRICOLA TROVATA NEL FOGLIO. VERIFICA I CODICI.';
       showToast(msg, 5000);
     } else {
-      showToast('❌ Errore: ' + (json.error || 'risposta non valida'), 5000);
+      showToast('❌ ERRORE: ' + (json.error || 'RISPOSTA NON VALIDA'), 5000);
     }
   } catch(e) {
-    showToast('❌ Connessione fallita: ' + e.message, 5000);
+    showToast('❌ CONNESSIONE FALLITA: ' + e.message, 5000);
   } finally {
     btn.disabled = false;
     btn.textContent = 'ESPORTA VARIAZIONI';
