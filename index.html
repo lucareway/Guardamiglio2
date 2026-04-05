@@ -151,7 +151,7 @@
         <button class="btn-reset" onclick="setStato(null)">Ripristina</button>
       </div>
       <div class="spostato-panel" id="spostato-panel">
-        <div class="spostato-panel-label">📍 Seleziona destinazione</div>
+        <div class="spostato-panel-label">📍 Seleziona destinazione (dal foglio CODICI_CANTIERI)</div>
         <input type="text" class="dest-search" id="dest-search" placeholder="Cerca cantiere…" oninput="renderDestOptions()">
         <div class="spostato-options-list" id="spostato-options-list"></div>
         <div class="spostato-libera-wrap">
@@ -178,6 +178,8 @@ const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
 const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
 const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
+// Nuovo foglio CODICI_CANTIERI (colonna B = codice, colonna C = descrizione)
+const CSV_CANTIERI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_CANTIERI`;
 // URL corretto del deploy della Web App Apps Script
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
@@ -185,7 +187,8 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4n
 //  STATO GLOBALE
 // ══════════════════════════════════════════════════════════════════════════════
 let data           = [];
-let codiciCommessa = [];
+let codiciCommessa = []; // non più usato per le destinazioni, ma mantenuto per altre eventuali funzioni
+let cantieri       = []; // array di stringhe "CODICE DESCRIZIONE" dal foglio CODICI_CANTIERI
 let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
@@ -287,19 +290,37 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
+// Nuova funzione: legge il foglio CODICI_CANTIERI, colonne B e C, e restituisce array di stringhe "B C" (come da ARRAYFORMULA)
+function parseCantieri(text) {
+  const rows = parseCSVRaw(text);
+  const result = [];
+  for (let i = 1; i < rows.length; i++) { // salta intestazione
+    const colB = (rows[i][1] || '').trim();   // colonna B (indice 1)
+    const colC = (rows[i][2] || '').trim();   // colonna C (indice 2)
+    // Condizione: se almeno una delle due ha lunghezza > 0
+    if (colB.length > 0 || colC.length > 0) {
+      result.push(colB + (colC ? ' ' + colC : ''));
+    }
+  }
+  return result;
+}
+
 async function loadData() {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
   dot.className = 'sync-dot loading';
   lbl.textContent = 'Aggiornamento...';
   try {
-    const [txtPros, txtCod] = await Promise.all([
+    const [txtPros, txtCod, txtCantieri] = await Promise.all([
       fetchCSV(CSV_PROSPETTO),
       fetchCSV(CSV_CODICI),
+      fetchCSV(CSV_CANTIERI)
     ]);
     data = parseProspetto(txtPros);
     codiciCommessa = parseCodiciCommessa(txtCod);
+    cantieri = parseCantieri(txtCantieri);
 
+    // Sincronizza stati iniziali dal foglio PROSPETTO
     stati = {};
     data.forEach(d => {
       if (d.statoSheet) {
@@ -313,7 +334,7 @@ async function loadData() {
 
     const now = new Date().toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
     dot.className = 'sync-dot';
-    lbl.textContent = `Aggiornato alle ${now} · ${data.length} mezzi`;
+    lbl.textContent = `Aggiornato alle ${now} · ${data.length} mezzi · ${cantieri.length} cantieri`;
     renderFilters();
     render();
   } catch(e) {
@@ -439,19 +460,17 @@ function closeModal() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PANEL SPOSTATO
+//  PANEL SPOSTATO - USANDO L'ARRAY cantieri (da CODICI_CANTIERI)
 // ══════════════════════════════════════════════════════════════════════════════
 function renderDestOptions() {
   const q = (document.getElementById('dest-search').value || '').toLowerCase();
   const list = document.getElementById('spostato-options-list');
-  const opzioni = codiciCommessa
-    .filter(c => c.codice !== CANTIERE_COMMESSA)
-    .filter(c => !q || (c.codice + ' ' + c.desc).toLowerCase().includes(q));
+  // Filtra i cantieri in base alla ricerca
+  const opzioni = cantieri.filter(c => !q || c.toLowerCase().includes(q));
 
   list.innerHTML = opzioni.map((c, i) => {
-    const val = `${c.codice} ${c.desc}`.trim();
     return `<label class="spostato-option" id="opt-dest-${i}">
-      <input type="radio" name="spostato-dest" value="${esc(val)}"> ${esc(val)}
+      <input type="radio" name="spostato-dest" value="${esc(c)}"> ${esc(c)}
     </label>`;
   }).join('');
 
@@ -518,9 +537,6 @@ function showToast(msg, duration = 3500) {
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  ESPORTA VARIAZIONI
-//  Cerca ogni matricola in colonna F del foglio PROSPETTO_CANTIERI_DEF
-//  e scrive il valore dello stato (RESO AL NOLEGGIATORE / SPOSTATO IN ...)
-//  nella colonna AF della stessa riga.
 // ══════════════════════════════════════════════════════════════════════════════
 async function openExport() {
   const btn = document.getElementById('export-btn');
