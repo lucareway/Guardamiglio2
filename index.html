@@ -178,17 +178,15 @@ const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
 const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
 const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
-// Nuovo foglio CODICI_CANTIERI (colonna B = codice, colonna C = descrizione)
 const CSV_CANTIERI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_CANTIERI`;
-// URL corretto del deploy della Web App Apps Script
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  STATO GLOBALE
 // ══════════════════════════════════════════════════════════════════════════════
 let data           = [];
-let codiciCommessa = []; // non più usato per le destinazioni, ma mantenuto per altre eventuali funzioni
-let cantieri       = []; // array di stringhe "CODICE DESCRIZIONE" dal foglio CODICI_CANTIERI
+let codiciCommessa = [];
+let cantieri       = [];
 let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
@@ -244,6 +242,30 @@ function parseCSVRaw(text) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  FORMATTA DATA (Excel serial o stringa)
+// ══════════════════════════════════════════════════════════════════════════════
+function formatDate(raw) {
+  if (!raw || raw === '') return null;
+  const trimmed = String(raw).trim();
+  // Prova a convertire come numero seriale Excel
+  const num = parseFloat(trimmed);
+  if (!isNaN(num) && num > 0 && num < 100000) {
+    // Excel serial: 25569 è la differenza tra 1/1/1900 (Excel) e 1/1/1970 (JS)
+    const date = new Date((num - 25569) * 86400000);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString('it-IT');
+    }
+  }
+  // Altrimenti parsing standard
+  const d = new Date(trimmed);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleDateString('it-IT');
+  }
+  // Se non riesce, restituisce il valore grezzo (es. stringa non riconosciuta)
+  return trimmed;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 //  CARICAMENTO DATI
 // ══════════════════════════════════════════════════════════════════════════════
 async function fetchCSV(url) {
@@ -290,14 +312,12 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
-// Nuova funzione: legge il foglio CODICI_CANTIERI, colonne B e C, e restituisce array di stringhe "B C" (come da ARRAYFORMULA)
 function parseCantieri(text) {
   const rows = parseCSVRaw(text);
   const result = [];
-  for (let i = 1; i < rows.length; i++) { // salta intestazione
-    const colB = (rows[i][1] || '').trim();   // colonna B (indice 1)
-    const colC = (rows[i][2] || '').trim();   // colonna C (indice 2)
-    // Condizione: se almeno una delle due ha lunghezza > 0
+  for (let i = 1; i < rows.length; i++) {
+    const colB = (rows[i][1] || '').trim();
+    const colC = (rows[i][2] || '').trim();
     if (colB.length > 0 || colC.length > 0) {
       result.push(colB + (colC ? ' ' + colC : ''));
     }
@@ -320,7 +340,6 @@ async function loadData() {
     codiciCommessa = parseCodiciCommessa(txtCod);
     cantieri = parseCantieri(txtCantieri);
 
-    // Sincronizza stati iniziali dal foglio PROSPETTO
     stati = {};
     data.forEach(d => {
       if (d.statoSheet) {
@@ -401,6 +420,7 @@ function render() {
       : stato === 'spostato'
       ? `<span class="stato-badge spostato">SPOSTATO IN ${destinazioni[d.codice] || ''}</span>`
       : '';
+    const dataFormattata = formatDate(d.dataInizio);
     return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}" onclick="openModal(this.dataset.codice)">
       <div class="card-top">
         <div class="card-title">${esc(d.marca) || '—'}</div>
@@ -414,7 +434,7 @@ function render() {
         <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
         ${d.canone ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(fmtCanone(d.canone))}</span></div>` : ''}
-        ${d.dataInizio ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(d.dataInizio)}</span></div>` : ''}
+        ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -438,6 +458,7 @@ function openModal(codice) {
     + (stato === 'reso'     ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>' : '')
     + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
   document.getElementById('modal-title').textContent = d.marca || 'Dettaglio mezzo';
+  const dataFormattata = formatDate(d.dataInizio);
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><label>Marca e Modello</label><div class="val">${esc(d.marca) || '—'}</div></div>
     <div class="modal-field"><label>Matricola / Targa</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'Non specificata'}</div></div>
@@ -445,7 +466,7 @@ function openModal(codice) {
     <div class="modal-field"><label>Proprietà / Noleggio</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'Non specificato'}</div></div>
     <div class="modal-field"><label>Proprietario</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'Non specificato'}</div></div>
     <div class="modal-field"><label>Canone</label><div class="val ${!d.canone?'empty-val':''}">${esc(fmtCanone(d.canone))}</div></div>
-    <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!d.dataInizio?'empty-val':''}">${esc(d.dataInizio) || 'Non specificata'}</div></div>
+    <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'Non specificata'}</div></div>
   `;
   document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
   document.getElementById('btn-spostato').className = 'btn-stato btn-spostato' + (stato === 'spostato' ? ' attivo' : '');
@@ -460,12 +481,11 @@ function closeModal() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PANEL SPOSTATO - USANDO L'ARRAY cantieri (da CODICI_CANTIERI)
+//  PANEL SPOSTATO
 // ══════════════════════════════════════════════════════════════════════════════
 function renderDestOptions() {
   const q = (document.getElementById('dest-search').value || '').toLowerCase();
   const list = document.getElementById('spostato-options-list');
-  // Filtra i cantieri in base alla ricerca
   const opzioni = cantieri.filter(c => !q || c.toLowerCase().includes(q));
 
   list.innerHTML = opzioni.map((c, i) => {
