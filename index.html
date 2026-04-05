@@ -25,8 +25,10 @@
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #8e8e93; pointer-events: none; }
   .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
   .search-bar input:focus { border-color: #007aff; background: #fff; }
-  .filter-row { display: flex; gap: 8px; padding: 10px 1rem; overflow-x: auto; scrollbar-width: none; background: #fff; border-bottom: 1px solid #e5e5e5; }
-  .filter-row::-webkit-scrollbar { display: none; }
+  
+  /* FILTRI: ora vanno a capo automaticamente */
+  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
+  
   .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; }
   .chip.active { background: #007aff; color: #fff; border-color: #007aff; }
   .chip.reso-chip.active { background: #ff3b30; border-color: #ff3b30; }
@@ -242,22 +244,43 @@ function parseCSVRaw(text) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  FORMATTA DATA (Excel serial o stringa)
+//  FORMATTA DATA (supporta Excel serial, ISO, italiano)
 // ══════════════════════════════════════════════════════════════════════════════
 function formatDate(raw) {
   if (!raw || raw === '') return null;
   const trimmed = String(raw).trim();
+  
+  // 1) Prova come numero seriale Excel (solo se è un numero puro)
   const num = parseFloat(trimmed);
-  if (!isNaN(num) && num > 0 && num < 100000) {
+  if (!isNaN(num) && Number.isFinite(num) && trimmed.match(/^-?\d+(\.\d+)?$/)) {
+    // Excel serial: 25569 giorni dal 1900-01-01 al 1970-01-01
     const date = new Date((num - 25569) * 86400000);
-    if (!isNaN(date.getTime())) {
+    if (!isNaN(date.getTime()) && date.getFullYear() > 1900) {
       return date.toLocaleDateString('it-IT');
     }
   }
-  const d = new Date(trimmed);
-  if (!isNaN(d.getTime())) {
+  
+  // 2) Prova formato ISO (YYYY-MM-DD)
+  let d = new Date(trimmed);
+  if (!isNaN(d.getTime()) && trimmed.match(/^\d{4}-\d{2}-\d{2}/)) {
     return d.toLocaleDateString('it-IT');
   }
+  
+  // 3) Prova formato italiano (DD/MM/YYYY) o (DD-MM-YYYY)
+  const parts = trimmed.split(/[\/\-]/);
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 1900 && year < 2100) {
+      const d2 = new Date(year, month, day);
+      if (d2.getDate() === day && d2.getMonth() === month) {
+        return d2.toLocaleDateString('it-IT');
+      }
+    }
+  }
+  
+  // 4) Fallback: restituisci il valore originale
   return trimmed;
 }
 
@@ -305,7 +328,6 @@ function parseProspetto(text) {
       const colN  = cols[13] || '';
       const colAF = cols[31] || '';
       
-      // Determina il canone e il tipo in base alla prima colonna non vuota tra J, K, L
       let canoneVal = '';
       let canoneType = '';
       if (colJ && colJ.trim()) {
