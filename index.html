@@ -3,14 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>2025_007.002 A1 VIADOTTO GUARDAMIGLIO — Prospetto Cantieri</title>
+<title>2025_007.002 — Prospetto Cantieri</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
-  .app { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100vh; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    min-height: 100vh;
+    position: relative;
+  }
+  /* Sfondo con logo Reway group (opaco e centrato) */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://www.rewaygroup.com/wp-content/uploads/2021/03/logo-reway.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 40% auto;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .app {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.96);
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(0px);
+  }
   .header { padding: 1rem 1rem 0.75rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
   .title { font-size: 20px; font-weight: 600; color: #1d1d1f; }
-  .subtitle { font-size: 13px; color: #6e6e73; margin-top: 2px; }
+  .subtitle { font-size: 15px; font-weight: 500; color: #3a3a44; margin-top: 4px; }
   .sync-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #34c759; flex-shrink: 0; }
   .sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
@@ -149,7 +179,6 @@
   #richiesta-mezzi-form-content textarea {
     text-transform: uppercase;
   }
-  /* Mantenere il placeholder in minuscolo (opzionale) */
   #richiesta-mezzi-form-content input::placeholder,
   #richiesta-mezzi-form-content textarea::placeholder {
     text-transform: none;
@@ -166,8 +195,10 @@
 <body>
 <div class="app">
   <div class="header">
-    <div class="title">2025_007.002 A1 VIADOTTO GUARDAMIGLIO</div>
-    <div class="subtitle">Prospetto Cantieri</div>
+    <!-- Prima riga: codice commessa -->
+    <div class="title" id="commessa-title">2025_007.002</div>
+    <!-- Seconda riga: nome cantiere -->
+    <div class="subtitle" id="cantiere-name">A1 VIADOTTO GUARDAMIGLIO</div>
     <div class="sync-row">
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Connessione in corso...</span>
@@ -375,21 +406,22 @@ function saveStati() {
   try { localStorage.setItem(STORAGE_KEY_DEST,  JSON.stringify(destinazioni)); } catch(e) {}
 }
 
+// Colori distinti per ogni tipologia di mezzo (testo su sfondo pastello)
 const BADGE_COLORS = {
-  PIATTAFORMA:     { bg:'#e8f0fe', fg:'#1a56db' },
-  GENERATORE:      { bg:'#fef3c7', fg:'#92400e' },
-  SOLLEVATORE:     { bg:'#d1fae5', fg:'#065f46' },
-  ESCAVATORE:      { bg:'#fee2e2', fg:'#991b1b' },
-  COMPRESSORE:     { bg:'#f3f4f6', fg:'#374151' },
-  MONOBLOCCO:      { bg:'#f3f4f6', fg:'#374151' },
-  CAMION:          { bg:'#ede9fe', fg:'#5b21b6' },
-  CISTERNA:        { bg:'#e0f2fe', fg:'#0c4a6e' },
-  INTONACATRICE:   { bg:'#fce7f3', fg:'#831843' },
-  WC:              { bg:'#f3f4f6', fg:'#374151' },
-  VASCA:           { bg:'#e0f2fe', fg:'#0c4a6e' },
-  IDRODEMOLIZIONE: { bg:'#fee2e2', fg:'#991b1b' },
-  GRU:             { bg:'#fef3c7', fg:'#78350f' },
-  DEFAULT:         { bg:'#f3f4f6', fg:'#374151' },
+  PIATTAFORMA:     { bg: '#E3F2FD', fg: '#0D47A1' },   // Blu chiaro
+  GENERATORE:      { bg: '#FFF3E0', fg: '#E65100' },   // Arancio pastello
+  SOLLEVATORE:     { bg: '#E8F5E9', fg: '#1B5E20' },   // Verde scuro
+  ESCAVATORE:      { bg: '#FFEBEE', fg: '#B71C1C' },   // Rosso intenso
+  COMPRESSORE:     { bg: '#F3E5F5', fg: '#4A148C' },   // Viola
+  MONOBLOCCO:      { bg: '#F1F8E9', fg: '#33691E' },   // Verde oliva
+  CAMION:          { bg: '#E0F7FA', fg: '#006064' },   // Ciano scuro
+  CISTERNA:        { bg: '#FFF9C4', fg: '#F57F17' },   // Giallo senape
+  INTONACATRICE:   { bg: '#FCE4EC', fg: '#880E4F' },   // Rosa intenso
+  WC:              { bg: '#ECEFF1', fg: '#37474F' },   // Grigio bluastro
+  VASCA:           { bg: '#E8EAF6', fg: '#1A237E' },   // Indaco
+  IDRODEMOLIZIONE: { bg: '#FBE9E7', fg: '#BF360C' },   // Terracotta
+  GRU:             { bg: '#EFEBE9', fg: '#4E342E' },   // Marrone
+  DEFAULT:         { bg: '#F5F5F5', fg: '#616161' }    // Neutro
 };
 
 function parseCSVRaw(text) {
@@ -436,6 +468,7 @@ function formatDate(raw) {
   return trimmed;
 }
 
+// Sostituzione "Canone" con "Tariffa"
 function formatCanone(val, tipo) {
   if (!val || val === '') return null;
   const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g, ''));
@@ -444,9 +477,9 @@ function formatCanone(val, tipo) {
     valoreFormattato = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
   }
   let tipoLabel = '';
-  if (tipo === 'mensile') tipoLabel = 'Canone mensile';
-  else if (tipo === 'giornaliero') tipoLabel = 'Canone giornaliero';
-  else if (tipo === 'orario') tipoLabel = 'Canone orario';
+  if (tipo === 'mensile') tipoLabel = 'Tariffa mensile';
+  else if (tipo === 'giornaliero') tipoLabel = 'Tariffa giornaliera';
+  else if (tipo === 'orario') tipoLabel = 'Tariffa oraria';
   else return valoreFormattato;
   return `${tipoLabel}: ${valoreFormattato}`;
 }
@@ -509,23 +542,17 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
-// CORRETTA: colonne del foglio CODICI_CANTIERI:
-// Colonna B (indice 1) = CODICE COMMESSA
-// Colonna C (indice 2) = NOME CANTIERE
-// Colonna D (indice 3) = CIG
-// Colonna E (indice 4) = UNITÀ LOCALE
 function parseCantieriDetails(text) {
   const rows = parseCSVRaw(text);
   const result = [];
   for (let i = 1; i < rows.length; i++) {
-    const commessa = (rows[i][1] || '').trim();     // colonna B
-    const nomeCantiere = (rows[i][2] || '').trim(); // colonna C
-    const cig = (rows[i][3] || '').trim();          // colonna D
-    const unitaLocale = (rows[i][4] || '').trim();  // colonna E
+    const commessa = (rows[i][1] || '').trim();
+    const nomeCantiere = (rows[i][2] || '').trim();
+    const cig = (rows[i][3] || '').trim();
+    const unitaLocale = (rows[i][4] || '').trim();
     if (commessa) {
       result.push({ commessa, nome: nomeCantiere, cig, unitaLocale });
     } else if (nomeCantiere) {
-      // Se non c'è commessa ma c'è nome, lo includiamo lo stesso per compatibilità
       result.push({ commessa: '', nome: nomeCantiere, cig, unitaLocale });
     }
   }
@@ -630,7 +657,7 @@ function render() {
         <div class="meta-row"><span class="meta-label">Matricola</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
-        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
+        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Tariffa</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
         ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
       <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE ↩️</button>
@@ -661,7 +688,7 @@ function openModal(codice) {
     <div class="modal-field"><label>Tipologia</label><div class="val">${esc(d.tipo) || '—'}</div></div>
     <div class="modal-field"><label>Proprietà / Noleggio</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'Non specificato'}</div></div>
     <div class="modal-field"><label>Proprietario</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'Non specificato'}</div></div>
-    <div class="modal-field"><label>Canone</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'Non specificato'}</div></div>
+    <div class="modal-field"><label>Tariffa</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'Non specificato'}</div></div>
     <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'Non specificata'}</div></div>
   `;
   document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
@@ -809,18 +836,13 @@ function inviaRichiestaRestituzione() {
   closeRestituzioneModal();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  RICHIESTA MEZZI E ATTREZZATURE (con ricerca per commessa)
-// ══════════════════════════════════════════════════════════════════════════════
 function openRichiestaMezziModal() {
-  // Trova i dati del cantiere in base al codice commessa
   const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
   document.getElementById('mezzi_commessa').value = CANTIERE_COMMESSA;
   document.getElementById('mezzi_cantiere').value = CANTIERE_NOME;
   document.getElementById('mezzi_cig').value = cantiereInfo ? cantiereInfo.cig : '';
   document.getElementById('mezzi_unita_locale').value = cantiereInfo ? cantiereInfo.unitaLocale : '';
   
-  // Resetta campi modulo
   document.getElementById('mezzi_nominativo').value = '';
   document.getElementById('mezzi_descrizione').value = '';
   document.getElementById('mezzi_datetime_consegna').value = '';
@@ -828,7 +850,6 @@ function openRichiestaMezziModal() {
   document.getElementById('mezzi_luogo').value = '';
   document.getElementById('mezzi_note').value = '';
   
-  // Nasconde errori
   document.querySelectorAll('#richiesta-mezzi-form-content .error-msg').forEach(el => el.style.display = 'none');
   
   document.getElementById('richiesta-mezzi-modal-bg').classList.add('open');
@@ -893,7 +914,6 @@ function showToast(msg, duration = 3500) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-// ESPORTA VARIAZIONI
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
