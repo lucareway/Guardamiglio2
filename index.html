@@ -26,7 +26,7 @@
   .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
   .search-bar input:focus { border-color: #007aff; background: #fff; }
   
-  /* FILTRI: ora vanno a capo automaticamente */
+  /* FILTRI */
   .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
   
   .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; }
@@ -35,7 +35,7 @@
   .chip.spostato-chip.active { background: #cc8800; border-color: #cc8800; }
   .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; }
   .cards { padding: 0.75rem 1rem 3rem; display: flex; flex-direction: column; gap: 10px; background: #f5f5f7; }
-  .card { background: #fff; border-radius: 12px; padding: 1rem; cursor: pointer; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; }
+  .card { background: #fff; border-radius: 12px; padding: 1rem; cursor: pointer; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
   .card:active { opacity: 0.85; }
   .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
   .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
@@ -49,10 +49,39 @@
   .meta-row { display: flex; gap: 8px; font-size: 13px; }
   .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
   .meta-value { color: #3c3c43; word-break: break-all; }
+  
+  /* PULSANTE RICHIESTA RESTITUZIONE */
+  .btn-richiesta-restituzione {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: #ff3b30;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-richiesta-restituzione:active {
+    background-color: #dc2626;
+    transform: scale(0.97);
+  }
+  .btn-richiesta-restituzione::before {
+    content: "✉️";
+    font-size: 14px;
+  }
+  
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
-  /* ── MODAL principale ── */
+  /* MODALE DETTAGLIO MEZZO */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
@@ -78,7 +107,7 @@
   .close-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #007aff; margin-top: 0.75rem; }
   .close-btn:active { background: #e5e5ea; }
 
-  /* ── PANEL SPOSTATO ── */
+  /* PANEL SPOSTATO */
   .spostato-panel { display: none; margin-top: 1rem; padding: 1rem; background: #fffbea; border: 1px solid #ffe58a; border-radius: 12px; }
   .spostato-panel.open { display: block; }
   .spostato-panel-label { font-size: 12px; color: #7a5c00; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
@@ -93,12 +122,23 @@
   .spostato-confirm:active { opacity: 0.8; }
   .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; }
 
-  /* ── BOTTONI HEADER ── */
+  /* MODALE RICHIESTA RESTITUZIONE */
+  .modal-richiesta { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
+  .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; font-family: inherit; }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #007aff; background: #fff; }
+  .form-group input.readonly-field { background: #f2f2f7; color: #3a3a44; font-weight: 500; border-color: #e5e5ea; }
+  .required-star { color: #ff3b30; margin-left: 2px; }
+  .error-msg { color: #ff3b30; font-size: 11px; margin-top: 4px; display: none; }
+  .btn-invia-richiesta { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; }
+  .btn-invia-richiesta:active { opacity: 0.85; transform: scale(0.97); }
+  .divider { height: 1px; background: #e5e5ea; margin: 1rem 0; }
+
   .export-btn { font-size: 13px; font-weight: 700; color: #fff; background: #34c759; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
   .export-btn:active { opacity: 0.8; }
   .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
 
-  /* ── TOAST ── */
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90vw; white-space: pre-wrap; text-align: center; }
   .toast.show { opacity: 1; }
 </style>
@@ -138,7 +178,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════ MODAL DETTAGLIO MEZZO ═══════════════ -->
+<!-- MODALE DETTAGLIO MEZZO (esistente) -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
@@ -171,6 +211,46 @@
   </div>
 </div>
 
+<!-- NUOVA MODALE PER RICHIESTA RESTITUZIONE -->
+<div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()">
+  <div class="modal-richiesta">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <h3 style="margin-bottom: 1rem; font-size: 20px;">✉️ Richiedi Restituzione</h3>
+    <div id="restituzione-form-content">
+      <!-- campi precompilati readonly -->
+      <div class="form-group">
+        <label>Codice Commessa</label>
+        <input type="text" id="richiesta_commessa" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>Cantiere di partenza</label>
+        <input type="text" id="richiesta_cantiere" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>Marca e Modello</label>
+        <input type="text" id="richiesta_marca_modello" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>Matricola / Targa</label>
+        <input type="text" id="richiesta_matricola" class="readonly-field" readonly>
+      </div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label>Nominativo richiedente <span class="required-star">*</span></label>
+        <input type="text" id="richiesta_nominativo" placeholder="Nome e Cognome / Ragione Sociale">
+        <div class="error-msg" id="error_nominativo">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Data e ora ritiro desiderata <span class="required-star">*</span></label>
+        <input type="datetime-local" id="richiesta_datetime">
+        <div class="error-msg" id="error_datetime">Campo obbligatorio</div>
+      </div>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">📧 Invia richiesta</button>
+    </div>
+    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">Annulla</button>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
 //  CONFIGURAZIONE
@@ -183,6 +263,13 @@ const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 const CSV_CANTIERI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_CANTIERI`;
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
+// Destinatari email
+const DESTINATARI_EMAIL = [
+  'a.argilla@rewaygroup.com',
+  'l.buselli@mga-aulla.it',
+  'e.tedeschi@rewaygroup.com'
+];
+
 // ══════════════════════════════════════════════════════════════════════════════
 //  STATO GLOBALE
 // ══════════════════════════════════════════════════════════════════════════════
@@ -193,6 +280,7 @@ let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
 let currentId      = null;
+let currentRichiestaMezzo = null;  // memorizza il mezzo per la richiesta restituzione
 
 const STORAGE_KEY_STATI = 'stati_guardamiglio_v1';
 const STORAGE_KEY_DEST  = 'dest_guardamiglio_v1';
@@ -243,30 +331,20 @@ function parseCSVRaw(text) {
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  FORMATTA DATA (supporta Excel serial, ISO, italiano)
-// ══════════════════════════════════════════════════════════════════════════════
 function formatDate(raw) {
   if (!raw || raw === '') return null;
   const trimmed = String(raw).trim();
-  
-  // 1) Prova come numero seriale Excel (solo se è un numero puro)
   const num = parseFloat(trimmed);
   if (!isNaN(num) && Number.isFinite(num) && trimmed.match(/^-?\d+(\.\d+)?$/)) {
-    // Excel serial: 25569 giorni dal 1900-01-01 al 1970-01-01
     const date = new Date((num - 25569) * 86400000);
     if (!isNaN(date.getTime()) && date.getFullYear() > 1900) {
       return date.toLocaleDateString('it-IT');
     }
   }
-  
-  // 2) Prova formato ISO (YYYY-MM-DD)
   let d = new Date(trimmed);
   if (!isNaN(d.getTime()) && trimmed.match(/^\d{4}-\d{2}-\d{2}/)) {
     return d.toLocaleDateString('it-IT');
   }
-  
-  // 3) Prova formato italiano (DD/MM/YYYY) o (DD-MM-YYYY)
   const parts = trimmed.split(/[\/\-]/);
   if (parts.length === 3) {
     const day = parseInt(parts[0], 10);
@@ -279,14 +357,9 @@ function formatDate(raw) {
       }
     }
   }
-  
-  // 4) Fallback: restituisci il valore originale
   return trimmed;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  FORMATTA CANONE CON TIPO (mensile/giornaliero/orario)
-// ══════════════════════════════════════════════════════════════════════════════
 function formatCanone(val, tipo) {
   if (!val || val === '') return null;
   const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g, ''));
@@ -302,9 +375,6 @@ function formatCanone(val, tipo) {
   return `${tipoLabel}: ${valoreFormattato}`;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  CARICAMENTO DATI
-// ══════════════════════════════════════════════════════════════════════════════
 async function fetchCSV(url) {
   const res = await fetch(url + '&nocache=' + Date.now());
   if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -415,9 +485,6 @@ async function loadData() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  FILTRI E RENDER
-// ══════════════════════════════════════════════════════════════════════════════
 function getTypes() {
   const types = ['Tutti', ...new Set(data.map(d => d.tipo).filter(Boolean))].sort((a,b) => a === 'Tutti' ? -1 : a.localeCompare(b));
   types.push('RESO', 'SPOSTATO IN');
@@ -464,21 +531,22 @@ function render() {
       : '';
     const dataFormattata = formatDate(d.dataInizio);
     const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
-    return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}" onclick="openModal(this.dataset.codice)">
-      <div class="card-top">
+    return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}">
+      <div class="card-top" onclick="openModal('${esc(d.codice)}')">
         <div class="card-title">${esc(d.marca) || '—'}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <span class="badge" style="background:${c.bg};color:${c.fg}">${d.tipo || '—'}</span>
           ${statoBadge}
         </div>
       </div>
-      <div class="card-meta">
+      <div class="card-meta" onclick="openModal('${esc(d.codice)}')">
         <div class="meta-row"><span class="meta-label">Matricola</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
         ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
         ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
+      <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE</button>
     </div>`;
   }).join('');
 }
@@ -488,7 +556,7 @@ function esc(s) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  MODAL DETTAGLIO
+//  MODALE DETTAGLIO MEZZO (esistente)
 // ══════════════════════════════════════════════════════════════════════════════
 function openModal(codice) {
   currentId = codice;
@@ -524,9 +592,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  PANEL SPOSTATO
-// ══════════════════════════════════════════════════════════════════════════════
 function renderDestOptions() {
   const q = (document.getElementById('dest-search').value || '').toLowerCase();
   const list = document.getElementById('spostato-options-list');
@@ -590,8 +655,87 @@ function setStato(valore, destinazione) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  TOAST
+//  MODALE RICHIESTA RESTITUZIONE
 // ══════════════════════════════════════════════════════════════════════════════
+function openRestituzioneModal(codiceMezzo) {
+  const mezzo = data.find(m => m.codice === codiceMezzo);
+  if (!mezzo) return;
+  currentRichiestaMezzo = mezzo;
+  
+  // Precompila campi
+  document.getElementById('richiesta_commessa').value = CANTIERE_COMMESSA;
+  document.getElementById('richiesta_cantiere').value = CANTIERE_NOME;
+  document.getElementById('richiesta_marca_modello').value = mezzo.marca || 'Non specificato';
+  document.getElementById('richiesta_matricola').value = mezzo.codice || 'Non specificata';
+  
+  // Reset campi e errori
+  document.getElementById('richiesta_nominativo').value = '';
+  document.getElementById('richiesta_datetime').value = '';
+  document.getElementById('error_nominativo').style.display = 'none';
+  document.getElementById('error_datetime').style.display = 'none';
+  
+  document.getElementById('restituzione-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRestituzioneModal() {
+  document.getElementById('restituzione-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+  currentRichiestaMezzo = null;
+}
+
+function inviaRichiestaRestituzione() {
+  const nominativo = document.getElementById('richiesta_nominativo').value.trim();
+  const datetime = document.getElementById('richiesta_datetime').value;
+  
+  let isValid = true;
+  if (!nominativo) {
+    document.getElementById('error_nominativo').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('error_nominativo').style.display = 'none';
+  }
+  if (!datetime) {
+    document.getElementById('error_datetime').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('error_datetime').style.display = 'none';
+  }
+  
+  if (!isValid) return;
+  
+  const mezzo = currentRichiestaMezzo;
+  if (!mezzo) return;
+  
+  // Formatta data/ora leggibile
+  const dataOraLeggibile = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
+  
+  // Costruzione corpo email
+  const oggetto = `RICHIESTA RESTITUZIONE - Mezzo ${mezzo.codice} - ${mezzo.marca}`;
+  let corpo = `Richiesta restituzione mezzo dal cantiere ${CANTIERE_NOME} (Commessa ${CANTIERE_COMMESSA})\n\n`;
+  corpo += `DATI MEZZO:\n`;
+  corpo += `- Marca/Modello: ${mezzo.marca || 'N/D'}\n`;
+  corpo += `- Matricola/Targa: ${mezzo.codice || 'N/D'}\n`;
+  corpo += `- Tipologia: ${mezzo.tipo || 'N/D'}\n\n`;
+  corpo += `RICHIESTO DA:\n`;
+  corpo += `- Nominativo richiedente: ${nominativo}\n`;
+  corpo += `- Data e ora ritiro desiderata: ${dataOraLeggibile}\n\n`;
+  corpo += `Cantiere di partenza: ${CANTIERE_NOME}\n`;
+  corpo += `Codice commessa: ${CANTIERE_COMMESSA}\n`;
+  corpo += `---\nRichiesta generata automaticamente dal gestionale mezzi.`;
+  
+  // Crea link mailto con tutti i destinatari
+  const destinatari = DESTINATARI_EMAIL.join(',');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  
+  // Apri il client email predefinito
+  window.location.href = mailtoLink;
+  
+  // Feedback all'utente
+  showToast('📧 Apertura programma email... Controlla e invia.', 3000);
+  closeRestituzioneModal();
+}
+
 function showToast(msg, duration = 3500) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -600,7 +744,7 @@ function showToast(msg, duration = 3500) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  ESPORTA VARIAZIONI
+//  ESPORTA VARIAZIONI (invariato)
 // ══════════════════════════════════════════════════════════════════════════════
 async function openExport() {
   const btn = document.getElementById('export-btn');
@@ -655,9 +799,6 @@ async function openExport() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════════════════════════════
 loadData();
 setInterval(loadData, 5 * 60 * 1000);
 </script>
