@@ -247,22 +247,36 @@ function parseCSVRaw(text) {
 function formatDate(raw) {
   if (!raw || raw === '') return null;
   const trimmed = String(raw).trim();
-  // Prova a convertire come numero seriale Excel
   const num = parseFloat(trimmed);
   if (!isNaN(num) && num > 0 && num < 100000) {
-    // Excel serial: 25569 è la differenza tra 1/1/1900 (Excel) e 1/1/1970 (JS)
     const date = new Date((num - 25569) * 86400000);
     if (!isNaN(date.getTime())) {
       return date.toLocaleDateString('it-IT');
     }
   }
-  // Altrimenti parsing standard
   const d = new Date(trimmed);
   if (!isNaN(d.getTime())) {
     return d.toLocaleDateString('it-IT');
   }
-  // Se non riesce, restituisce il valore grezzo (es. stringa non riconosciuta)
   return trimmed;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  FORMATTA CANONE CON TIPO (mensile/giornaliero/orario)
+// ══════════════════════════════════════════════════════════════════════════════
+function formatCanone(val, tipo) {
+  if (!val || val === '') return null;
+  const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g, ''));
+  let valoreFormattato = val;
+  if (!isNaN(n) && n > 0) {
+    valoreFormattato = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
+  }
+  let tipoLabel = '';
+  if (tipo === 'mensile') tipoLabel = 'Canone mensile';
+  else if (tipo === 'giornaliero') tipoLabel = 'Canone giornaliero';
+  else if (tipo === 'orario') tipoLabel = 'Canone orario';
+  else return valoreFormattato;
+  return `${tipoLabel}: ${valoreFormattato}`;
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -290,14 +304,29 @@ function parseProspetto(text) {
       const colL  = cols[11] || '';
       const colN  = cols[13] || '';
       const colAF = cols[31] || '';
-      const canone = [colJ, colK, colL].find(v => v && v.trim()) || '';
+      
+      // Determina il canone e il tipo in base alla prima colonna non vuota tra J, K, L
+      let canoneVal = '';
+      let canoneType = '';
+      if (colJ && colJ.trim()) {
+        canoneVal = colJ.trim();
+        canoneType = 'mensile';
+      } else if (colK && colK.trim()) {
+        canoneVal = colK.trim();
+        canoneType = 'giornaliero';
+      } else if (colL && colL.trim()) {
+        canoneVal = colL.trim();
+        canoneType = 'orario';
+      }
+      
       const statoRaw = colAF.trim().toLowerCase();
       const statoSheet = statoRaw.includes('reso') ? 'reso'
                        : statoRaw.includes('spostato') ? 'spostato'
                        : null;
       return {
         commessa: colB, tipo: colE.toUpperCase(), codice: colF,
-        marca: colG, propNol: colH, proprietario: colI, canone,
+        marca: colG, propNol: colH, proprietario: colI,
+        canoneVal, canoneType,
         dataInizio: colN, statoSheet, statoAF: colAF,
         destinazioneAF: statoRaw.includes('spostato in') ? colAF.replace(/^spostato in\s*/i, '').trim() : '',
       };
@@ -395,15 +424,6 @@ function filtered() {
   });
 }
 
-function fmtCanone(val) {
-  if (!val) return '—';
-  const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g,''));
-  if (!isNaN(n) && n > 0) {
-    return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
-  }
-  return val;
-}
-
 function render() {
   const items = filtered();
   document.getElementById('count').textContent = items.length + (items.length === 1 ? ' mezzo trovato' : ' mezzi trovati');
@@ -421,6 +441,7 @@ function render() {
       ? `<span class="stato-badge spostato">SPOSTATO IN ${destinazioni[d.codice] || ''}</span>`
       : '';
     const dataFormattata = formatDate(d.dataInizio);
+    const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
     return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}" onclick="openModal(this.dataset.codice)">
       <div class="card-top">
         <div class="card-title">${esc(d.marca) || '—'}</div>
@@ -433,7 +454,7 @@ function render() {
         <div class="meta-row"><span class="meta-label">Matricola</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietà</span><span class="meta-value">${esc(d.propNol) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">Proprietario</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
-        ${d.canone ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(fmtCanone(d.canone))}</span></div>` : ''}
+        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
         ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
     </div>`;
@@ -459,13 +480,14 @@ function openModal(codice) {
     + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
   document.getElementById('modal-title').textContent = d.marca || 'Dettaglio mezzo';
   const dataFormattata = formatDate(d.dataInizio);
+  const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><label>Marca e Modello</label><div class="val">${esc(d.marca) || '—'}</div></div>
     <div class="modal-field"><label>Matricola / Targa</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'Non specificata'}</div></div>
     <div class="modal-field"><label>Tipologia</label><div class="val">${esc(d.tipo) || '—'}</div></div>
     <div class="modal-field"><label>Proprietà / Noleggio</label><div class="val ${!d.propNol?'empty-val':''}">${esc(d.propNol) || 'Non specificato'}</div></div>
     <div class="modal-field"><label>Proprietario</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'Non specificato'}</div></div>
-    <div class="modal-field"><label>Canone</label><div class="val ${!d.canone?'empty-val':''}">${esc(fmtCanone(d.canone))}</div></div>
+    <div class="modal-field"><label>Canone</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'Non specificato'}</div></div>
     <div class="modal-field"><label>Data inizio noleggio</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'Non specificata'}</div></div>
   `;
   document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
