@@ -48,7 +48,7 @@
   .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
   .meta-value { color: #3c3c43; word-break: break-all; }
   
-  /* PULSANTE RICHIESTA RESTITUZIONE */
+  /* PULSANTE RICHIESTA RESTITUZIONE (senza pseudo-elemento) */
   .btn-richiesta-restituzione {
     display: inline-flex;
     align-items: center;
@@ -70,11 +70,6 @@
   .btn-richiesta-restituzione:active {
     background-color: #dc2626;
     transform: scale(0.97);
-  }
-  .btn-richiesta-restituzione::before {
-    content: "✉️";
-    font-size: 14px;
-    margin-right: 4px;
   }
   
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
@@ -247,7 +242,7 @@
         <label>Note (opzionali)</label>
         <textarea id="richiesta_note" rows="3" placeholder="Eventuali informazioni aggiuntive... (es. luogo esatto, contatti, istruzioni per il ritiro)"></textarea>
       </div>
-      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">📧 Invia richiesta</button>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA 📩</button>
     </div>
     <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">Annulla</button>
   </div>
@@ -548,7 +543,7 @@ function render() {
         ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">Canone</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
         ${dataFormattata ? `<div class="meta-row"><span class="meta-label">Inizio noleggio</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
       </div>
-      <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE</button>
+      <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE ↩️</button>
     </div>`;
   }).join('');
 }
@@ -720,10 +715,8 @@ function inviaRichiestaRestituzione() {
   corpo += `RICHIESTO DA:\n`;
   corpo += `- Nominativo richiedente: ${nominativo}\n`;
   corpo += `- Data e ora entro cui effettuare il ritiro: ${dataOraLeggibile}\n`;
-  corpo += `- Note: ${note || '(nessuna nota)'}\n\n`;
-  corpo += `Cantiere di partenza: ${CANTIERE_NOME}\n`;
-  corpo += `Codice commessa: ${CANTIERE_COMMESSA}\n`;
-  corpo += `---\nRichiesta generata automaticamente dal gestionale mezzi.`;
+  corpo += `- Note: ${note || '(nessuna nota)'}\n`;
+  // NOTA: le righe "Cantiere di partenza" e "Codice commessa" sono state rimosse come richiesto.
   
   const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
