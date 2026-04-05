@@ -17,7 +17,7 @@
   .sync-dot.error { background: #ff3b30; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
   .sync-label { font-size: 12px; color: #6e6e73; flex: 1; min-width: 100px; }
-  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
   .refresh-btn:active { background: #e8f0fe; }
   .search-bar { padding: 10px 1rem; position: sticky; top: 0; background: #fff; z-index: 10; border-bottom: 1px solid #e5e5e5; }
@@ -48,7 +48,7 @@
   .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
   .meta-value { color: #3c3c43; word-break: break-all; }
   
-  /* PULSANTE RICHIESTA RESTITUZIONE (senza pseudo-elemento) */
+  /* PULSANTE RICHIESTA RESTITUZIONE */
   .btn-richiesta-restituzione {
     display: inline-flex;
     align-items: center;
@@ -70,6 +70,25 @@
   .btn-richiesta-restituzione:active {
     background-color: #dc2626;
     transform: scale(0.97);
+  }
+  
+  /* NUOVO PULSANTE RICHIEDI MEZZI */
+  .richiesta-mezzi-btn {
+    background-color: #20b2aa; /* turchese */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .richiesta-mezzi-btn:active {
+    opacity: 0.8;
   }
   
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
@@ -116,8 +135,8 @@
   .spostato-confirm:active { opacity: 0.8; }
   .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; }
 
-  /* MODALE RICHIESTA RESTITUZIONE */
-  .modal-richiesta { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  /* MODALE RICHIESTA RESTITUZIONE (esistente) */
+  .modal-richiesta, .modal-richiesta-mezzi { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; font-family: inherit; }
@@ -146,6 +165,7 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Connessione in corso...</span>
       <div class="btn-group">
+        <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI E ATTREZZATURE ➕📝</button>
         <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
         <button class="refresh-btn" onclick="loadData()">↻</button>
       </div>
@@ -248,6 +268,66 @@
   </div>
 </div>
 
+<!-- MODALE RICHIESTA MEZZI E ATTREZZATURE -->
+<div class="modal-bg" id="richiesta-mezzi-modal-bg" onclick="if(event.target===this)closeRichiestaMezziModal()">
+  <div class="modal-richiesta-mezzi">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <h3 style="margin-bottom: 1rem; font-size: 20px;">📦 Richiesta Mezzi e Attrezzature</h3>
+    <div id="richiesta-mezzi-form-content">
+      <!-- precompilati -->
+      <div class="form-group">
+        <label>Codice Commessa</label>
+        <input type="text" id="mezzi_commessa" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>Cantiere di partenza</label>
+        <input type="text" id="mezzi_cantiere" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>CIG</label>
+        <input type="text" id="mezzi_cig" class="readonly-field" readonly>
+      </div>
+      <div class="form-group">
+        <label>Unità Locale</label>
+        <input type="text" id="mezzi_unita_locale" class="readonly-field" readonly>
+      </div>
+      <div class="divider"></div>
+      <!-- campi obbligatori -->
+      <div class="form-group">
+        <label>Nominativo richiedente <span class="required-star">*</span></label>
+        <input type="text" id="mezzi_nominativo" placeholder="Nome e Cognome / Ragione Sociale">
+        <div class="error-msg" id="error_mezzi_nominativo">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Descrizione con caratteristiche e quantità dei mezzi richiesti <span class="required-star">*</span></label>
+        <textarea id="mezzi_descrizione" rows="4" placeholder="Es. Piattaforma aerea 24m, n.2, motore diesel..."></textarea>
+        <div class="error-msg" id="error_mezzi_descrizione">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Data e ora in cui devono essere consegnati in cantiere <span class="required-star">*</span></label>
+        <input type="datetime-local" id="mezzi_datetime_consegna">
+        <div class="error-msg" id="error_mezzi_datetime">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Periodi di impiego previsto <span class="required-star">*</span></label>
+        <textarea id="mezzi_periodi" rows="2" placeholder="Es. dal 10/05 al 20/05, oppure 2 settimane a partire dal..."></textarea>
+        <div class="error-msg" id="error_mezzi_periodi">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Luogo di consegna <span class="required-star">*</span></label>
+        <input type="text" id="mezzi_luogo" placeholder="Indirizzo specifico, punto di riferimento...">
+        <div class="error-msg" id="error_mezzi_luogo">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Note (opzionali)</label>
+        <textarea id="mezzi_note" rows="3" placeholder="Eventuali ulteriori informazioni"></textarea>
+      </div>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI E ATTREZZATURE 📩</button>
+    </div>
+    <button class="close-btn" style="margin-top: 1rem;" onclick="closeRichiestaMezziModal()">Annulla</button>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
 //  CONFIGURAZIONE
@@ -260,7 +340,6 @@ const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 const CSV_CANTIERI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_CANTIERI`;
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
-// Destinatari email
 const DESTINATARI_EMAIL = [
   'a.argilla@rewaygroup.com',
   'l.buselli@mga-aulla.it',
@@ -272,7 +351,8 @@ const DESTINATARI_EMAIL = [
 // ══════════════════════════════════════════════════════════════════════════════
 let data           = [];
 let codiciCommessa = [];
-let cantieri       = [];
+let cantieri       = [];        // array di stringhe per compatibilità esistente
+let cantieriDetails = [];       // array di oggetti { nome, cig, unitaLocale }
 let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
@@ -290,9 +370,6 @@ function saveStati() {
   try { localStorage.setItem(STORAGE_KEY_DEST,  JSON.stringify(destinazioni)); } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  BADGE COLORS
-// ══════════════════════════════════════════════════════════════════════════════
 const BADGE_COLORS = {
   PIATTAFORMA:     { bg:'#e8f0fe', fg:'#1a56db' },
   GENERATORE:      { bg:'#fef3c7', fg:'#92400e' },
@@ -310,9 +387,6 @@ const BADGE_COLORS = {
   DEFAULT:         { bg:'#f3f4f6', fg:'#374151' },
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  PARSE CSV ROBUSTO
-// ══════════════════════════════════════════════════════════════════════════════
 function parseCSVRaw(text) {
   const lines = text.trim().split('\n');
   return lines.map(line => {
@@ -430,14 +504,17 @@ function parseCodiciCommessa(text) {
     .filter(c => c.codice);
 }
 
-function parseCantieri(text) {
+function parseCantieriDetails(text) {
   const rows = parseCSVRaw(text);
   const result = [];
   for (let i = 1; i < rows.length; i++) {
     const colB = (rows[i][1] || '').trim();
     const colC = (rows[i][2] || '').trim();
+    const colD = (rows[i][3] || '').trim(); // CIG
+    const colE = (rows[i][4] || '').trim(); // Unità Locale
     if (colB.length > 0 || colC.length > 0) {
-      result.push(colB + (colC ? ' ' + colC : ''));
+      const nome = colB + (colC ? ' ' + colC : '');
+      result.push({ nome, cig: colD, unitaLocale: colE });
     }
   }
   return result;
@@ -456,7 +533,8 @@ async function loadData() {
     ]);
     data = parseProspetto(txtPros);
     codiciCommessa = parseCodiciCommessa(txtCod);
-    cantieri = parseCantieri(txtCantieri);
+    cantieriDetails = parseCantieriDetails(txtCantieri);
+    cantieri = cantieriDetails.map(c => c.nome); // per compatibilità con la select spostato
 
     stati = {};
     data.forEach(d => {
@@ -552,9 +630,7 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  MODAL DETTAGLIO MEZZO
-// ══════════════════════════════════════════════════════════════════════════════
+// MODAL DETTAGLIO MEZZO
 function openModal(codice) {
   currentId = codice;
   const d = data.find(x => x.codice === codice);
@@ -651,9 +727,7 @@ function setStato(valore, destinazione) {
   openModal(currentId);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  MODALE RICHIESTA RESTITUZIONE
-// ══════════════════════════════════════════════════════════════════════════════
+// MODALE RICHIESTA RESTITUZIONE
 function openRestituzioneModal(codiceMezzo) {
   const mezzo = data.find(m => m.codice === codiceMezzo);
   if (!mezzo) return;
@@ -716,7 +790,6 @@ function inviaRichiestaRestituzione() {
   corpo += `- Nominativo richiedente: ${nominativo}\n`;
   corpo += `- Data e ora entro cui effettuare il ritiro: ${dataOraLeggibile}\n`;
   corpo += `- Note: ${note || '(nessuna nota)'}\n`;
-  // NOTA: le righe "Cantiere di partenza" e "Codice commessa" sono state rimosse come richiesto.
   
   const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
@@ -726,6 +799,83 @@ function inviaRichiestaRestituzione() {
   closeRestituzioneModal();
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+//  NUOVA FUNZIONE: RICHIESTA MEZZI E ATTREZZATURE
+// ══════════════════════════════════════════════════════════════════════════════
+function openRichiestaMezziModal() {
+  // precompila i dati del cantiere corrente
+  const cantiereInfo = cantieriDetails.find(c => c.nome === CANTIERE_NOME);
+  document.getElementById('mezzi_commessa').value = CANTIERE_COMMESSA;
+  document.getElementById('mezzi_cantiere').value = CANTIERE_NOME;
+  document.getElementById('mezzi_cig').value = cantiereInfo ? cantiereInfo.cig : '';
+  document.getElementById('mezzi_unita_locale').value = cantiereInfo ? cantiereInfo.unitaLocale : '';
+  
+  // resetta campi modulo
+  document.getElementById('mezzi_nominativo').value = '';
+  document.getElementById('mezzi_descrizione').value = '';
+  document.getElementById('mezzi_datetime_consegna').value = '';
+  document.getElementById('mezzi_periodi').value = '';
+  document.getElementById('mezzi_luogo').value = '';
+  document.getElementById('mezzi_note').value = '';
+  
+  // nasconde errori
+  document.querySelectorAll('#richiesta-mezzi-form-content .error-msg').forEach(el => el.style.display = 'none');
+  
+  document.getElementById('richiesta-mezzi-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRichiestaMezziModal() {
+  document.getElementById('richiesta-mezzi-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function inviaRichiestaMezzi() {
+  const nominativo = document.getElementById('mezzi_nominativo').value.trim();
+  const descrizione = document.getElementById('mezzi_descrizione').value.trim();
+  const datetime = document.getElementById('mezzi_datetime_consegna').value;
+  const periodi = document.getElementById('mezzi_periodi').value.trim();
+  const luogo = document.getElementById('mezzi_luogo').value.trim();
+  const note = document.getElementById('mezzi_note').value.trim();
+  
+  let isValid = true;
+  if (!nominativo) { document.getElementById('error_mezzi_nominativo').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_nominativo').style.display = 'none'; }
+  if (!descrizione) { document.getElementById('error_mezzi_descrizione').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_descrizione').style.display = 'none'; }
+  if (!datetime) { document.getElementById('error_mezzi_datetime').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_datetime').style.display = 'none'; }
+  if (!periodi) { document.getElementById('error_mezzi_periodi').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_periodi').style.display = 'none'; }
+  if (!luogo) { document.getElementById('error_mezzi_luogo').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_luogo').style.display = 'none'; }
+  
+  if (!isValid) return;
+  
+  const dataOraConsegna = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
+  
+  const oggetto = `RICHIESTA MEZZI E ATTREZZATURE - ${CANTIERE_NOME} (${CANTIERE_COMMESSA})`;
+  let corpo = `Richiesta mezzi e attrezzature per il cantiere ${CANTIERE_NOME}\n`;
+  corpo += `Codice Commessa: ${CANTIERE_COMMESSA}\n`;
+  const cantiereInfo = cantieriDetails.find(c => c.nome === CANTIERE_NOME);
+  if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
+  if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `Unità Locale: ${cantiereInfo.unitaLocale}\n`;
+  corpo += `\nDATI RICHIESTA:\n`;
+  corpo += `- Nominativo richiedente: ${nominativo}\n`;
+  corpo += `- Descrizione e quantità mezzi: ${descrizione}\n`;
+  corpo += `- Data e ora consegna in cantiere: ${dataOraConsegna}\n`;
+  corpo += `- Periodi di impiego previsto: ${periodi}\n`;
+  corpo += `- Luogo di consegna: ${luogo}\n`;
+  corpo += `- Note: ${note || '(nessuna nota)'}\n`;
+  
+  const destinatari = DESTINATARI_EMAIL.join(',');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  
+  window.location.href = mailtoLink;
+  showToast('📧 Apertura programma email... Controlla e invia.', 3000);
+  closeRichiestaMezziModal();
+}
+
 function showToast(msg, duration = 3500) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -733,9 +883,7 @@ function showToast(msg, duration = 3500) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  ESPORTA VARIAZIONI
-// ══════════════════════════════════════════════════════════════════════════════
+// ESPORTA VARIAZIONI
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
