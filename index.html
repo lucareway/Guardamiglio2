@@ -26,7 +26,6 @@
   .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; -webkit-appearance: none; }
   .search-bar input:focus { border-color: #007aff; background: #fff; }
   
-  /* FILTRI */
   .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; }
   
   .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; -webkit-tap-highlight-color: transparent; }
@@ -35,17 +34,16 @@
   .chip.spostato-chip.active { background: #cc8800; border-color: #cc8800; }
   .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; }
   .cards { padding: 0.75rem 1rem 3rem; display: flex; flex-direction: column; gap: 10px; background: #f5f5f7; }
-  .card { background: #fff; border-radius: 12px; padding: 1rem; cursor: pointer; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
-  .card:active { opacity: 0.85; }
+  .card { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
   .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
   .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; cursor: pointer; }
   .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; line-height: 1.4; flex: 1; }
   .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
   .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
   .stato-badge.reso { background: #ff3b30; color: #fff; }
   .stato-badge.spostato { background: #ffcc00; color: #7a5c00; }
-  .card-meta { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .card-meta { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
   .meta-row { display: flex; gap: 8px; font-size: 13px; }
   .meta-label { color: #8e8e93; min-width: 90px; flex-shrink: 0; }
   .meta-value { color: #3c3c43; word-break: break-all; }
@@ -60,11 +58,11 @@
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 12px;
     width: 100%;
     transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
@@ -76,12 +74,13 @@
   .btn-richiesta-restituzione::before {
     content: "✉️";
     font-size: 14px;
+    margin-right: 4px;
   }
   
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; font-size: 15px; line-height: 1.6; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
-  /* MODALE DETTAGLIO MEZZO */
+  /* MODAL DETTAGLIO MEZZO */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
@@ -123,7 +122,7 @@
   .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; }
 
   /* MODALE RICHIESTA RESTITUZIONE */
-  .modal-richiesta { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2.5rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  .modal-richiesta { background: #fff; border-radius: 20px 20px 0 0; padding: 0 1.25rem 2rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; font-family: inherit; }
@@ -178,7 +177,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- MODALE DETTAGLIO MEZZO (esistente) -->
+<!-- MODALE DETTAGLIO MEZZO -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
@@ -211,13 +210,12 @@
   </div>
 </div>
 
-<!-- NUOVA MODALE PER RICHIESTA RESTITUZIONE -->
+<!-- MODALE RICHIESTA RESTITUZIONE -->
 <div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()">
   <div class="modal-richiesta">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
     <h3 style="margin-bottom: 1rem; font-size: 20px;">✉️ Richiedi Restituzione</h3>
     <div id="restituzione-form-content">
-      <!-- campi precompilati readonly -->
       <div class="form-group">
         <label>Codice Commessa</label>
         <input type="text" id="richiesta_commessa" class="readonly-field" readonly>
@@ -241,9 +239,13 @@
         <div class="error-msg" id="error_nominativo">Campo obbligatorio</div>
       </div>
       <div class="form-group">
-        <label>Data e ora ritiro  <span class="required-star">*</span></label>
+        <label>Data e ora entro cui effettuare il ritiro <span class="required-star">*</span></label>
         <input type="datetime-local" id="richiesta_datetime">
         <div class="error-msg" id="error_datetime">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Note (opzionali)</label>
+        <textarea id="richiesta_note" rows="3" placeholder="Eventuali informazioni aggiuntive... (es. luogo esatto, contatti, istruzioni per il ritiro)"></textarea>
       </div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">📧 Invia richiesta</button>
     </div>
@@ -280,7 +282,7 @@ let stati          = {};
 let destinazioni   = {};
 let activeFilter   = 'Tutti';
 let currentId      = null;
-let currentRichiestaMezzo = null;  // memorizza il mezzo per la richiesta restituzione
+let currentRichiestaMezzo = null;
 
 const STORAGE_KEY_STATI = 'stati_guardamiglio_v1';
 const STORAGE_KEY_DEST  = 'dest_guardamiglio_v1';
@@ -556,7 +558,7 @@ function esc(s) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  MODALE DETTAGLIO MEZZO (esistente)
+//  MODAL DETTAGLIO MEZZO
 // ══════════════════════════════════════════════════════════════════════════════
 function openModal(codice) {
   currentId = codice;
@@ -662,15 +664,14 @@ function openRestituzioneModal(codiceMezzo) {
   if (!mezzo) return;
   currentRichiestaMezzo = mezzo;
   
-  // Precompila campi
   document.getElementById('richiesta_commessa').value = CANTIERE_COMMESSA;
   document.getElementById('richiesta_cantiere').value = CANTIERE_NOME;
   document.getElementById('richiesta_marca_modello').value = mezzo.marca || 'Non specificato';
   document.getElementById('richiesta_matricola').value = mezzo.codice || 'Non specificata';
   
-  // Reset campi e errori
   document.getElementById('richiesta_nominativo').value = '';
   document.getElementById('richiesta_datetime').value = '';
+  document.getElementById('richiesta_note').value = '';
   document.getElementById('error_nominativo').style.display = 'none';
   document.getElementById('error_datetime').style.display = 'none';
   
@@ -678,10 +679,16 @@ function openRestituzioneModal(codiceMezzo) {
   document.body.style.overflow = 'hidden';
 }
 
+function closeRestituzioneModal() {
+  document.getElementById('restituzione-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+  currentRichiestaMezzo = null;
+}
+
 function inviaRichiestaRestituzione() {
   const nominativo = document.getElementById('richiesta_nominativo').value.trim();
   const datetime = document.getElementById('richiesta_datetime').value;
-  const note = document.getElementById('richiesta_note').value.trim(); // <-- NUOVO
+  const note = document.getElementById('richiesta_note').value.trim();
   
   let isValid = true;
   if (!nominativo) {
@@ -712,14 +719,9 @@ function inviaRichiestaRestituzione() {
   corpo += `- Tipologia: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n`;
   corpo += `- Nominativo richiedente: ${nominativo}\n`;
-  corpo += `- Data e ora entro cui ritirarlo: ${dataOraLeggibile}\n`;
-  // Aggiunta note
-  if (note) {
-    corpo += `- Note: ${note}\n`;
-  } else {
-    corpo += `- Note: (nessuna nota)\n`;
-  }
-  corpo += `\nCantiere di partenza: ${CANTIERE_NOME}\n`;
+  corpo += `- Data e ora entro cui effettuare il ritiro: ${dataOraLeggibile}\n`;
+  corpo += `- Note: ${note || '(nessuna nota)'}\n\n`;
+  corpo += `Cantiere di partenza: ${CANTIERE_NOME}\n`;
   corpo += `Codice commessa: ${CANTIERE_COMMESSA}\n`;
   corpo += `---\nRichiesta generata automaticamente dal gestionale mezzi.`;
   
@@ -739,7 +741,7 @@ function showToast(msg, duration = 3500) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  ESPORTA VARIAZIONI (invariato)
+//  ESPORTA VARIAZIONI
 // ══════════════════════════════════════════════════════════════════════════════
 async function openExport() {
   const btn = document.getElementById('export-btn');
