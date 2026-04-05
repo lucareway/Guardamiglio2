@@ -241,7 +241,7 @@
         <div class="error-msg" id="error_nominativo">Campo obbligatorio</div>
       </div>
       <div class="form-group">
-        <label>Data e ora ritiro desiderata <span class="required-star">*</span></label>
+        <label>Data e ora ritiro  <span class="required-star">*</span></label>
         <input type="datetime-local" id="richiesta_datetime">
         <div class="error-msg" id="error_datetime">Campo obbligatorio</div>
       </div>
@@ -678,15 +678,10 @@ function openRestituzioneModal(codiceMezzo) {
   document.body.style.overflow = 'hidden';
 }
 
-function closeRestituzioneModal() {
-  document.getElementById('restituzione-modal-bg').classList.remove('open');
-  document.body.style.overflow = '';
-  currentRichiestaMezzo = null;
-}
-
 function inviaRichiestaRestituzione() {
   const nominativo = document.getElementById('richiesta_nominativo').value.trim();
   const datetime = document.getElementById('richiesta_datetime').value;
+  const note = document.getElementById('richiesta_note').value.trim(); // <-- NUOVO
   
   let isValid = true;
   if (!nominativo) {
@@ -707,10 +702,8 @@ function inviaRichiestaRestituzione() {
   const mezzo = currentRichiestaMezzo;
   if (!mezzo) return;
   
-  // Formatta data/ora leggibile
   const dataOraLeggibile = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
   
-  // Costruzione corpo email
   const oggetto = `RICHIESTA RESTITUZIONE - Mezzo ${mezzo.codice} - ${mezzo.marca}`;
   let corpo = `Richiesta restituzione mezzo dal cantiere ${CANTIERE_NOME} (Commessa ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n`;
@@ -719,19 +712,21 @@ function inviaRichiestaRestituzione() {
   corpo += `- Tipologia: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n`;
   corpo += `- Nominativo richiedente: ${nominativo}\n`;
-  corpo += `- Data e ora ritiro desiderata: ${dataOraLeggibile}\n\n`;
-  corpo += `Cantiere di partenza: ${CANTIERE_NOME}\n`;
+  corpo += `- Data e ora entro cui ritirarlo: ${dataOraLeggibile}\n`;
+  // Aggiunta note
+  if (note) {
+    corpo += `- Note: ${note}\n`;
+  } else {
+    corpo += `- Note: (nessuna nota)\n`;
+  }
+  corpo += `\nCantiere di partenza: ${CANTIERE_NOME}\n`;
   corpo += `Codice commessa: ${CANTIERE_COMMESSA}\n`;
   corpo += `---\nRichiesta generata automaticamente dal gestionale mezzi.`;
   
-  // Crea link mailto con tutti i destinatari
   const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   
-  // Apri il client email predefinito
   window.location.href = mailtoLink;
-  
-  // Feedback all'utente
   showToast('📧 Apertura programma email... Controlla e invia.', 3000);
   closeRestituzioneModal();
 }
