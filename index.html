@@ -299,7 +299,7 @@
         <label>NOTE (OPZIONALI)</label>
         <textarea id="richiesta_note" rows="3" placeholder="EVENTUALI INFORMAZIONI AGGIUNTIVE... (ES. LUOGO ESATTO, CONTATTI, ISTRUZIONI PER IL RITIRO)"></textarea>
       </div>
-      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA 📩</button>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA ALL'UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top: 1rem;" onclick="closeRestituzioneModal()">ANNULLA</button>
   </div>
@@ -334,17 +334,23 @@
         <div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>DESCRIZIONE CON CARATTERISTICHE E QUANTITÀ DEI MEZZI RICHIESTI <span class="required-star">*</span></label>
+        <label>DESCRIZIONE, CARATTERISTICHE E QUANTITÀ DEI MEZZI RICHIESTI <span class="required-star">*</span></label>
         <textarea id="mezzi_descrizione" rows="4" placeholder="ES. PIATTAFORMA AEREA 24M, N.2, MOTORE DIESEL..."></textarea>
         <div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
-        <label>DATA E ORA IN CUI DEVONO ESSERE CONSEGNATI IN CANTIERE <span class="required-star">*</span></label>
+        <label>DATA E ORA DELLA CONSEGNA IN CANTIERE <span class="required-star">*</span></label>
         <input type="datetime-local" id="mezzi_datetime_consegna">
         <div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div>
       </div>
+      <!-- NUOVO CAMPO OBBLIGATORIO: REFERENTE DI CANTIERE PER LA CONSEGNA -->
       <div class="form-group">
-        <label>PERIODI DI IMPIEGO PREVISTO <span class="required-star">*</span></label>
+        <label>REFERENTE DI CANTIERE PER LA CONSEGNA <span class="required-star">*</span></label>
+        <input type="text" id="mezzi_referente" placeholder="NOME E COGNOME DEL REFERENTE">
+        <div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div>
+      </div>
+      <div class="form-group">
+        <label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label>
         <textarea id="mezzi_periodi" rows="2" placeholder="ES. DAL 10/05 AL 20/05, OPPURE 2 SETTIMANE A PARTIRE DAL..."></textarea>
         <div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div>
       </div>
@@ -357,7 +363,7 @@
         <label>NOTE (OPZIONALI)</label>
         <textarea id="mezzi_note" rows="3" placeholder="EVENTUALI ULTERIORI INFORMAZIONI"></textarea>
       </div>
-      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI E ATTREZZATURE 📩</button>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top: 1rem;" onclick="closeRichiestaMezziModal()">ANNULLA</button>
   </div>
@@ -848,6 +854,7 @@ function openRichiestaMezziModal() {
   document.getElementById('mezzi_nominativo').value = '';
   document.getElementById('mezzi_descrizione').value = '';
   document.getElementById('mezzi_datetime_consegna').value = '';
+  document.getElementById('mezzi_referente').value = '';          // reset nuovo campo
   document.getElementById('mezzi_periodi').value = '';
   document.getElementById('mezzi_luogo').value = '';
   document.getElementById('mezzi_note').value = '';
@@ -867,6 +874,7 @@ function inviaRichiestaMezzi() {
   const nominativo = document.getElementById('mezzi_nominativo').value.trim();
   const descrizione = document.getElementById('mezzi_descrizione').value.trim();
   const datetime = document.getElementById('mezzi_datetime_consegna').value;
+  const referente = document.getElementById('mezzi_referente').value.trim();    // nuovo campo
   const periodi = document.getElementById('mezzi_periodi').value.trim();
   const luogo = document.getElementById('mezzi_luogo').value.trim();
   const note = document.getElementById('mezzi_note').value.trim();
@@ -878,6 +886,8 @@ function inviaRichiestaMezzi() {
   else { document.getElementById('error_mezzi_descrizione').style.display = 'none'; }
   if (!datetime) { document.getElementById('error_mezzi_datetime').style.display = 'block'; isValid = false; }
   else { document.getElementById('error_mezzi_datetime').style.display = 'none'; }
+  if (!referente) { document.getElementById('error_mezzi_referente').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_referente').style.display = 'none'; }
   if (!periodi) { document.getElementById('error_mezzi_periodi').style.display = 'block'; isValid = false; }
   else { document.getElementById('error_mezzi_periodi').style.display = 'none'; }
   if (!luogo) { document.getElementById('error_mezzi_luogo').style.display = 'block'; isValid = false; }
@@ -897,6 +907,7 @@ function inviaRichiestaMezzi() {
   corpo += `- NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
   corpo += `- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n`;
   corpo += `- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n`;
+  corpo += `- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n`;
   corpo += `- PERIODI DI IMPIEGO PREVISTO: ${periodi}\n`;
   corpo += `- LUOGO DI CONSEGNA: ${luogo}\n`;
   corpo += `- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
