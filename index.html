@@ -287,7 +287,7 @@
       <div class="divider"></div>
       <div class="form-group">
         <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
-        <input type="text" id="richiesta_nominativo" placeholder="NOME E COGNOME / RAGIONE SOCIALE">
+        <input type="text" id="richiesta_nominativo" placeholder="NOME E COGNOME">
         <div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
@@ -330,7 +330,7 @@
       <div class="divider"></div>
       <div class="form-group">
         <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
-        <input type="text" id="mezzi_nominativo" placeholder="NOME E COGNOME / RAGIONE SOCIALE">
+        <input type="text" id="mezzi_nominativo" placeholder="NOME E COGNOME">
         <div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
@@ -343,16 +343,10 @@
         <input type="datetime-local" id="mezzi_datetime_consegna">
         <div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div>
       </div>
-      <!-- NUOVO CAMPO OBBLIGATORIO: REFERENTE DI CANTIERE PER LA CONSEGNA -->
       <div class="form-group">
         <label>REFERENTE DI CANTIERE PER LA CONSEGNA <span class="required-star">*</span></label>
         <input type="text" id="mezzi_referente" placeholder="NOME E COGNOME DEL REFERENTE">
         <div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div>
-      </div>
-      <div class="form-group">
-        <label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label>
-        <textarea id="mezzi_periodi" rows="2" placeholder="ES. DAL 10/05 AL 20/05, OPPURE 2 SETTIMANE A PARTIRE DAL..."></textarea>
-        <div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
         <label>LUOGO DI CONSEGNA <span class="required-star">*</span></label>
@@ -360,8 +354,13 @@
         <div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div>
       </div>
       <div class="form-group">
+        <label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label>
+        <textarea id="mezzi_periodi" rows="2" placeholder="ES. FINO AL 29/12, OPPURE 2 SETTIMANE..."></textarea>
+        <div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div>
+      </div>
+      <div class="form-group">
         <label>NOTE (OPZIONALI)</label>
-        <textarea id="mezzi_note" rows="3" placeholder="EVENTUALI ULTERIORI INFORMAZIONI"></textarea>
+        <textarea id="mezzi_note" rows="3" placeholder="EVENTUALI INFORMAZIONI AGGIUNTIVE"></textarea>
       </div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button>
     </div>
@@ -854,9 +853,9 @@ function openRichiestaMezziModal() {
   document.getElementById('mezzi_nominativo').value = '';
   document.getElementById('mezzi_descrizione').value = '';
   document.getElementById('mezzi_datetime_consegna').value = '';
-  document.getElementById('mezzi_referente').value = '';          // reset nuovo campo
-  document.getElementById('mezzi_periodi').value = '';
+  document.getElementById('mezzi_referente').value = '';
   document.getElementById('mezzi_luogo').value = '';
+  document.getElementById('mezzi_periodi').value = '';
   document.getElementById('mezzi_note').value = '';
   
   document.querySelectorAll('#richiesta-mezzi-form-content .error-msg').forEach(el => el.style.display = 'none');
@@ -874,9 +873,9 @@ function inviaRichiestaMezzi() {
   const nominativo = document.getElementById('mezzi_nominativo').value.trim();
   const descrizione = document.getElementById('mezzi_descrizione').value.trim();
   const datetime = document.getElementById('mezzi_datetime_consegna').value;
-  const referente = document.getElementById('mezzi_referente').value.trim();    // nuovo campo
-  const periodi = document.getElementById('mezzi_periodi').value.trim();
+  const referente = document.getElementById('mezzi_referente').value.trim();
   const luogo = document.getElementById('mezzi_luogo').value.trim();
+  const periodi = document.getElementById('mezzi_periodi').value.trim();
   const note = document.getElementById('mezzi_note').value.trim();
   
   let isValid = true;
@@ -888,10 +887,10 @@ function inviaRichiestaMezzi() {
   else { document.getElementById('error_mezzi_datetime').style.display = 'none'; }
   if (!referente) { document.getElementById('error_mezzi_referente').style.display = 'block'; isValid = false; }
   else { document.getElementById('error_mezzi_referente').style.display = 'none'; }
-  if (!periodi) { document.getElementById('error_mezzi_periodi').style.display = 'block'; isValid = false; }
-  else { document.getElementById('error_mezzi_periodi').style.display = 'none'; }
   if (!luogo) { document.getElementById('error_mezzi_luogo').style.display = 'block'; isValid = false; }
   else { document.getElementById('error_mezzi_luogo').style.display = 'none'; }
+  if (!periodi) { document.getElementById('error_mezzi_periodi').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_periodi').style.display = 'none'; }
   
   if (!isValid) return;
   
@@ -908,8 +907,8 @@ function inviaRichiestaMezzi() {
   corpo += `- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n`;
   corpo += `- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n`;
   corpo += `- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n`;
-  corpo += `- PERIODI DI IMPIEGO PREVISTO: ${periodi}\n`;
   corpo += `- LUOGO DI CONSEGNA: ${luogo}\n`;
+  corpo += `- DURATA D'IMPIEGO PREVISTO: ${periodi}\n`;
   corpo += `- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
   
   const destinatari = DESTINATARI_EMAIL.join(',');
