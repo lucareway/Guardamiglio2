@@ -678,7 +678,7 @@ function render() {
         </div>
       </div>
       <div class="card-meta" onclick="openModal('${esc(d.codice)}')">
-        <div class="meta-row"><span class="meta-label">MATRICOLA</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">MATRICOLA / TARGA</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">TITOLO DI POSSESSO</span><span class="meta-value">${esc(tipoPossessoFormattato) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">PROPRIETARIO</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
         ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">TARIFFA</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
