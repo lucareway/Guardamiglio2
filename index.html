@@ -133,7 +133,6 @@
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; text-transform: uppercase; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
-  /* Modali generali */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal, .modal-richiesta, .modal-richiesta-mezzi, .modal-aggiungi-mezzo {
@@ -766,7 +765,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -825,7 +824,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -877,9 +876,8 @@ async function openExport() {
   }
 }
 
-// ======================== NUOVO MEZZO - INVIO VIA APPS SCRIPT ========================
+// ======================== FUNZIONI PER "AGGIUNGI MEZZO" CON INVIO VIA APPS SCRIPT ========================
 let fotoBase64 = null;
-let fotoNomeFile = null;
 
 function apriFotocamera() {
   document.getElementById('fotoInput').click();
@@ -888,7 +886,6 @@ function apriFotocamera() {
 function anteprimaFoto(input) {
   const file = input.files[0];
   if (!file) return;
-  fotoNomeFile = file.name;
   const reader = new FileReader();
   reader.onload = function(e) {
     fotoBase64 = e.target.result;
@@ -905,7 +902,6 @@ function openAggiungiMezzoModal() {
   document.getElementById('fotoInput').value = '';
   document.getElementById('fotoPreview').innerHTML = '';
   fotoBase64 = null;
-  fotoNomeFile = null;
   document.getElementById('error_nominativo_mezzo').style.display = 'none';
   document.getElementById('error_proprietario').style.display = 'none';
   document.getElementById('error_foto').style.display = 'none';
@@ -946,7 +942,6 @@ async function inviaNuovoMezzo() {
 
   if (!isValid) return;
 
-  // Mostra un messaggio di attesa (opzionale)
   const btn = document.querySelector('#aggiungi-mezzo-modal-bg .btn-invia-richiesta');
   const originalText = btn.textContent;
   btn.disabled = true;
@@ -968,10 +963,9 @@ async function inviaNuovoMezzo() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
     const result = await response.json();
     if (result.status === 'ok') {
-      showToast('✅ Richiesta inviata! L\'email con foto è stata spedita.', 4000);
+      showToast('✅ Richiesta inviata! L\'email con foto allegata è stata spedita.', 4000);
       closeAggiungiMezzoModal();
     } else {
       throw new Error(result.error || 'Risposta non valida');
@@ -983,20 +977,6 @@ async function inviaNuovoMezzo() {
     btn.disabled = false;
     btn.textContent = originalText;
   }
-}
-
-function fallbackEmail(nominativo, proprietario) {
-  const oggetto = `NUOVA RICHIESTA MEZZO - ${CANTIERE_NOME}`;
-  let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
-  corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
-  corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
-  corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
-  corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
-  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
-  window.location.href = mailtoLink;
-  showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
-  closeAggiungiMezzoModal();
 }
 
 function showToast(msg, duration = 3500) {
