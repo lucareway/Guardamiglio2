@@ -49,7 +49,7 @@
   .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; text-transform: uppercase; font-weight: 600; }
   .refresh-btn:active { background: #e8f0fe; }
 
-  /* NUOVO PULSANTE ARANCIONE */
+  /* PULSANTE ARANCIONE NUOVO */
   .btn-arancione {
     background-color: #ff9500;
     color: white;
@@ -67,14 +67,33 @@
   }
   .btn-arancione:active { opacity: 0.8; transform: scale(0.97); }
 
+  /* Pulsante export (verde) */
+  .export-btn {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: #34c759;
+    border: none;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: 0.1s;
+  }
+  .export-btn:active { opacity: 0.8; transform: scale(0.97); }
+  .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
+
   .search-bar { padding: 10px 1rem; position: sticky; top: 0; background: #fff; border-bottom: 1px solid #e5e5e5; }
   .search-wrap { position: relative; }
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #8e8e93; pointer-events: none; }
-  .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; color: #1d1d1f; outline: none; }
+  .search-bar input { width: 100%; padding: 9px 12px 9px 32px; font-size: 16px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f2f2f7; outline: none; }
   .search-bar input:focus { border-color: #007aff; background: #fff; }
   .filter-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1rem; background: #fff; border-bottom: 1px solid #e5e5e5; align-items: center; }
   .chip { white-space: nowrap; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #d1d1d6; cursor: pointer; background: #fff; color: #3c3c43; font-weight: 500; text-transform: uppercase; }
   .chip.active { background: #007aff; color: #fff; border-color: #007aff; }
+  .chip.reso-chip.active { background: #ff3b30; border-color: #ff3b30; }
+  .chip.spostato-chip.active { background: #cc8800; border-color: #cc8800; }
   .count { padding: 8px 1rem; font-size: 12px; color: #8e8e93; background: #f5f5f7; text-transform: uppercase; font-weight: 600; }
   .cards { padding: 0.75rem 1rem 3rem; display: flex; flex-direction: column; gap: 10px; background: #f5f5f7; }
   .card { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid transparent; }
@@ -117,6 +136,7 @@
   .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; text-transform: uppercase; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; }
   .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #007aff; background: #fff; }
+  .readonly-field { background: #f2f2f7; color: #3a3a44; font-weight: 500; border-color: #e5e5ea; }
   .required-star { color: #ff3b30; margin-left: 2px; }
   .error-msg { color: #ff3b30; font-size: 11px; margin-top: 4px; display: none; text-transform: uppercase; }
   .btn-invia-richiesta { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: #34c759; color: #fff; margin-top: 0.5rem; text-transform: uppercase; }
@@ -126,8 +146,29 @@
   .foto-preview img { max-width: 100%; max-height: 180px; border-radius: 12px; border: 1px solid #ddd; background: #f5f5f5; }
   .btn-foto { background-color: #5856d6; color: white; border: none; border-radius: 12px; padding: 12px; font-size: 15px; font-weight: 600; width: 100%; margin-bottom: 12px; cursor: pointer; text-transform: uppercase; }
   .btn-foto:active { opacity: 0.8; }
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; z-index: 999; text-align: center; text-transform: uppercase; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; padding: 11px 20px; border-radius: 12px; font-size: 14px; z-index: 999; text-align: center; text-transform: uppercase; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: pre-wrap; max-width: 90vw; }
   .toast.show { opacity: 1; }
+
+  .stato-section { margin: 1.25rem 0 0.5rem; border-top: 1px solid #f2f2f7; padding-top: 1.25rem; }
+  .stato-label { font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
+  .stato-btns { display: flex; gap: 10px; }
+  .btn-stato { flex: 1; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; text-transform: uppercase; }
+  .btn-reso { background: #ff3b30; color: #fff; }
+  .btn-reso.attivo { box-shadow: 0 0 0 3px rgba(255,59,48,0.35); }
+  .btn-spostato { background: #ffcc00; color: #7a5c00; }
+  .btn-spostato.attivo { box-shadow: 0 0 0 3px rgba(255,204,0,0.45); }
+  .btn-reset { flex: 0.5; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: #f2f2f7; color: #8e8e93; text-transform: uppercase; }
+  .spostato-panel { display: none; margin-top: 1rem; padding: 1rem; background: #fffbea; border: 1px solid #ffe58a; border-radius: 12px; }
+  .spostato-panel.open { display: block; }
+  .spostato-panel-label { font-size: 12px; color: #7a5c00; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
+  .spostato-options-list { max-height: 280px; overflow-y: auto; }
+  .spostato-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; border: 1.5px solid transparent; margin-bottom: 6px; background: #fff; text-transform: uppercase; }
+  .spostato-option.selected { border-color: #ffcc00; background: #fff8e1; font-weight: 600; }
+  .spostato-option input[type=radio] { accent-color: #cc8800; width: 18px; height: 18px; flex-shrink: 0; }
+  .dest-search { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe58a; font-size: 13px; background: #fffef5; outline: none; margin-bottom: 8px; text-transform: uppercase; }
+  .spostato-libera-wrap input { width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #ffe58a; font-size:14px; background:#fff8e1; outline:none; display:block; text-transform: uppercase; margin-top: 8px; }
+  .spostato-confirm { width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: #ffcc00; color: #7a5c00; text-transform: uppercase; }
+  .divider { height: 1px; background: #e5e5ea; margin: 1rem 0; }
 </style>
 </head>
 <body>
@@ -141,6 +182,7 @@
       <div class="btn-group">
         <button class="btn-arancione" onclick="openAggiungiMezzoModal()">➕ AGGIUNGI MEZZO</button>
         <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI 📝</button>
+        <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
         <button class="refresh-btn" onclick="loadData()">↻</button>
       </div>
     </div>
@@ -149,7 +191,7 @@
   <div class="search-bar">
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input type="search" id="search" placeholder="CERCA MARCA, TARGA, TIPOLOGIA..." oninput="render()">
+      <input type="search" id="search" placeholder="CERCA MARCA, TARGA, TIPOLOGIA, PROPRIETARIO..." oninput="render()">
     </div>
   </div>
   <div class="filter-row" id="filters"></div>
@@ -158,7 +200,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- MODALE AGGIUNGI MEZZO (NUOVO) -->
+<!-- MODALE AGGIUNGI MEZZO -->
 <div class="modal-bg" id="aggiungi-mezzo-modal-bg" onclick="if(event.target===this)closeAggiungiMezzoModal()">
   <div class="modal-aggiungi-mezzo">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
@@ -169,43 +211,662 @@
       <div class="error-msg" id="error_proprietario">CAMPO OBBLIGATORIO</div>
     </div>
     <div class="form-group">
-      <label>FOTO TARGHETTA CE / TARGA</label>
-      <button type="button" class="btn-foto" id="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
+      <label>FOTO TARGHETTA CE / TARGA <span class="required-star">*</span></label>
+      <button type="button" class="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
       <input type="file" id="fotoInput" accept="image/*" capture="environment" style="display:none" onchange="anteprimaFoto(this)">
       <div class="foto-preview" id="fotoPreview"></div>
-     <div class="error-msg" id="error_foto">FOTO OBBLIGATORIA (scatta o seleziona un'immagine)</div>
+      <div class="error-msg" id="error_foto">FOTO OBBLIGATORIA</div>
     </div>
     <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
     <button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
   </div>
 </div>
 
-<!-- (Qui vanno gli altri modali esistenti: dettaglio, restituzione, richiesta mezzi - li ho lasciati identici, ma per brevità li riporto compatti) -->
 <!-- MODALE DETTAGLIO MEZZO -->
-<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-handle-wrap"><div class="modal-handle"></div></div><div class="modal-badge-row" id="modal-badge"></div><div class="modal-title" id="modal-title"></div><div id="modal-body"></div><div class="stato-section"><div class="stato-label">CAMBIA STATO MEZZO</div><div class="stato-btns"><button class="btn-stato btn-reso" id="btn-reso" onclick="setStato('reso')">RESO AL NOLEGGIATORE</button><button class="btn-stato btn-spostato" id="btn-spostato" onclick="openSpostatoPanel()">SPOSTATO IN</button><button class="btn-reset" onclick="setStato(null)">RIPRISTINA</button></div><div class="spostato-panel" id="spostato-panel"><div class="spostato-panel-label">📍 SELEZIONA DESTINAZIONE</div><input type="text" class="dest-search" id="dest-search" placeholder="CERCA CANTIERE…" oninput="renderDestOptions()"><div class="spostato-options-list" id="spostato-options-list"></div><div class="spostato-libera-wrap"><label class="spostato-option" id="opt-altro" onclick="document.getElementById('dest-libera').focus()"><input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> ALTRA DESTINAZIONE…</label><input type="text" id="dest-libera" placeholder="SCRIVI DESTINAZIONE LIBERA…" style="width:100%;margin-top:2px;padding:10px 12px;"></div><button class="spostato-confirm" onclick="confirmSpostato()">CONFERMA SPOSTAMENTO</button></div></div><button class="close-btn" onclick="closeModal()">CHIUDI</button></div></div>
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-badge-row" id="modal-badge"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div class="stato-section">
+      <div class="stato-label">CAMBIA STATO MEZZO</div>
+      <div class="stato-btns">
+        <button class="btn-stato btn-reso" id="btn-reso" onclick="setStato('reso')">RESO AL NOLEGGIATORE</button>
+        <button class="btn-stato btn-spostato" id="btn-spostato" onclick="openSpostatoPanel()">SPOSTATO IN</button>
+        <button class="btn-reset" onclick="setStato(null)">RIPRISTINA</button>
+      </div>
+      <div class="spostato-panel" id="spostato-panel">
+        <div class="spostato-panel-label">📍 SELEZIONA DESTINAZIONE (DAL FOGLIO CODICI_CANTIERI)</div>
+        <input type="text" class="dest-search" id="dest-search" placeholder="CERCA CANTIERE…" oninput="renderDestOptions()">
+        <div class="spostato-options-list" id="spostato-options-list"></div>
+        <div class="spostato-libera-wrap">
+          <label class="spostato-option" id="opt-altro" onclick="document.getElementById('dest-libera').focus()">
+            <input type="radio" name="spostato-dest" value="__altro__" id="radio-altro"> ALTRA DESTINAZIONE…
+          </label>
+          <input type="text" id="dest-libera" placeholder="SCRIVI DESTINAZIONE LIBERA…" oninput="if(this.value.trim()){document.getElementById('radio-altro').checked=true;document.querySelectorAll('.spostato-option').forEach(o=>o.classList.remove('selected'));document.getElementById('opt-altro').classList.add('selected');}">
+        </div>
+        <button class="spostato-confirm" onclick="confirmSpostato()">CONFERMA SPOSTAMENTO</button>
+      </div>
+    </div>
+    <button class="close-btn" onclick="closeModal()">CHIUDI</button>
+  </div>
+</div>
 
 <!-- MODALE RICHIESTA RESTITUZIONE -->
-<div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()"><div class="modal-richiesta"><div class="modal-handle-wrap"><div class="modal-handle"></div></div><h3 style="margin-bottom:1rem">✉️ RICHIEDI RESTITUZIONE</h3><div id="restituzione-form-content"><div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="richiesta_commessa" class="readonly-field" readonly></div><div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="richiesta_cantiere" class="readonly-field" readonly></div><div class="form-group"><label>MARCA E MODELLO</label><input type="text" id="richiesta_marca_modello" class="readonly-field" readonly></div><div class="form-group"><label>MATRICOLA / TARGA</label><input type="text" id="richiesta_matricola" class="readonly-field" readonly></div><div class="divider"></div><div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="richiesta_nominativo"><div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO <span class="required-star">*</span></label><input type="datetime-local" id="richiesta_datetime"><div class="error-msg" id="error_datetime">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="richiesta_note" rows="3"></textarea></div><button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA ALL'UFFICIO MEZZI 📩</button></div><button class="close-btn" style="margin-top:1rem" onclick="closeRestituzioneModal()">ANNULLA</button></div></div>
+<div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()">
+  <div class="modal-richiesta">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <h3 style="margin-bottom: 1rem;">✉️ RICHIEDI RESTITUZIONE</h3>
+    <div id="restituzione-form-content">
+      <div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="richiesta_commessa" class="readonly-field" readonly></div>
+      <div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="richiesta_cantiere" class="readonly-field" readonly></div>
+      <div class="form-group"><label>MARCA E MODELLO</label><input type="text" id="richiesta_marca_modello" class="readonly-field" readonly></div>
+      <div class="form-group"><label>MATRICOLA / TARGA</label><input type="text" id="richiesta_matricola" class="readonly-field" readonly></div>
+      <div class="divider"></div>
+      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="richiesta_nominativo"><div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO <span class="required-star">*</span></label><input type="datetime-local" id="richiesta_datetime"><div class="error-msg" id="error_datetime">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="richiesta_note" rows="3"></textarea></div>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA ALL'UFFICIO MEZZI 📩</button>
+    </div>
+    <button class="close-btn" style="margin-top:1rem" onclick="closeRestituzioneModal()">ANNULLA</button>
+  </div>
+</div>
 
 <!-- MODALE RICHIESTA MEZZI E ATTREZZATURE -->
-<div class="modal-bg" id="richiesta-mezzi-modal-bg" onclick="if(event.target===this)closeRichiestaMezziModal()"><div class="modal-richiesta-mezzi"><div class="modal-handle-wrap"><div class="modal-handle"></div></div><h3 style="margin-bottom:1rem">📦 RICHIESTA MEZZI E ATTREZZATURE</h3><div id="richiesta-mezzi-form-content"><div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="mezzi_commessa" class="readonly-field" readonly></div><div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="mezzi_cantiere" class="readonly-field" readonly></div><div class="form-group"><label>CIG</label><input type="text" id="mezzi_cig" class="readonly-field" readonly></div><div class="form-group"><label>UNITÀ LOCALE</label><input type="text" id="mezzi_unita_locale" class="readonly-field" readonly></div><div class="divider"></div><div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="mezzi_nominativo"><div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>DESCRIZIONE, CARATTERISTICHE E QUANTITÀ <span class="required-star">*</span></label><textarea id="mezzi_descrizione" rows="4"></textarea><div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>DATA E ORA DELLA CONSEGNA <span class="required-star">*</span></label><input type="datetime-local" id="mezzi_datetime_consegna"><div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>REFERENTE DI CANTIERE <span class="required-star">*</span></label><input type="text" id="mezzi_referente"><div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>LUOGO DI CONSEGNA <span class="required-star">*</span></label><input type="text" id="mezzi_luogo"><div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label><textarea id="mezzi_periodi" rows="2"></textarea><div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div></div><div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="mezzi_note" rows="3"></textarea></div><button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button></div><button class="close-btn" style="margin-top:1rem" onclick="closeRichiestaMezziModal()">ANNULLA</button></div></div>
+<div class="modal-bg" id="richiesta-mezzi-modal-bg" onclick="if(event.target===this)closeRichiestaMezziModal()">
+  <div class="modal-richiesta-mezzi">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <h3 style="margin-bottom: 1rem;">📦 RICHIESTA MEZZI E ATTREZZATURE</h3>
+    <div id="richiesta-mezzi-form-content">
+      <div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="mezzi_commessa" class="readonly-field" readonly></div>
+      <div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="mezzi_cantiere" class="readonly-field" readonly></div>
+      <div class="form-group"><label>CIG</label><input type="text" id="mezzi_cig" class="readonly-field" readonly></div>
+      <div class="form-group"><label>UNITÀ LOCALE</label><input type="text" id="mezzi_unita_locale" class="readonly-field" readonly></div>
+      <div class="divider"></div>
+      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="mezzi_nominativo"><div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DESCRIZIONE, CARATTERISTICHE E QUANTITÀ <span class="required-star">*</span></label><textarea id="mezzi_descrizione" rows="4"></textarea><div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DATA E ORA DELLA CONSEGNA <span class="required-star">*</span></label><input type="datetime-local" id="mezzi_datetime_consegna"><div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>REFERENTE DI CANTIERE <span class="required-star">*</span></label><input type="text" id="mezzi_referente"><div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>LUOGO DI CONSEGNA <span class="required-star">*</span></label><input type="text" id="mezzi_luogo"><div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label><textarea id="mezzi_periodi" rows="2"></textarea><div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="mezzi_note" rows="3"></textarea></div>
+      <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button>
+    </div>
+    <button class="close-btn" style="margin-top:1rem" onclick="closeRichiestaMezziModal()">ANNULLA</button>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
-// TUTTE LE FUNZIONI ESISTENTI (loadData, render, filtri, modali, ecc.) 
-// SONO STATE PRESERVATE. QUI SOTTO VENGONO AGGIUNTE SOLO LE NUOVE PER "AGGIUNGI MEZZO"
+//  CONFIGURAZIONE (stessa dell'originale)
 // ══════════════════════════════════════════════════════════════════════════════
+const CANTIERE_COMMESSA = '2025_007.002';
+const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
+const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
+const CSV_PROSPETTO = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PROSPETTO_CANTIERI_DEF`;
+const CSV_CODICI    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_COMMESSA`;
+const CSV_CANTIERI  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CODICI_CANTIERI`;
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlWtmwvl_XWC4ns2n0TIpCdFnFm0OOXZLTPRoIPbTmGtC0fSNhaQh8_g8v2wtGN9DwsQ/exec';
 
-// RICORDATI: nel tuo codice originale ci sono già tutte le variabili globali (data, stati, cantieri, etc.)
-// Per brevità ho incluso solo le aggiunte, ma nel file finale devi mantenere tutto il codice esistente.
-// Qui sotto trovi le nuove funzioni + l'override dell'invio email tramite Apps Script.
-// DEVI SOSTITUIRE L'URL DEL APPS SCRIPT CON QUELLO CHE CREERAI (vedi nota finale).
+const DESTINATARI_EMAIL = [
+  'a.argilla@rewaygroup.com',
+  'l.buselli@mga-aulla.it',
+  'e.tedeschi@rewaygroup.com'
+];
 
-let fotoBase64 = null;  // memorizza l'immagine scattata
+// ══════════════════════════════════════════════════════════════════════════════
+//  STATO GLOBALE (originale)
+// ══════════════════════════════════════════════════════════════════════════════
+let data           = [];
+let codiciCommessa = [];
+let cantieri       = [];
+let cantieriDetails = [];
+let stati          = {};
+let destinazioni   = {};
+let activeFilter   = 'Tutti';
+let currentId      = null;
+let currentRichiestaMezzo = null;
+
+const STORAGE_KEY_STATI = 'stati_guardamiglio_v1';
+const STORAGE_KEY_DEST  = 'dest_guardamiglio_v1';
+
+try { stati       = JSON.parse(localStorage.getItem(STORAGE_KEY_STATI) || '{}'); } catch(e) {}
+try { destinazioni= JSON.parse(localStorage.getItem(STORAGE_KEY_DEST)  || '{}'); } catch(e) {}
+
+function saveStati() {
+  try { localStorage.setItem(STORAGE_KEY_STATI, JSON.stringify(stati)); } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY_DEST,  JSON.stringify(destinazioni)); } catch(e) {}
+}
+
+const BADGE_COLORS = {
+  PIATTAFORMA:     { bg: '#E3F2FD', fg: '#0D47A1' },
+  GENERATORE:      { bg: '#FFF3E0', fg: '#E65100' },
+  SOLLEVATORE:     { bg: '#E8F5E9', fg: '#1B5E20' },
+  ESCAVATORE:      { bg: '#FFEBEE', fg: '#B71C1C' },
+  COMPRESSORE:     { bg: '#F3E5F5', fg: '#4A148C' },
+  MONOBLOCCO:      { bg: '#F1F8E9', fg: '#33691E' },
+  CAMION:          { bg: '#E0F7FA', fg: '#006064' },
+  CISTERNA:        { bg: '#FFF9C4', fg: '#F57F17' },
+  INTONACATRICE:   { bg: '#FCE4EC', fg: '#880E4F' },
+  WC:              { bg: '#ECEFF1', fg: '#37474F' },
+  VASCA:           { bg: '#E8EAF6', fg: '#1A237E' },
+  IDRODEMOLIZIONE: { bg: '#FBE9E7', fg: '#BF360C' },
+  GRU:             { bg: '#EFEBE9', fg: '#4E342E' },
+  DEFAULT:         { bg: '#F5F5F5', fg: '#616161' }
+};
+
+function parseCSVRaw(text) {
+  const lines = text.trim().split('\n');
+  return lines.map(line => {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+}
+
+function formatDate(raw) {
+  if (!raw || raw === '') return null;
+  const trimmed = String(raw).trim();
+  const num = parseFloat(trimmed);
+  if (!isNaN(num) && Number.isFinite(num) && trimmed.match(/^-?\d+(\.\d+)?$/)) {
+    const date = new Date((num - 25569) * 86400000);
+    if (!isNaN(date.getTime()) && date.getFullYear() > 1900) {
+      return date.toLocaleDateString('it-IT');
+    }
+  }
+  let d = new Date(trimmed);
+  if (!isNaN(d.getTime()) && trimmed.match(/^\d{4}-\d{2}-\d{2}/)) {
+    return d.toLocaleDateString('it-IT');
+  }
+  const parts = trimmed.split(/[\/\-]/);
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 1900 && year < 2100) {
+      const d2 = new Date(year, month, day);
+      if (d2.getDate() === day && d2.getMonth() === month) {
+        return d2.toLocaleDateString('it-IT');
+      }
+    }
+  }
+  return trimmed;
+}
+
+function formatProprieta(val) {
+  if (!val) return val;
+  const map = {
+    'P': 'PROPRIETÀ',
+    'L': 'LEASING',
+    'N BT MGA': 'NOLEGGIO BREVE TERMINE MGA',
+    'N LT MGA': 'NOLEGGIO LUNGO TERMINE MGA'
+  };
+  return map[val] || val;
+}
+
+function formatCanone(val, tipo) {
+  if (!val || val === '') return null;
+  const n = parseFloat(val.replace(',', '.').replace(/[^0-9.]/g, ''));
+  let valoreFormattato = val;
+  if (!isNaN(n) && n > 0) {
+    valoreFormattato = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
+  }
+  let tipoLabel = '';
+  if (tipo === 'mensile') tipoLabel = 'CANONE MENSILE';
+  else if (tipo === 'giornaliero') tipoLabel = 'CANONE GIORNALIERO';
+  else if (tipo === 'orario') tipoLabel = 'CANONE ORARIO';
+  else return valoreFormattato;
+  return `${tipoLabel}: ${valoreFormattato}`;
+}
+
+async function fetchCSV(url) {
+  const res = await fetch(url + '&nocache=' + Date.now());
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.text();
+}
+
+function parseProspetto(text) {
+  const rows = parseCSVRaw(text);
+  return rows.slice(1)
+    .filter(cols => (cols[1] || '').trim() === CANTIERE_COMMESSA)
+    .map(cols => {
+      const colB  = cols[1]  || '';
+      const colE  = cols[4]  || '';
+      const colF  = cols[5]  || '';
+      const colG  = cols[6]  || '';
+      const colH  = cols[7]  || '';
+      const colI  = cols[8]  || '';
+      const colJ  = cols[9]  || '';
+      const colK  = cols[10] || '';
+      const colL  = cols[11] || '';
+      const colN  = cols[13] || '';
+      const colAF = cols[31] || '';
+      
+      let canoneVal = '';
+      let canoneType = '';
+      if (colJ && colJ.trim()) {
+        canoneVal = colJ.trim();
+        canoneType = 'mensile';
+      } else if (colK && colK.trim()) {
+        canoneVal = colK.trim();
+        canoneType = 'giornaliero';
+      } else if (colL && colL.trim()) {
+        canoneVal = colL.trim();
+        canoneType = 'orario';
+      }
+      
+      const statoRaw = colAF.trim().toLowerCase();
+      const statoSheet = statoRaw.includes('reso') ? 'reso'
+                       : statoRaw.includes('spostato') ? 'spostato'
+                       : null;
+      return {
+        commessa: colB, tipo: colE.toUpperCase(), codice: colF,
+        marca: colG, propNol: colH, proprietario: colI,
+        canoneVal, canoneType,
+        dataInizio: colN, statoSheet, statoAF: colAF,
+        destinazioneAF: statoRaw.includes('spostato in') ? colAF.replace(/^spostato in\s*/i, '').trim() : '',
+      };
+    })
+    .filter(d => d.codice);
+}
+
+function parseCodiciCommessa(text) {
+  const rows = parseCSVRaw(text);
+  return rows.slice(1)
+    .map(cols => ({ codice: (cols[1]||'').trim(), desc: (cols[2]||'').trim() }))
+    .filter(c => c.codice);
+}
+
+function parseCantieriDetails(text) {
+  const rows = parseCSVRaw(text);
+  const result = [];
+  for (let i = 1; i < rows.length; i++) {
+    const commessa = (rows[i][1] || '').trim();
+    const nomeCantiere = (rows[i][2] || '').trim();
+    const cig = (rows[i][3] || '').trim();
+    const unitaLocale = (rows[i][4] || '').trim();
+    if (commessa) {
+      result.push({ commessa, nome: nomeCantiere, cig, unitaLocale });
+    } else if (nomeCantiere) {
+      result.push({ commessa: '', nome: nomeCantiere, cig, unitaLocale });
+    }
+  }
+  return result;
+}
+
+async function loadData() {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot loading';
+  lbl.textContent = 'AGGIORNAMENTO...';
+  try {
+    const [txtPros, txtCod, txtCantieri] = await Promise.all([
+      fetchCSV(CSV_PROSPETTO),
+      fetchCSV(CSV_CODICI),
+      fetchCSV(CSV_CANTIERI)
+    ]);
+    data = parseProspetto(txtPros);
+    codiciCommessa = parseCodiciCommessa(txtCod);
+    cantieriDetails = parseCantieriDetails(txtCantieri);
+    cantieri = cantieriDetails.map(c => c.nome).filter(n => n);
+
+    stati = {};
+    data.forEach(d => {
+      if (d.statoSheet) {
+        stati[d.codice] = d.statoSheet;
+        if (d.statoSheet === 'spostato' && d.destinazioneAF) {
+          destinazioni[d.codice] = d.destinazioneAF;
+        }
+      }
+    });
+    saveStati();
+
+    const now = new Date().toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
+    dot.className = 'sync-dot';
+    lbl.textContent = `AGGIORNATO ALLE ${now} · ${data.length} MEZZI · ${cantieri.length} CANTIERI`;
+    renderFilters();
+    render();
+  } catch(e) {
+    dot.className = 'sync-dot error';
+    lbl.textContent = 'ERRORE DI CONNESSIONE';
+    document.getElementById('cards').innerHTML = '<div class="empty">IMPOSSIBILE CARICARE I DATI.<br>VERIFICA LA CONNESSIONE E RIPROVA.</div>';
+    console.error(e);
+  }
+}
+
+function getTypes() {
+  const types = ['Tutti', ...new Set(data.map(d => d.tipo).filter(Boolean))].sort((a,b) => a === 'Tutti' ? -1 : a.localeCompare(b));
+  types.push('RESO', 'SPOSTATO IN');
+  return types;
+}
+
+function renderFilters() {
+  const filterContainer = document.getElementById('filters');
+  filterContainer.innerHTML = `<span style="font-size: 18px; margin-right: 4px;">🔍</span>` +
+    getTypes().map(t => {
+      const extra = t === 'RESO' ? 'reso-chip' : t === 'SPOSTATO IN' ? 'spostato-chip' : '';
+      return `<span class="chip ${extra} ${t===activeFilter?'active':''}" onclick="setFilter('${t}')">${t}</span>`;
+    }).join('');
+}
+
+function setFilter(t) { activeFilter = t; renderFilters(); render(); }
+
+function filtered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  return data.filter(d => {
+    let mF;
+    if      (activeFilter === 'Tutti')       mF = true;
+    else if (activeFilter === 'RESO')        mF = stati[d.codice] === 'reso';
+    else if (activeFilter === 'SPOSTATO IN') mF = stati[d.codice] === 'spostato';
+    else                                     mF = d.tipo === activeFilter;
+    const mQ = !q || [d.tipo, d.marca, d.propNol, d.proprietario, d.codice].join(' ').toLowerCase().includes(q);
+    return mF && mQ;
+  });
+}
+
+function render() {
+  const items = filtered();
+  document.getElementById('count').textContent = items.length + (items.length === 1 ? ' MEZZO TROVATO' : ' MEZZI TROVATI');
+  if (!items.length) {
+    document.getElementById('cards').innerHTML = '<div class="empty">NESSUN RISULTATO TROVATO.<br>PROVA A CAMBIARE IL FILTRO O LA RICERCA.</div>';
+    return;
+  }
+  document.getElementById('cards').innerHTML = items.map(d => {
+    const c = BADGE_COLORS[d.tipo] || BADGE_COLORS.DEFAULT;
+    const stato = stati[d.codice];
+    const statoClass = stato ? 'stato-' + stato : '';
+    const statoBadge = stato === 'reso'
+      ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>'
+      : stato === 'spostato'
+      ? `<span class="stato-badge spostato">SPOSTATO IN ${destinazioni[d.codice] || ''}</span>`
+      : '';
+    const dataFormattata = formatDate(d.dataInizio);
+    const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
+    const tipoPossessoFormattato = formatProprieta(d.propNol);
+    return `<div class="card ${statoClass}" data-codice="${esc(d.codice)}">
+      <div class="card-top" onclick="openModal('${esc(d.codice)}')">
+        <div class="card-title">${esc(d.marca) || '—'}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="badge" style="background:${c.bg};color:${c.fg}">${d.tipo || '—'}</span>
+          ${statoBadge}
+        </div>
+      </div>
+      <div class="card-meta" onclick="openModal('${esc(d.codice)}')">
+        <div class="meta-row"><span class="meta-label">MATRICOLA / TARGA</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">TITOLO DI POSSESSO</span><span class="meta-value">${esc(tipoPossessoFormattato) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">PROPRIETARIO</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
+        ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">TARIFFA</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
+        ${dataFormattata ? `<div class="meta-row"><span class="meta-label">INIZIO NOLEGGIO</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
+      </div>
+      <button class="btn-richiesta-restituzione" onclick="event.stopPropagation(); openRestituzioneModal('${esc(d.codice)}')">RICHIEDI RESTITUZIONE ↩️</button>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openModal(codice) {
+  currentId = codice;
+  const d = data.find(x => x.codice === codice);
+  if (!d) return;
+  const c = BADGE_COLORS[d.tipo] || BADGE_COLORS.DEFAULT;
+  const stato = stati[codice];
+  document.getElementById('modal-badge').innerHTML =
+    `<span class="badge" style="background:${c.bg};color:${c.fg};display:inline-block">${d.tipo || '—'}</span>`
+    + (stato === 'reso'     ? '<span class="stato-badge reso">RESO AL NOLEGGIATORE</span>' : '')
+    + (stato === 'spostato' ? `<span class="stato-badge spostato">SPOSTATO IN${destinazioni[codice] ? ' ' + destinazioni[codice] : ''}</span>` : '');
+  document.getElementById('modal-title').textContent = d.marca || 'DETTAGLIO MEZZO';
+  const dataFormattata = formatDate(d.dataInizio);
+  const canoneFormattato = formatCanone(d.canoneVal, d.canoneType);
+  const tipoPossessoFormattato = formatProprieta(d.propNol);
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field"><label>MARCA E MODELLO</label><div class="val">${esc(d.marca) || '—'}</div></div>
+    <div class="modal-field"><label>MATRICOLA / TARGA</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'NON SPECIFICATA'}</div></div>
+    <div class="modal-field"><label>TIPOLOGIA</label><div class="val">${esc(d.tipo) || '—'}</div></div>
+    <div class="modal-field"><label>TITOLO DI POSSESSO</label><div class="val ${!tipoPossessoFormattato?'empty-val':''}">${esc(tipoPossessoFormattato) || 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>PROPRIETARIO</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>TARIFFA</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>DATA INIZIO NOLEGGIO</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'NON SPECIFICATA'}</div></div>
+  `;
+  document.getElementById('btn-reso').className     = 'btn-stato btn-reso'     + (stato === 'reso'     ? ' attivo' : '');
+  document.getElementById('btn-spostato').className = 'btn-stato btn-spostato' + (stato === 'spostato' ? ' attivo' : '');
+  document.getElementById('spostato-panel').classList.remove('open');
+  document.getElementById('modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderDestOptions() {
+  const q = (document.getElementById('dest-search').value || '').toLowerCase();
+  const list = document.getElementById('spostato-options-list');
+  const opzioni = cantieri.filter(c => !q || c.toLowerCase().includes(q));
+  list.innerHTML = opzioni.map((c, i) => {
+    return `<label class="spostato-option" id="opt-dest-${i}">
+      <input type="radio" name="spostato-dest" value="${esc(c)}"> ${esc(c)}
+    </label>`;
+  }).join('');
+  list.querySelectorAll('input[type=radio]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
+      r.closest('.spostato-option').classList.add('selected');
+    });
+  });
+  list.querySelectorAll('.spostato-option').forEach(lbl => {
+    lbl.addEventListener('click', () => {
+      document.querySelectorAll('.spostato-option').forEach(o => o.classList.remove('selected'));
+      lbl.classList.add('selected');
+      const radio = lbl.querySelector('input[type=radio]');
+      if (radio) radio.checked = true;
+    });
+  });
+}
+
+function openSpostatoPanel() {
+  const panel = document.getElementById('spostato-panel');
+  panel.classList.toggle('open');
+  document.getElementById('dest-search').value = '';
+  document.getElementById('dest-libera').value = '';
+  renderDestOptions();
+}
+
+function confirmSpostato() {
+  const selected = document.querySelector('input[name="spostato-dest"]:checked');
+  if (!selected) { showToast('⚠️ SELEZIONA UNA DESTINAZIONE'); return; }
+  let dest = selected.value;
+  if (dest === '__altro__') {
+    dest = document.getElementById('dest-libera').value.trim();
+    if (!dest) { showToast('⚠️ SCRIVI UNA DESTINAZIONE'); return; }
+  }
+  setStato('spostato', dest);
+  document.getElementById('spostato-panel').classList.remove('open');
+}
+
+function setStato(valore, destinazione) {
+  if (currentId === null) return;
+  if (valore === null) {
+    delete stati[currentId];
+    delete destinazioni[currentId];
+    document.getElementById('spostato-panel').classList.remove('open');
+  } else {
+    stati[currentId] = valore;
+    if (destinazione) destinazioni[currentId] = destinazione;
+  }
+  saveStati();
+  render();
+  openModal(currentId);
+}
+
+function openRestituzioneModal(codiceMezzo) {
+  const mezzo = data.find(m => m.codice === codiceMezzo);
+  if (!mezzo) return;
+  currentRichiestaMezzo = mezzo;
+  document.getElementById('richiesta_commessa').value = CANTIERE_COMMESSA;
+  document.getElementById('richiesta_cantiere').value = CANTIERE_NOME;
+  document.getElementById('richiesta_marca_modello').value = mezzo.marca || 'NON SPECIFICATO';
+  document.getElementById('richiesta_matricola').value = mezzo.codice || 'NON SPECIFICATA';
+  document.getElementById('richiesta_nominativo').value = '';
+  document.getElementById('richiesta_datetime').value = '';
+  document.getElementById('richiesta_note').value = '';
+  document.getElementById('error_nominativo').style.display = 'none';
+  document.getElementById('error_datetime').style.display = 'none';
+  document.getElementById('restituzione-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRestituzioneModal() {
+  document.getElementById('restituzione-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+  currentRichiestaMezzo = null;
+}
+
+function inviaRichiestaRestituzione() {
+  const nominativo = document.getElementById('richiesta_nominativo').value.trim();
+  const datetime = document.getElementById('richiesta_datetime').value;
+  const note = document.getElementById('richiesta_note').value.trim();
+  let isValid = true;
+  if (!nominativo) { document.getElementById('error_nominativo').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_nominativo').style.display = 'none'; }
+  if (!datetime) { document.getElementById('error_datetime').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_datetime').style.display = 'none'; }
+  if (!isValid) return;
+  const mezzo = currentRichiestaMezzo;
+  if (!mezzo) return;
+  const dataOraLeggibile = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
+  const oggetto = `RICHIESTA RESTITUZIONE - MEZZO ${mezzo.codice} - ${mezzo.marca}`;
+  let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
+  corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
+  corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
+  const destinatari = DESTINATARI_EMAIL.join(';');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  window.location.href = mailtoLink;
+  showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
+  closeRestituzioneModal();
+}
+
+function openRichiestaMezziModal() {
+  const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
+  document.getElementById('mezzi_commessa').value = CANTIERE_COMMESSA;
+  document.getElementById('mezzi_cantiere').value = CANTIERE_NOME;
+  document.getElementById('mezzi_cig').value = cantiereInfo ? cantiereInfo.cig : '';
+  document.getElementById('mezzi_unita_locale').value = cantiereInfo ? cantiereInfo.unitaLocale : '';
+  document.getElementById('mezzi_nominativo').value = '';
+  document.getElementById('mezzi_descrizione').value = '';
+  document.getElementById('mezzi_datetime_consegna').value = '';
+  document.getElementById('mezzi_referente').value = '';
+  document.getElementById('mezzi_luogo').value = '';
+  document.getElementById('mezzi_periodi').value = '';
+  document.getElementById('mezzi_note').value = '';
+  document.querySelectorAll('#richiesta-mezzi-form-content .error-msg').forEach(el => el.style.display = 'none');
+  document.getElementById('richiesta-mezzi-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRichiestaMezziModal() {
+  document.getElementById('richiesta-mezzi-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function inviaRichiestaMezzi() {
+  const nominativo = document.getElementById('mezzi_nominativo').value.trim();
+  const descrizione = document.getElementById('mezzi_descrizione').value.trim();
+  const datetime = document.getElementById('mezzi_datetime_consegna').value;
+  const referente = document.getElementById('mezzi_referente').value.trim();
+  const luogo = document.getElementById('mezzi_luogo').value.trim();
+  const periodi = document.getElementById('mezzi_periodi').value.trim();
+  const note = document.getElementById('mezzi_note').value.trim();
+  let isValid = true;
+  if (!nominativo) { document.getElementById('error_mezzi_nominativo').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_nominativo').style.display = 'none'; }
+  if (!descrizione) { document.getElementById('error_mezzi_descrizione').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_descrizione').style.display = 'none'; }
+  if (!datetime) { document.getElementById('error_mezzi_datetime').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_datetime').style.display = 'none'; }
+  if (!referente) { document.getElementById('error_mezzi_referente').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_referente').style.display = 'none'; }
+  if (!luogo) { document.getElementById('error_mezzi_luogo').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_luogo').style.display = 'none'; }
+  if (!periodi) { document.getElementById('error_mezzi_periodi').style.display = 'block'; isValid = false; }
+  else { document.getElementById('error_mezzi_periodi').style.display = 'none'; }
+  if (!isValid) return;
+  const dataOraConsegna = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
+  const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
+  const oggetto = `RICHIESTA MEZZI E ATTREZZATURE - ${CANTIERE_NOME} (${CANTIERE_COMMESSA})`;
+  let corpo = `RICHIESTA MEZZI E ATTREZZATURE PER IL CANTIERE ${CANTIERE_NOME}\nCODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
+  if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
+  if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
+  corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
+  const destinatari = DESTINATARI_EMAIL.join(';');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  window.location.href = mailtoLink;
+  showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
+  closeRichiestaMezziModal();
+}
+
+async function openExport() {
+  const btn = document.getElementById('export-btn');
+  const conStato = data.filter(d => stati[d.codice]);
+  if (!conStato.length) {
+    showToast('⚠️ NESSUN MEZZO HA UNO STATO ASSEGNATO.');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'ESPORTAZIONE...';
+  const payload = {
+    foglio: 'PROSPETTO_CANTIERI_DEF',
+    colonna_chiave: 'F',
+    colonna_output: 'AF',
+    commessa: CANTIERE_COMMESSA,
+    variazioni: conStato.map(d => {
+      const s = stati[d.codice];
+      const valore = s === 'reso'
+        ? 'RESO AL NOLEGGIATORE'
+        : 'SPOSTATO IN ' + (destinazioni[d.codice] || '').trim();
+      return { matricola: d.codice.trim(), valore };
+    })
+  };
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.status === 'ok') {
+      const msg = json.aggiornati > 0
+        ? `✅ ${json.aggiornati} VARIAZIONI SCRITTE SUL FOGLIO!` + (json.nonTrovati > 0 ? `\n⚠️ ${json.nonTrovati} MATRICOLE NON TROVATE.` : '')
+        : '⚠️ NESSUNA MATRICOLA TROVATA NEL FOGLIO. VERIFICA I CODICI.';
+      showToast(msg, 5000);
+    } else {
+      showToast('❌ ERRORE: ' + (json.error || 'RISPOSTA NON VALIDA'), 5000);
+    }
+  } catch(e) {
+    showToast('❌ CONNESSIONE FALLITA: ' + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ESPORTA VARIAZIONI';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  NUOVE FUNZIONI PER "AGGIUNGI MEZZO"
+// ══════════════════════════════════════════════════════════════════════════════
+let fotoBase64 = null;
 
 function apriFotocamera() {
-  const input = document.getElementById('fotoInput');
-  input.click();
+  document.getElementById('fotoInput').click();
 }
 
 function anteprimaFoto(input) {
@@ -213,9 +874,11 @@ function anteprimaFoto(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    fotoBase64 = e.target.result; // data:image/jpeg;base64,...
+    fotoBase64 = e.target.result;
     const previewDiv = document.getElementById('fotoPreview');
     previewDiv.innerHTML = `<img src="${fotoBase64}" alt="Anteprima targhetta">`;
+    // Nasconde l'errore della foto se precedentemente visibile
+    document.getElementById('error_foto').style.display = 'none';
   };
   reader.readAsDataURL(file);
 }
@@ -226,6 +889,7 @@ function openAggiungiMezzoModal() {
   document.getElementById('fotoPreview').innerHTML = '';
   fotoBase64 = null;
   document.getElementById('error_proprietario').style.display = 'none';
+  document.getElementById('error_foto').style.display = 'none';
   document.getElementById('aggiungi-mezzo-modal-bg').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -239,7 +903,6 @@ function inviaNuovoMezzo() {
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
   let isValid = true;
 
-  // Controllo proprietario
   if (!proprietario) {
     document.getElementById('error_proprietario').style.display = 'block';
     isValid = false;
@@ -247,7 +910,6 @@ function inviaNuovoMezzo() {
     document.getElementById('error_proprietario').style.display = 'none';
   }
 
-  // Controllo foto obbligatoria
   if (!fotoBase64) {
     document.getElementById('error_foto').style.display = 'block';
     isValid = false;
@@ -256,33 +918,40 @@ function inviaNuovoMezzo() {
   }
 
   if (!isValid) return;
-}
-  
-  // Prepariamo i dati per l'invio al backend (Apps Script)
+
+  // Prepara il payload per il backend (Apps Script)
   const payload = {
     tipo: 'nuovo_mezzo',
     commessa: CANTIERE_COMMESSA,
     cantiere: CANTIERE_NOME,
     proprietario: proprietario,
-    foto: fotoBase64 || null,   // può essere null se non scattata
+    foto: fotoBase64,
     timestamp: new Date().toISOString()
   };
-  
-  // INVIO VIA FETCH AL TUO APPS SCRIPT (che deve essere aggiornato)
-  // SOSTITUISCI 'URL_DEL_TUO_APPS_SCRIPT' CON L'URL REALE
-  fetch('URL_DEL_TUO_APPS_SCRIPT', {
+
+  // Invio al tuo Google Apps Script (sostituisci l'URL se diverso)
+  // IMPORTANTE: devi creare una funzione doPost nel tuo Apps Script che gestisca questo payload e invii l'email con allegato.
+  fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    mode: 'no-cors',  // per semplificare, ma per ricevere risposta serve CORS; meglio usare 'cors' se configuri lo script
+    mode: 'cors',               // meglio cors se lo script supporta CORS
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
-  }).catch(e => console.log(e));
-  
-  // Intanto mostriamo un feedback all'utente
-  showToast('📧 Richiesta inviata all\'ufficio mezzi (email con foto)', 4000);
-  closeAggiungiMezzoModal();
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto)', 4000);
+      closeAggiungiMezzoModal();
+    } else {
+      showToast('❌ Errore: ' + (data.error || 'risposta non valida'), 4000);
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast('❌ Errore di connessione. Riprova più tardi.', 4000);
+  });
 }
 
-// SOSTITUISCI anche la funzione showToast se non esiste già (nel codice originale c'era)
 function showToast(msg, duration = 3500) {
   let t = document.getElementById('toast');
   if (!t) {
@@ -296,9 +965,9 @@ function showToast(msg, duration = 3500) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-// Il resto del codice (loadData, render, ecc.) rimane IDENTICO al tuo originale.
-// Per non appesantire la risposta, ti ho mostrato solo le aggiunte.
-// Assicurati di unire questo blocco al tuo file completo, mantenendo tutte le funzioni originali.
+// Avvio
+loadData();
+setInterval(loadData, 5 * 60 * 1000);
 </script>
 </body>
 </html>
