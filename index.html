@@ -209,16 +209,27 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- MODALE AGGIUNGI MEZZO -->
+<!-- MODALE AGGIUNGI MEZZO con campi obbligatori: nominativo richiedente, società proprietaria, foto -->
 <div class="modal-bg" id="aggiungi-mezzo-modal-bg" onclick="if(event.target===this)closeAggiungiMezzoModal()">
   <div class="modal-aggiungi-mezzo">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
     <h3 style="margin-bottom: 1rem; font-size: 20px;">➕ AGGIUNGI NUOVO MEZZO</h3>
+    
+    <!-- NOMINATIVO RICHIEDENTE (obbligatorio) -->
+    <div class="form-group">
+      <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
+      <input type="text" id="richiedente_nominativo" placeholder="NOME E COGNOME">
+      <div class="error-msg" id="error_nominativo_mezzo">CAMPO OBBLIGATORIO</div>
+    </div>
+
+    <!-- SOCIETÀ PROPRIETARIA (obbligatorio) -->
     <div class="form-group">
       <label>SOCIETÀ PROPRIETARIA <span class="required-star">*</span></label>
       <input type="text" id="nuovo_proprietario" placeholder="NOME SOCIETÀ PROPRIETARIA">
       <div class="error-msg" id="error_proprietario">CAMPO OBBLIGATORIO</div>
     </div>
+
+    <!-- FOTO TARGHETTA CE / TARGA (obbligatorio) -->
     <div class="form-group">
       <label>FOTO TARGHETTA CE / TARGA <span class="required-star">*</span></label>
       <button type="button" class="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
@@ -226,6 +237,7 @@
       <div class="foto-preview" id="fotoPreview"></div>
       <div class="error-msg" id="error_foto">FOTO OBBLIGATORIA</div>
     </div>
+
     <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
     <button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
   </div>
@@ -865,7 +877,7 @@ async function openExport() {
   }
 }
 
-// ======================== NUOVE FUNZIONI PER "AGGIUNGI MEZZO" (CON NO-CORS E FALLBACK) ========================
+// ======================== NUOVE FUNZIONI PER "AGGIUNGI MEZZO" CON NOMINATIVO OBBLIGATORIO ========================
 let fotoBase64 = null;
 
 function apriFotocamera() {
@@ -886,10 +898,12 @@ function anteprimaFoto(input) {
 }
 
 function openAggiungiMezzoModal() {
+  document.getElementById('richiedente_nominativo').value = '';
   document.getElementById('nuovo_proprietario').value = '';
   document.getElementById('fotoInput').value = '';
   document.getElementById('fotoPreview').innerHTML = '';
   fotoBase64 = null;
+  document.getElementById('error_nominativo_mezzo').style.display = 'none';
   document.getElementById('error_proprietario').style.display = 'none';
   document.getElementById('error_foto').style.display = 'none';
   document.getElementById('aggiungi-mezzo-modal-bg').classList.add('open');
@@ -902,8 +916,16 @@ function closeAggiungiMezzoModal() {
 }
 
 function inviaNuovoMezzo() {
+  const nominativo = document.getElementById('richiedente_nominativo').value.trim();
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
   let isValid = true;
+
+  if (!nominativo) {
+    document.getElementById('error_nominativo_mezzo').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('error_nominativo_mezzo').style.display = 'none';
+  }
 
   if (!proprietario) {
     document.getElementById('error_proprietario').style.display = 'block';
@@ -925,37 +947,47 @@ function inviaNuovoMezzo() {
     tipo: 'nuovo_mezzo',
     commessa: CANTIERE_COMMESSA,
     cantiere: CANTIERE_NOME,
+    nominativo: nominativo,
     proprietario: proprietario,
     foto: fotoBase64,
     timestamp: new Date().toISOString()
   };
 
-  // Usa mode: 'no-cors' per evitare blocchi CORS
+  // Tentativo di invio al server (che invierà l'email con allegato)
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(payload)
   })
-  .then(() => {
-    // Con no-cors non possiamo leggere la risposta, ma se il catch non scatta la richiesta è partita
-    showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto)', 4000);
-    closeAggiungiMezzoModal();
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto allegata)', 4000);
+      closeAggiungiMezzoModal();
+    } else {
+      // Fallback: se il server risponde con errore, apriamo mailto senza foto (ma con tutti i dati testuali)
+      fallbackEmail(nominativo, proprietario);
+    }
   })
   .catch(err => {
-    console.error('Fetch error (no-cors):', err);
-    // Fallback: apre una email con i dati testuali (senza foto)
-    const oggetto = `NUOVA RICHIESTA MEZZO - ${CANTIERE_NOME}`;
-    let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
-    corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
-    corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
-    corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente (errore di connessione). Inviare manualmente all'ufficio mezzi.`;
-    const destinatari = DESTINATARI_EMAIL.join(',');
-    const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
-    window.location.href = mailtoLink;
-    showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
-    closeAggiungiMezzoModal();
+    console.error('Errore fetch:', err);
+    // Fallback: apri mailto con i dati (la foto non può essere allegata, avviso)
+    fallbackEmail(nominativo, proprietario);
   });
+}
+
+function fallbackEmail(nominativo, proprietario) {
+  const oggetto = `NUOVA RICHIESTA MEZZO - ${CANTIERE_NOME}`;
+  let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
+  corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
+  corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
+  corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
+  corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
+  const destinatari = DESTINATARI_EMAIL.join(',');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  window.location.href = mailtoLink;
+  showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
+  closeAggiungiMezzoModal();
 }
 
 function showToast(msg, duration = 3500) {
