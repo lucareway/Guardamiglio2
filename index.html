@@ -49,59 +49,53 @@
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: stretch;
   }
-  /* Pulsanti principali con stessa larghezza */
-  .btn-arancione, .export-btn {
-    flex: 1;
+  .btn-group button {
+    flex: 1 1 0;
     min-width: 0;
+    white-space: normal;
+    word-break: break-word;
     text-align: center;
-    justify-content: center;
-  }
-  /* Pulsanti secondari larghezza automatica */
-  .richiesta-mezzi-btn, .refresh-btn {
-    flex: 0 0 auto;
-  }
-  .refresh-btn { font-size: 13px; color: #007aff; background: none; border: none; cursor: pointer; padding: 6px 14px; border-radius: 8px; text-transform: uppercase; font-weight: 600; }
-  .refresh-btn:active { background: #e8f0fe; }
-
-  /* PULSANTE ARANCIONE NUOVO */
-  .btn-arancione {
-    background-color: #ff9500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 6px 14px;
+    padding: 8px 6px;
+    line-height: 1.3;
     font-size: 13px;
     font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-    transition: 0.1s;
-  }
-  .btn-arancione:active { opacity: 0.8; transform: scale(0.97); }
-
-  /* Pulsante export (verde) */
-  .export-btn {
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    background: #34c759;
-    border: none;
-    cursor: pointer;
-    padding: 6px 14px;
     border-radius: 10px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    cursor: pointer;
     transition: 0.1s;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
+    text-transform: uppercase;
   }
-  .export-btn:active { opacity: 0.8; transform: scale(0.97); }
+  .btn-group .refresh-btn {
+    flex: 0 0 auto;
+    background: none;
+    color: #007aff;
+    padding: 8px 14px;
+  }
+  .btn-arancione {
+    background-color: #ff9500;
+    color: white;
+    border: none;
+  }
+  .richiesta-mezzi-btn {
+    background-color: #20b2aa;
+    color: white;
+    border: none;
+  }
+  .export-btn {
+    background-color: #34c759;
+    color: white;
+    border: none;
+  }
+  .btn-arancione:active, .richiesta-mezzi-btn:active, .export-btn:active {
+    opacity: 0.8;
+    transform: scale(0.97);
+  }
+  .refresh-btn:active { background: #e8f0fe; }
   .export-btn:disabled { background: #aaa; cursor: not-allowed; opacity: 0.7; }
 
   .search-bar { padding: 10px 1rem; position: sticky; top: 0; background: #fff; border-bottom: 1px solid #e5e5e5; }
@@ -136,20 +130,6 @@
     width: 100%; text-transform: uppercase;
   }
   .btn-richiesta-restituzione:active { background-color: #dc2626; transform: scale(0.97); }
-  .richiesta-mezzi-btn {
-    background-color: #20b2aa;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    text-transform: uppercase;
-  }
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; text-transform: uppercase; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
@@ -327,9 +307,7 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════════════
-//  CONFIGURAZIONE (stessa dell'originale)
-// ══════════════════════════════════════════════════════════════════════════════
+// ======================== CONFIGURAZIONE ========================
 const CANTIERE_COMMESSA = '2025_007.002';
 const CANTIERE_NOME     = 'A1 VIADOTTO GUARDAMIGLIO';
 const SHEET_ID = '1t4kap4RuxriH_MAkqRu_UnHzGjQWaO_TLEMIm5VXAnw';
@@ -344,9 +322,7 @@ const DESTINATARI_EMAIL = [
   'e.tedeschi@rewaygroup.com'
 ];
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  STATO GLOBALE (originale)
-// ══════════════════════════════════════════════════════════════════════════════
+// ======================== STATO GLOBALE ========================
 let data           = [];
 let codiciCommessa = [];
 let cantieri       = [];
@@ -457,7 +433,7 @@ function formatCanone(val, tipo) {
 
 async function fetchCSV(url) {
   const res = await fetch(url + '&nocache=' + Date.now());
-  if (!res.ok) throw new Error('HTTP ' + res.status);
+  if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
   return res.text();
 }
 
@@ -564,8 +540,8 @@ async function loadData() {
     render();
   } catch(e) {
     dot.className = 'sync-dot error';
-    lbl.textContent = 'ERRORE DI CONNESSIONE';
-    document.getElementById('cards').innerHTML = '<div class="empty">IMPOSSIBILE CARICARE I DATI.<br>VERIFICA LA CONNESSIONE E RIPROVA.</div>';
+    lbl.textContent = 'ERRORE DI CONNESSIONE AL FOGLIO';
+    document.getElementById('cards').innerHTML = `<div class="empty">⚠️ IMPOSSIBILE CARICARE I DATI.<br>Verifica che il foglio Google sia pubblico (condiviso con "Chiunque può visualizzare").<br>Errore: ${e.message}</div>`;
     console.error(e);
   }
 }
@@ -778,7 +754,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -837,7 +813,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -889,9 +865,7 @@ async function openExport() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  NUOVE FUNZIONI PER "AGGIUNGI MEZZO" (CORRETTE PER EVITARE ERRORI DI CONNESSIONE)
-// ══════════════════════════════════════════════════════════════════════════════
+// ======================== NUOVE FUNZIONI PER "AGGIUNGI MEZZO" (CON NO-CORS E FALLBACK) ========================
 let fotoBase64 = null;
 
 function apriFotocamera() {
@@ -956,22 +930,31 @@ function inviaNuovoMezzo() {
     timestamp: new Date().toISOString()
   };
 
- fetch(APPS_SCRIPT_URL, {
+  // Usa mode: 'no-cors' per evitare blocchi CORS
+  fetch(APPS_SCRIPT_URL, {
     method: 'POST',
+    mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(payload)
   })
-  .then(response => {
-    if (response.ok) {
-      showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto)', 4000);
-      closeAggiungiMezzoModal();
-    } else {
-      showToast('❌ Errore dal server (codice ' + response.status + ')', 4000);
-    }
+  .then(() => {
+    // Con no-cors non possiamo leggere la risposta, ma se il catch non scatta la richiesta è partita
+    showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto)', 4000);
+    closeAggiungiMezzoModal();
   })
   .catch(err => {
-    console.error('Fetch error:', err);
-    showToast('❌ Errore di connessione. Verifica la connessione internet.', 4000);
+    console.error('Fetch error (no-cors):', err);
+    // Fallback: apre una email con i dati testuali (senza foto)
+    const oggetto = `NUOVA RICHIESTA MEZZO - ${CANTIERE_NOME}`;
+    let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
+    corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
+    corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
+    corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente (errore di connessione). Inviare manualmente all'ufficio mezzi.`;
+    const destinatari = DESTINATARI_EMAIL.join(',');
+    const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+    window.location.href = mailtoLink;
+    showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
+    closeAggiungiMezzoModal();
   });
 }
 
