@@ -477,7 +477,7 @@ function formatDate(raw) {
   return trimmed;
 }
 
-// FUNZIONE DI CONVERSIONE PER IL TIPO DI POSSESSO
+// FUNZIONE DI CONVERSIONE PER IL TITOLO DI POSSESSO
 function formatProprieta(val) {
   if (!val) return val;
   const map = {
@@ -679,7 +679,7 @@ function render() {
       </div>
       <div class="card-meta" onclick="openModal('${esc(d.codice)}')">
         <div class="meta-row"><span class="meta-label">MATRICOLA</span><span class="meta-value">${esc(d.codice) || '—'}</span></div>
-        <div class="meta-row"><span class="meta-label">TIPO DI POSSESSO</span><span class="meta-value">${esc(tipoPossessoFormattato) || '—'}</span></div>
+        <div class="meta-row"><span class="meta-label">TITOLO DI POSSESSO</span><span class="meta-value">${esc(tipoPossessoFormattato) || '—'}</span></div>
         <div class="meta-row"><span class="meta-label">PROPRIETARIO</span><span class="meta-value">${esc(d.proprietario) || '—'}</span></div>
         ${canoneFormattato ? `<div class="meta-row"><span class="meta-label">TARIFFA</span><span class="meta-value">${esc(canoneFormattato)}</span></div>` : ''}
         ${dataFormattata ? `<div class="meta-row"><span class="meta-label">INIZIO NOLEGGIO</span><span class="meta-value">${esc(dataFormattata)}</span></div>` : ''}
@@ -711,7 +711,7 @@ function openModal(codice) {
     <div class="modal-field"><label>MARCA E MODELLO</label><div class="val">${esc(d.marca) || '—'}</div></div>
     <div class="modal-field"><label>MATRICOLA / TARGA</label><div class="val ${!d.codice?'empty-val':''}">${esc(d.codice) || 'NON SPECIFICATA'}</div></div>
     <div class="modal-field"><label>TIPOLOGIA</label><div class="val">${esc(d.tipo) || '—'}</div></div>
-    <div class="modal-field"><label>TIPO DI POSSESSO / NOLEGGIO</label><div class="val ${!tipoPossessoFormattato?'empty-val':''}">${esc(tipoPossessoFormattato) || 'NON SPECIFICATO'}</div></div>
+    <div class="modal-field"><label>TITOLO DI POSSESSO / NOLEGGIO</label><div class="val ${!tipoPossessoFormattato?'empty-val':''}">${esc(tipoPossessoFormattato) || 'NON SPECIFICATO'}</div></div>
     <div class="modal-field"><label>PROPRIETARIO</label><div class="val ${!d.proprietario?'empty-val':''}">${esc(d.proprietario) || 'NON SPECIFICATO'}</div></div>
     <div class="modal-field"><label>TARIFFA</label><div class="val ${!canoneFormattato?'empty-val':''}">${canoneFormattato ? esc(canoneFormattato) : 'NON SPECIFICATO'}</div></div>
     <div class="modal-field"><label>DATA INIZIO NOLEGGIO</label><div class="val ${!dataFormattata?'empty-val':''}">${dataFormattata ? esc(dataFormattata) : 'NON SPECIFICATA'}</div></div>
