@@ -70,16 +70,13 @@
     gap: 4px;
     text-transform: uppercase;
   }
-  .btn-group .refresh-btn {
-    flex: 0 0 auto;
-    background: none;
-    color: #007aff;
-    padding: 8px 14px;
-  }
+  /* Pulsante AGGIUNGI MEZZO su due righe */
   .btn-arancione {
     background-color: #ff9500;
     color: white;
     border: none;
+    flex-direction: column;
+    gap: 2px;
   }
   .richiesta-mezzi-btn {
     background-color: #20b2aa;
@@ -113,8 +110,17 @@
   .card { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid transparent; }
   .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
   .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; cursor: pointer; }
-  .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; flex: 1; text-transform: uppercase; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: pointer; }
+  /* Titolo della card: grassetto, maiuscolo, centrato, distanziato dal contenuto successivo */
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d1d1f;
+    flex: 1;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
   .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
   .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
   .stato-badge.reso { background: #ff3b30; color: #fff; }
@@ -210,7 +216,11 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">CONNESSIONE IN CORSO...</span>
       <div class="btn-group">
-        <button class="btn-arancione" onclick="openAggiungiMezzoModal()">➕ AGGIUNGI MEZZO</button>
+        <!-- Pulsante AGGIUNGI MEZZO su due righe -->
+        <button class="btn-arancione" onclick="openAggiungiMezzoModal()">
+          <span>AGGIUNGI</span>
+          <span>MEZZO ➕</span>
+        </button>
         <button class="richiesta-mezzi-btn" onclick="openRichiestaMezziModal()">RICHIEDI MEZZI 📝</button>
         <button class="export-btn" id="export-btn" onclick="openExport()">ESPORTA VARIAZIONI</button>
         <button class="refresh-btn" onclick="loadData()">↻</button>
@@ -787,7 +797,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -846,7 +856,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -1004,7 +1014,7 @@ function fallbackEmail(nominativo, proprietario) {
   corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
   corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(',');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
