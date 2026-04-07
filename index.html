@@ -766,7 +766,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -825,7 +825,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -877,8 +877,9 @@ async function openExport() {
   }
 }
 
-// ======================== NUOVE FUNZIONI PER "AGGIUNGI MEZZO" CON NOMINATIVO OBBLIGATORIO ========================
+// ======================== NUOVO MEZZO - INVIO VIA APPS SCRIPT ========================
 let fotoBase64 = null;
+let fotoNomeFile = null;
 
 function apriFotocamera() {
   document.getElementById('fotoInput').click();
@@ -887,6 +888,7 @@ function apriFotocamera() {
 function anteprimaFoto(input) {
   const file = input.files[0];
   if (!file) return;
+  fotoNomeFile = file.name;
   const reader = new FileReader();
   reader.onload = function(e) {
     fotoBase64 = e.target.result;
@@ -903,6 +905,7 @@ function openAggiungiMezzoModal() {
   document.getElementById('fotoInput').value = '';
   document.getElementById('fotoPreview').innerHTML = '';
   fotoBase64 = null;
+  fotoNomeFile = null;
   document.getElementById('error_nominativo_mezzo').style.display = 'none';
   document.getElementById('error_proprietario').style.display = 'none';
   document.getElementById('error_foto').style.display = 'none';
@@ -915,7 +918,7 @@ function closeAggiungiMezzoModal() {
   document.body.style.overflow = '';
 }
 
-function inviaNuovoMezzo() {
+async function inviaNuovoMezzo() {
   const nominativo = document.getElementById('richiedente_nominativo').value.trim();
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
   let isValid = true;
@@ -943,6 +946,12 @@ function inviaNuovoMezzo() {
 
   if (!isValid) return;
 
+  // Mostra un messaggio di attesa (opzionale)
+  const btn = document.querySelector('#aggiungi-mezzo-modal-bg .btn-invia-richiesta');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'INVIO IN CORSO...';
+
   const payload = {
     tipo: 'nuovo_mezzo',
     commessa: CANTIERE_COMMESSA,
@@ -953,27 +962,27 @@ function inviaNuovoMezzo() {
     timestamp: new Date().toISOString()
   };
 
-  // Tentativo di invio al server (che invierà l'email con allegato)
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(payload)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'ok') {
-      showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto allegata)', 4000);
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await response.json();
+    if (result.status === 'ok') {
+      showToast('✅ Richiesta inviata! L\'email con foto è stata spedita.', 4000);
       closeAggiungiMezzoModal();
     } else {
-      // Fallback: se il server risponde con errore, apriamo mailto senza foto (ma con tutti i dati testuali)
-      fallbackEmail(nominativo, proprietario);
+      throw new Error(result.error || 'Risposta non valida');
     }
-  })
-  .catch(err => {
-    console.error('Errore fetch:', err);
-    // Fallback: apri mailto con i dati (la foto non può essere allegata, avviso)
-    fallbackEmail(nominativo, proprietario);
-  });
+  } catch (error) {
+    console.error('Errore:', error);
+    showToast('❌ Errore di connessione. Verifica che l\'App Script sia pubblicato correttamente.', 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
 
 function fallbackEmail(nominativo, proprietario) {
@@ -983,7 +992,7 @@ function fallbackEmail(nominativo, proprietario) {
   corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
   corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
