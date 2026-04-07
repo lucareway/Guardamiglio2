@@ -247,7 +247,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- MODALE AGGIUNGI MEZZO con campi obbligatori: nominativo richiedente, società proprietaria, foto -->
+<!-- MODALE AGGIUNGI MEZZO con campi obbligatori: nominativo richiedente, società proprietaria del mezzo, foto -->
 <div class="modal-bg" id="aggiungi-mezzo-modal-bg" onclick="if(event.target===this)closeAggiungiMezzoModal()">
   <div class="modal-aggiungi-mezzo">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
@@ -260,10 +260,10 @@
       <div class="error-msg" id="error_nominativo_mezzo">CAMPO OBBLIGATORIO</div>
     </div>
 
-    <!-- SOCIETÀ PROPRIETARIA (obbligatorio) -->
+    <!-- SOCIETÀ PROPRIETARIA DEL MEZZO (obbligatorio) -->
     <div class="form-group">
-      <label>SOCIETÀ PROPRIETARIA <span class="required-star">*</span></label>
-      <input type="text" id="nuovo_proprietario" placeholder="NOME SOCIETÀ PROPRIETARIA">
+      <label>SOCIETÀ PROPRIETARIA DEL MEZZO<span class="required-star">*</span></label>
+      <input type="text" id="nuovo_proprietario" placeholder="NOME SOCIETÀ PROPRIETARIA DEL MEZZO">
       <div class="error-msg" id="error_proprietario">CAMPO OBBLIGATORIO</div>
     </div>
 
@@ -804,7 +804,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -863,7 +863,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -999,11 +999,11 @@ function inviaNuovoMezzo() {
   corpo += `CODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
   corpo += `NOME CANTIERE: ${CANTIERE_NOME}\n`;
   corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
-  corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
+  corpo += `SOCIETÀ PROPRIETARIA DEL MEZZO: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
   corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${link.download}) ALLA PRESENTE EMAIL.`;
 
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
 
   // 3) Mostra messaggio e apre il client di posta
