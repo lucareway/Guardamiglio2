@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>2025_007.002 — PROSPETTO CANTIERI + AGGIUNTA MEZZI</title>
 <style>
+  /* ... (tutto lo stile rimane invariato) ... */
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -76,7 +77,6 @@
     color: #007aff;
     padding: 8px 14px;
   }
-  /* Pulsante AGGIUNGI MEZZO su due righe centrate */
   .btn-arancione {
     background-color: #ff9500;
     color: white;
@@ -136,7 +136,6 @@
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; text-transform: uppercase; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
-  /* Modali generali */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal, .modal-richiesta, .modal-richiesta-mezzi, .modal-aggiungi-mezzo {
@@ -145,7 +144,6 @@
   .modal-handle-wrap { display: flex; justify-content: center; padding: 12px 0 8px; }
   .modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
   
-  /* Titolo del modale di dettaglio: grassetto, maiuscolo, centrato, spazio sotto */
   .modal-title {
     font-weight: 700;
     text-transform: uppercase;
@@ -155,7 +153,6 @@
     color: #1d1d1f;
   }
   
-  /* Stili per i campi del modale di dettaglio (etichetta + valore in riga) */
   .modal-field {
     display: flex;
     gap: 8px;
@@ -223,7 +220,6 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">CONNESSIONE IN CORSO...</span>
       <div class="btn-group">
-        <!-- Pulsante AGGIUNGI MEZZO su due righe centrate -->
         <button class="btn-arancione" onclick="openAggiungiMezzoModal()">
           <span>AGGIUNGI</span>
           <span>MEZZO ➕</span>
@@ -247,27 +243,24 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- MODALE AGGIUNGI MEZZO con campi obbligatori: nominativo richiedente, società proprietaria del mezzo, foto -->
+<!-- MODALE AGGIUNGI MEZZO -->
 <div class="modal-bg" id="aggiungi-mezzo-modal-bg" onclick="if(event.target===this)closeAggiungiMezzoModal()">
   <div class="modal-aggiungi-mezzo">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
     <h3 style="margin-bottom: 1rem; font-size: 20px;">➕ AGGIUNGI NUOVO MEZZO</h3>
     
-    <!-- NOMINATIVO RICHIEDENTE (obbligatorio) -->
     <div class="form-group">
       <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
       <input type="text" id="richiedente_nominativo" placeholder="NOME E COGNOME">
       <div class="error-msg" id="error_nominativo_mezzo">CAMPO OBBLIGATORIO</div>
     </div>
 
-    <!-- SOCIETÀ PROPRIETARIA DEL MEZZO (obbligatorio) -->
     <div class="form-group">
       <label>SOCIETÀ PROPRIETARIA DEL MEZZO<span class="required-star">*</span></label>
       <input type="text" id="nuovo_proprietario" placeholder="NOME SOCIETÀ PROPRIETARIA DEL MEZZO">
       <div class="error-msg" id="error_proprietario">CAMPO OBBLIGATORIO</div>
     </div>
 
-    <!-- FOTO TARGHETTA CE / TARGA (obbligatorio) -->
     <div class="form-group">
       <label>FOTO TARGHETTA CE / TARGA <span class="required-star">*</span></label>
       <button type="button" class="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
@@ -870,6 +863,7 @@ function inviaRichiestaMezzi() {
   closeRichiestaMezziModal();
 }
 
+// ========== FUNZIONE ESPORTA VARIAZIONI CORRETTA ==========
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
@@ -879,6 +873,7 @@ async function openExport() {
   }
   btn.disabled = true;
   btn.textContent = 'ESPORTAZIONE...';
+  
   const payload = {
     foglio: 'PROSPETTO_CANTIERI_DEF',
     colonna_chiave: 'F',
@@ -892,30 +887,44 @@ async function openExport() {
       return { matricola: d.codice.trim(), valore };
     })
   };
+
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
+    const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
+      mode: 'cors',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
-    const json = await res.json();
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const json = await response.json();
     if (json.status === 'ok') {
       const msg = json.aggiornati > 0
         ? `✅ ${json.aggiornati} VARIAZIONI SCRITTE SUL FOGLIO!` + (json.nonTrovati > 0 ? `\n⚠️ ${json.nonTrovati} MATRICOLE NON TROVATE.` : '')
         : '⚠️ NESSUNA MATRICOLA TROVATA NEL FOGLIO. VERIFICA I CODICI.';
       showToast(msg, 5000);
     } else {
-      showToast('❌ ERRORE: ' + (json.error || 'RISPOSTA NON VALIDA'), 5000);
+      throw new Error(json.error || 'Risposta non valida dal server');
     }
-  } catch(e) {
-    showToast('❌ CONNESSIONE FALLITA: ' + e.message, 5000);
+  } catch (error) {
+    console.error('Errore export:', error);
+    let msg = '❌ CONNESSIONE FALLITA: ' + error.message;
+    if (error.message.includes('Failed to fetch')) {
+      msg += '\n\nVerifica che l\'App Script sia pubblicato correttamente (Esegui come "Me", accesso "Chiunque") e che l\'URL sia aggiornato.';
+    }
+    showToast(msg, 8000);
   } finally {
     btn.disabled = false;
     btn.textContent = 'ESPORTA VARIAZIONI';
   }
 }
 
-// ======================== FUNZIONE PER AGGIUNGI MEZZO (con download foto e mailto) ========================
+// ======================== FUNZIONE PER AGGIUNGI MEZZO ========================
 let fotoBase64 = null;
 let fotoNomeFile = null;
 
@@ -961,7 +970,6 @@ function inviaNuovoMezzo() {
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
   let isValid = true;
 
-  // Validazione campi obbligatori
   if (!nominativo) {
     document.getElementById('error_nominativo_mezzo').style.display = 'block';
     isValid = false;
@@ -985,7 +993,7 @@ function inviaNuovoMezzo() {
 
   if (!isValid) return;
 
-  // 1) Scarica automaticamente la foto
+  // Scarica la foto
   const link = document.createElement('a');
   link.href = fotoBase64;
   link.download = fotoNomeFile || 'foto_targhetta_CE.jpg';
@@ -993,7 +1001,7 @@ function inviaNuovoMezzo() {
   link.click();
   document.body.removeChild(link);
 
-  // 2) Prepara l'email con i dati precompilati
+  // Prepara email
   const oggetto = `NUOVA RICHIESTA INSERIMENTO MEZZO - ${CANTIERE_NOME}`;
   let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
   corpo += `CODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
@@ -1006,7 +1014,6 @@ function inviaNuovoMezzo() {
   const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
 
-  // 3) Mostra messaggio e apre il client di posta
   showToast('📸 Foto scaricata. Ora allega il file all\'email che si aprirà.', 4000);
   setTimeout(() => {
     window.location.href = mailtoLink;
