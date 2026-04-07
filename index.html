@@ -141,6 +141,27 @@
   }
   .modal-handle-wrap { display: flex; justify-content: center; padding: 12px 0 8px; }
   .modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
+  
+  /* Stili per i campi del modale di dettaglio (etichetta + valore in riga) */
+  .modal-field {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .modal-field label {
+    color: #8e8e93;
+    width: 140px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .modal-field .val {
+    color: #3c3c43;
+    word-break: break-all;
+  }
+  
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; text-transform: uppercase; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #d1d1d6; border-radius: 10px; background: #f9f9fb; }
@@ -766,7 +787,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -825,7 +846,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -983,7 +1004,7 @@ function fallbackEmail(nominativo, proprietario) {
   corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
   corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
-  const destinatari = DESTINATARI_EMAIL.join(',');
+  const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
