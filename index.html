@@ -70,7 +70,13 @@
     gap: 4px;
     text-transform: uppercase;
   }
-  /* Pulsante AGGIUNGI MEZZO su due righe */
+  .btn-group .refresh-btn {
+    flex: 0 0 auto;
+    background: none;
+    color: #007aff;
+    padding: 8px 14px;
+  }
+  /* Pulsante AGGIUNGI MEZZO su due righe centrate */
   .btn-arancione {
     background-color: #ff9500;
     color: white;
@@ -110,17 +116,8 @@
   .card { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid transparent; }
   .card.stato-reso { background: #fff0ef; border-color: #ffcdd0; }
   .card.stato-spostato { background: #fffbea; border-color: #ffe58a; }
-  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: pointer; }
-  /* Titolo della card: grassetto, maiuscolo, centrato, distanziato dal contenuto successivo */
-  .card-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1d1d1f;
-    flex: 1;
-    text-align: center;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; cursor: pointer; }
+  .card-title { font-size: 15px; font-weight: 600; color: #1d1d1f; flex: 1; text-transform: uppercase; }
   .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
   .stato-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
   .stato-badge.reso { background: #ff3b30; color: #fff; }
@@ -147,6 +144,16 @@
   }
   .modal-handle-wrap { display: flex; justify-content: center; padding: 12px 0 8px; }
   .modal-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; }
+  
+  /* Titolo del modale di dettaglio: grassetto, maiuscolo, centrato, spazio sotto */
+  .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #1d1d1f;
+  }
   
   /* Stili per i campi del modale di dettaglio (etichetta + valore in riga) */
   .modal-field {
@@ -216,7 +223,7 @@
       <div class="sync-dot loading" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">CONNESSIONE IN CORSO...</span>
       <div class="btn-group">
-        <!-- Pulsante AGGIUNGI MEZZO su due righe -->
+        <!-- Pulsante AGGIUNGI MEZZO su due righe centrate -->
         <button class="btn-arancione" onclick="openAggiungiMezzoModal()">
           <span>AGGIUNGI</span>
           <span>MEZZO ➕</span>
