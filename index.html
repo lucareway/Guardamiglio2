@@ -863,7 +863,7 @@ function inviaRichiestaMezzi() {
   closeRichiestaMezziModal();
 }
 
-// ========== FUNZIONE ESPORTA VARIAZIONI CORRETTA ==========
+// ========== FUNZIONE ESPORTA VARIAZIONI CORRETTA (Content-Type: text/plain) ==========
 async function openExport() {
   const btn = document.getElementById('export-btn');
   const conStato = data.filter(d => stati[d.codice]);
@@ -893,7 +893,7 @@ async function openExport() {
       method: 'POST',
       mode: 'cors',
       headers: { 
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain'   // ← fondamentale per evitare preflight CORS
       },
       body: JSON.stringify(payload)
     });
