@@ -859,10 +859,10 @@ function inviaRichiestaMezzi() {
   const dataOraConsegna = new Date(datetime).toLocaleString('it-IT', { dateStyle: 'full', timeStyle: 'short' });
   const cantiereInfo = cantieriDetails.find(c => c.commessa === CANTIERE_COMMESSA);
   const oggetto = `RICHIESTA MEZZI E ATTREZZATURE - ${CANTIERE_NOME} (${CANTIERE_COMMESSA})`;
-  let corpo = `RICHIESTA MEZZI E ATTREZZATURE PER IL CANTIERE ${CANTIERE_NOME}\nCODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
+  let corpo = `RICHIESTA MEZZI E ATTREZZATURE PER IL CANTIERE ${CANTIERE_NOME}\n\nCODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
-  corpo += `\nDATI RICHIESTA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
+  corpo += `\nDATI RICHIESTA:\n\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
   const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
