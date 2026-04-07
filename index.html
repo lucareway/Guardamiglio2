@@ -133,6 +133,7 @@
   .empty { text-align: center; padding: 4rem 1rem; color: #8e8e93; text-transform: uppercase; }
   .skeleton { background: #e5e5ea; border-radius: 12px; height: 120px; animation: pulse 1.2s infinite; margin-bottom: 10px; }
 
+  /* Modali generali */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal, .modal-richiesta, .modal-richiesta-mezzi, .modal-aggiungi-mezzo {
@@ -876,7 +877,7 @@ async function openExport() {
   }
 }
 
-// ======================== FUNZIONI PER "AGGIUNGI MEZZO" CON INVIO VIA APPS SCRIPT ========================
+// ======================== NUOVE FUNZIONI PER "AGGIUNGI MEZZO" CON NOMINATIVO OBBLIGATORIO ========================
 let fotoBase64 = null;
 
 function apriFotocamera() {
@@ -914,7 +915,7 @@ function closeAggiungiMezzoModal() {
   document.body.style.overflow = '';
 }
 
-async function inviaNuovoMezzo() {
+function inviaNuovoMezzo() {
   const nominativo = document.getElementById('richiedente_nominativo').value.trim();
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
   let isValid = true;
@@ -942,11 +943,6 @@ async function inviaNuovoMezzo() {
 
   if (!isValid) return;
 
-  const btn = document.querySelector('#aggiungi-mezzo-modal-bg .btn-invia-richiesta');
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'INVIO IN CORSO...';
-
   const payload = {
     tipo: 'nuovo_mezzo',
     commessa: CANTIERE_COMMESSA,
@@ -957,26 +953,41 @@ async function inviaNuovoMezzo() {
     timestamp: new Date().toISOString()
   };
 
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
-    if (result.status === 'ok') {
-      showToast('✅ Richiesta inviata! L\'email con foto allegata è stata spedita.', 4000);
+  // Tentativo di invio al server (che invierà l'email con allegato)
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      showToast('✅ Richiesta inviata all\'ufficio mezzi (email con foto allegata)', 4000);
       closeAggiungiMezzoModal();
     } else {
-      throw new Error(result.error || 'Risposta non valida');
+      // Fallback: se il server risponde con errore, apriamo mailto senza foto (ma con tutti i dati testuali)
+      fallbackEmail(nominativo, proprietario);
     }
-  } catch (error) {
-    console.error('Errore:', error);
-    showToast('❌ Errore di connessione. Verifica che l\'App Script sia pubblicato correttamente.', 5000);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
-  }
+  })
+  .catch(err => {
+    console.error('Errore fetch:', err);
+    // Fallback: apri mailto con i dati (la foto non può essere allegata, avviso)
+    fallbackEmail(nominativo, proprietario);
+  });
+}
+
+function fallbackEmail(nominativo, proprietario) {
+  const oggetto = `NUOVA RICHIESTA MEZZO - ${CANTIERE_NOME}`;
+  let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
+  corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
+  corpo += `SOCIETÀ PROPRIETARIA: ${proprietario}\n`;
+  corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
+  corpo += `⚠️ La foto della targhetta CE non è stata allegata automaticamente a causa di un errore di connessione. Si prega di inviare la foto manualmente all'ufficio mezzi.`;
+  const destinatari = DESTINATARI_EMAIL.join(',');
+  const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+  window.location.href = mailtoLink;
+  showToast('📧 Email di fallback aperta (foto da inviare a parte)', 5000);
+  closeAggiungiMezzoModal();
 }
 
 function showToast(msg, duration = 3500) {
