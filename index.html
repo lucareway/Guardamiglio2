@@ -173,6 +173,7 @@
       <button type="button" class="btn-foto" id="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
       <input type="file" id="fotoInput" accept="image/*" capture="environment" style="display:none" onchange="anteprimaFoto(this)">
       <div class="foto-preview" id="fotoPreview"></div>
+     <div class="error-msg" id="error_foto">FOTO OBBLIGATORIA (scatta o seleziona un'immagine)</div>
     </div>
     <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
     <button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
@@ -236,11 +237,26 @@ function closeAggiungiMezzoModal() {
 
 function inviaNuovoMezzo() {
   const proprietario = document.getElementById('nuovo_proprietario').value.trim();
+  let isValid = true;
+
+  // Controllo proprietario
   if (!proprietario) {
     document.getElementById('error_proprietario').style.display = 'block';
-    return;
+    isValid = false;
+  } else {
+    document.getElementById('error_proprietario').style.display = 'none';
   }
-  document.getElementById('error_proprietario').style.display = 'none';
+
+  // Controllo foto obbligatoria
+  if (!fotoBase64) {
+    document.getElementById('error_foto').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('error_foto').style.display = 'none';
+  }
+
+  if (!isValid) return;
+}
   
   // Prepariamo i dati per l'invio al backend (Apps Script)
   const payload = {
