@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>2025_007.002 — PROSPETTO CANTIERI A1 VIADOTTO GUARDAMIGLIO</title>
+<title>2025_007.002 — PROSPETTO CANTIERI — A1 VIADOTTO GUARDAMIGLIO</title>
 <style>
   /* ... (tutto lo stile rimane invariato) ... */
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -250,7 +250,7 @@
     <h3 style="margin-bottom: 1rem; font-size: 20px;">➕ AGGIUNGI NUOVO MEZZO</h3>
     
     <div class="form-group">
-      <label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label>
+      <label>NOMINATIVO COMPILATORE <span class="required-star">*</span></label>
       <input type="text" id="richiedente_nominativo" placeholder="NOME E COGNOME">
       <div class="error-msg" id="error_nominativo_mezzo">CAMPO OBBLIGATORIO</div>
     </div>
@@ -265,12 +265,16 @@
       <label>FOTO TARGHETTA CE / TARGA <span class="required-star">*</span></label>
       <button type="button" class="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
       <input type="file" id="fotoInput" accept="image/*" capture="environment" style="display:none" onchange="anteprimaFoto(this)">
-      <div class="foto-preview" id="fotoPreview"></div>
-      <div class="error-msg" id="error_foto">FOTO OBBLIGATORIA</div>
-    </div>
+ <div class="foto-preview" id="fotoPreview"></div>
+<div class="error-msg" id="error_foto">⚠️ FOTO OBBLIGATORIA. SU IPHONE PREMI A LUNGO SULLA FOTO PER SALVARLA. SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.</div>
 
-    <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
-    <button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
+<!-- NUOVO AVVISO SOPRA IL BOTTONE -->
+<div style="text-align: center; font-size: 12px; color: #000000; margin: 10px 0 5px 0; text-transform: uppercase;">
+  ⚠️ SCATTA LA FOTO. SU IPHONE PREMI A LUNGO SULLA FOTO PER SALVARLA. SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.
+</div>
+
+<button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
+<button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
   </div>
 </div>
 
