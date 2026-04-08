@@ -314,16 +314,16 @@
 <div class="modal-bg" id="restituzione-modal-bg" onclick="if(event.target===this)closeRestituzioneModal()">
   <div class="modal-richiesta">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <h3 style="margin-bottom: 1rem;">✉️ RICHIEDI RESTITUZIONE</h3>
+    <h3 style="margin-bottom: 1rem;">📝 RICHIEDI RESTITUZIONE</h3>
     <div id="restituzione-form-content">
       <div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="richiesta_commessa" class="readonly-field" readonly></div>
       <div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="richiesta_cantiere" class="readonly-field" readonly></div>
       <div class="form-group"><label>MARCA E MODELLO</label><input type="text" id="richiesta_marca_modello" class="readonly-field" readonly></div>
       <div class="form-group"><label>MATRICOLA / TARGA</label><input type="text" id="richiesta_matricola" class="readonly-field" readonly></div>
       <div class="divider"></div>
-      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="richiesta_nominativo"><div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="richiesta_nominativo" placeholder="NOME E COGNOME DEL RICHIEDENTE"><div class="error-msg" id="error_nominativo">CAMPO OBBLIGATORIO</div></div>
       <div class="form-group"><label>DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO <span class="required-star">*</span></label><input type="datetime-local" id="richiesta_datetime"><div class="error-msg" id="error_datetime">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="richiesta_note" rows="3"></textarea></div>
+      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="richiesta_note" rows="3" placeholder="EVENTUALI INFORMAZIONI AGGIUNTIVE (ES. LUOGO ESATTO, CONTATTI, ISTRUZIONI PER IL RITIRO)"></textarea></div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaRestituzione()">INVIA RICHIESTA ALL'UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top:1rem" onclick="closeRestituzioneModal()">ANNULLA</button>
@@ -334,20 +334,20 @@
 <div class="modal-bg" id="richiesta-mezzi-modal-bg" onclick="if(event.target===this)closeRichiestaMezziModal()">
   <div class="modal-richiesta-mezzi">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <h3 style="margin-bottom: 1rem;">📦 RICHIESTA MEZZI E ATTREZZATURE</h3>
+    <h3 style="margin-bottom: 1rem;">📝 RICHIESTA MEZZI E ATTREZZATURE</h3>
     <div id="richiesta-mezzi-form-content">
       <div class="form-group"><label>CODICE COMMESSA</label><input type="text" id="mezzi_commessa" class="readonly-field" readonly></div>
       <div class="form-group"><label>CANTIERE DI PARTENZA</label><input type="text" id="mezzi_cantiere" class="readonly-field" readonly></div>
       <div class="form-group"><label>CIG</label><input type="text" id="mezzi_cig" class="readonly-field" readonly></div>
       <div class="form-group"><label>UNITÀ LOCALE</label><input type="text" id="mezzi_unita_locale" class="readonly-field" readonly></div>
       <div class="divider"></div>
-      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="mezzi_nominativo"><div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>DESCRIZIONE, CARATTERISTICHE E QUANTITÀ <span class="required-star">*</span></label><textarea id="mezzi_descrizione" rows="4"></textarea><div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>DATA E ORA DELLA CONSEGNA <span class="required-star">*</span></label><input type="datetime-local" id="mezzi_datetime_consegna"><div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>REFERENTE DI CANTIERE <span class="required-star">*</span></label><input type="text" id="mezzi_referente"><div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>LUOGO DI CONSEGNA <span class="required-star">*</span></label><input type="text" id="mezzi_luogo"><div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label><textarea id="mezzi_periodi" rows="2"></textarea><div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div></div>
-      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="mezzi_note" rows="3"></textarea></div>
+      <div class="form-group"><label>NOMINATIVO RICHIEDENTE <span class="required-star">*</span></label><input type="text" id="mezzi_nominativo" placeholder="NOME E COGNOME DEL RICHIEDENTE"><div class="error-msg" id="error_mezzi_nominativo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>REFERENTE DI CANTIERE PER LA CONSEGNA <span class="required-star">*</span></label><input type="text" id="mezzi_referente" placeholder="ADDETTO DI CANTIERE PER LA CONSEGNA"><div class="error-msg" id="error_mezzi_referente">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DESCRIZIONE, CARATTERISTICHE E QUANTITÀ <span class="required-star">*</span></label><textarea id="mezzi_descrizione" rows="4" placeholder="ES. PLE 24 MT, ESCAVATORE 50  QLI..."></textarea><div class="error-msg" id="error_mezzi_descrizione">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DATA E ORA ENTRO CUI EFFETTUARE LA CONSEGNA <span class="required-star">*</span></label><input type="datetime-local" id="mezzi_datetime_consegna"><div class="error-msg" id="error_mezzi_datetime">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>LUOGO DI CONSEGNA <span class="required-star">*</span></label><input type="text" id="mezzi_luogo" placeholder="LUOGO SPECIFICO, PUNTO DI RIFERIMENTO"><div class="error-msg" id="error_mezzi_luogo">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>DURATA D'IMPIEGO PREVISTA <span class="required-star">*</span></label><textarea id="mezzi_periodi" rows="2" placeholder="ES. FINO AL 29/12, OPPURE 2 SETTIMANE..."></textarea><div class="error-msg" id="error_mezzi_periodi">CAMPO OBBLIGATORIO</div></div>
+      <div class="form-group"><label>NOTE (OPZIONALI)</label><textarea id="mezzi_note" rows="3" placeholder="EVENTUALI INFORMAZIONI AGGIUNTIVE (ES. ISTRUZIONI PER IL RITIRO..."></textarea></div>
       <button class="btn-invia-richiesta" onclick="inviaRichiestaMezzi()">INVIA RICHIESTA ALL’UFFICIO MEZZI 📩</button>
     </div>
     <button class="close-btn" style="margin-top:1rem" onclick="closeRichiestaMezziModal()">ANNULLA</button>
