@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>2025_007.002 — PROSPETTO CANTIERI + AGGIUNTA MEZZI</title>
+<title>2025_007.002 — PROSPETTO CANTIERI A1 VIADOTTO GUARDAMIGLIO</title>
 <style>
   /* ... (tutto lo stile rimane invariato) ... */
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -924,7 +924,7 @@ async function openExport() {
   }
 }
 
-// ======================== FUNZIONE PER AGGIUNGI MEZZO ========================
+// ======================== FUNZIONE PER AGGIUNGI MEZZO (con supporto iOS) ========================
 let fotoBase64 = null;
 let fotoNomeFile = null;
 
@@ -993,13 +993,26 @@ function inviaNuovoMezzo() {
 
   if (!isValid) return;
 
-  // Scarica la foto
-  const link = document.createElement('a');
-  link.href = fotoBase64;
-  link.download = fotoNomeFile || 'foto_targhetta_CE.jpg';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  // Rilevazione iOS (iPhone/iPad)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  let fotoFileName = fotoNomeFile || 'foto_targhetta_CE.jpg';
+  let downloadMsg = '';
+
+  if (isIOS) {
+    // Apri l'immagine in una nuova scheda per permettere il salvataggio manuale
+    window.open(fotoBase64, '_blank');
+    downloadMsg = '📸 Foto aperta in una nuova scheda. Premi a lungo sulla foto per salvarla.';
+  } else {
+    // Download automatico (Android, Windows, etc.)
+    const link = document.createElement('a');
+    link.href = fotoBase64;
+    link.download = fotoFileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    downloadMsg = '📸 Foto scaricata.';
+  }
 
   // Prepara email
   const oggetto = `NUOVA RICHIESTA INSERIMENTO MEZZO - ${CANTIERE_NOME}`;
@@ -1009,15 +1022,19 @@ function inviaNuovoMezzo() {
   corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
   corpo += `SOCIETÀ PROPRIETARIA DEL MEZZO: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
-  corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${link.download}) ALLA PRESENTE EMAIL.`;
+  if (isIOS) {
+    corpo += `⚠️ La foto è stata aperta in una nuova scheda. Salvala manualmente (premi a lungo) e allegala a questa email.`;
+  } else {
+    corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${fotoFileName}) ALLA PRESENTE EMAIL.`;
+  }
 
   const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
 
-  showToast('📸 Foto scaricata. Ora allega il file all\'email che si aprirà.', 4000);
+  showToast(downloadMsg + ' Ora allega il file all\'email che si aprirà.', 5000);
   setTimeout(() => {
     window.location.href = mailtoLink;
-  }, 500);
+  }, 800);
 
   closeAggiungiMezzoModal();
 }
