@@ -265,16 +265,17 @@
       <label>FOTO TARGHETTA CE / TARGA <span class="required-star">*</span></label>
       <button type="button" class="btn-foto" onclick="apriFotocamera()">📸 FOTO TARGHETTA CE / TARGA</button>
       <input type="file" id="fotoInput" accept="image/*" capture="environment" style="display:none" onchange="anteprimaFoto(this)">
- <div class="foto-preview" id="fotoPreview"></div>
-<div class="error-msg" id="error_foto">⚠️ FOTO OBBLIGATORIA. SU IPHONE PREMI A LUNGO SULLA FOTO PER SALVARLA. SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.</div>
+      <div class="foto-preview" id="fotoPreview"></div>
+      <div class="error-msg" id="error_foto">⚠️ FOTO OBBLIGATORIA</div>
 
-<!-- NUOVO AVVISO SOPRA IL BOTTONE -->
-<div style="text-align: center; font-size: 12px; font-weight: bold; color: #000000; margin: 10px 0 10px 0; text-transform: uppercase;">
-  ⚠️ SCATTA LA FOTO.<br>🍏 SU IPHONE PREMI A LUNGO SULL'ANTEPRIMA PER SALVARLA.<br>🤖 SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.
-</div>
+      <!-- NUOVO AVVISO SOPRA IL BOTTONE -->
+      <div style="text-align: center; font-size: 12px; font-weight: bold; color: #000000; margin: 10px 0 10px 0; text-transform: uppercase;">
+        ⚠️ SCATTA LA FOTO.<br>🍏 SU IPHONE PREMI A LUNGO SULL'ANTEPRIMA PER SALVARLA.<br>🤖 SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.
+      </div>
 
-<button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
-<button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
+      <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
+      <button class="close-btn" onclick="closeAggiungiMezzoModal()">ANNULLA</button>
+    </div>
   </div>
 </div>
 
@@ -368,6 +369,13 @@ const DESTINATARI_EMAIL = [
   'l.buselli@mga-aulla.it',
   'e.tedeschi@rewaygroup.com'
 ];
+
+// ======================== FUNZIONE PER IL SEPARATORE EMAIL DINAMICO ========================
+function getEmailSeparator() {
+  const userAgent = navigator.userAgent;
+  const isApple = /Mac|iPhone|iPad|iPod/.test(userAgent);
+  return isApple ? ',' : ';';
+}
 
 // ======================== STATO GLOBALE ========================
 let data           = [];
@@ -801,7 +809,7 @@ function inviaRichiestaRestituzione() {
   let corpo = `RICHIESTA RESTITUZIONE MEZZO DAL CANTIERE ${CANTIERE_NOME} (COMMESSA ${CANTIERE_COMMESSA})\n\n`;
   corpo += `DATI MEZZO:\n- MARCA/MODELLO: ${mezzo.marca || 'N/D'}\n- MATRICOLA/TARGA: ${mezzo.codice || 'N/D'}\n- TIPOLOGIA: ${mezzo.tipo || 'N/D'}\n\n`;
   corpo += `RICHIESTO DA:\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DATA E ORA ENTRO CUI EFFETTUARE IL RITIRO: ${dataOraLeggibile}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(getEmailSeparator());
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -860,7 +868,7 @@ function inviaRichiestaMezzi() {
   if (cantiereInfo && cantiereInfo.cig) corpo += `CIG: ${cantiereInfo.cig}\n`;
   if (cantiereInfo && cantiereInfo.unitaLocale) corpo += `UNITÀ LOCALE: ${cantiereInfo.unitaLocale}\n`;
   corpo += `\nDATI RICHIESTA:\n\n- NOMINATIVO RICHIEDENTE: ${nominativo}\n- DESCRIZIONE E QUANTITÀ MEZZI: ${descrizione}\n- DATA E ORA CONSEGNA IN CANTIERE: ${dataOraConsegna}\n- REFERENTE DI CANTIERE PER LA CONSEGNA: ${referente}\n- LUOGO DI CONSEGNA: ${luogo}\n- DURATA D'IMPIEGO PREVISTO: ${periodi}\n- NOTE: ${note || '(NESSUNA NOTA)'}\n`;
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(getEmailSeparator());
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
   window.location.href = mailtoLink;
   showToast('📧 APERTURA PROGRAMMA EMAIL... CONTROLLA E INVIA.', 3000);
@@ -897,7 +905,7 @@ async function openExport() {
       method: 'POST',
       mode: 'cors',
       headers: { 
-        'Content-Type': 'text/plain'   // ← fondamentale per evitare preflight CORS
+        'Content-Type': 'text/plain'
       },
       body: JSON.stringify(payload)
     });
@@ -1028,10 +1036,9 @@ function inviaNuovoMezzo() {
     corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${fotoNomeFile || 'foto_targhetta_CE.jpg'}) ALLA PRESENTE EMAIL.`;
   }
 
-  const destinatari = DESTINATARI_EMAIL.join(';');
+  const destinatari = DESTINATARI_EMAIL.join(getEmailSeparator());
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
 
-  // Apri l'email dopo un ritardo (per dare tempo al download o al messaggio)
   setTimeout(() => {
     window.location.href = mailtoLink;
   }, 800);
