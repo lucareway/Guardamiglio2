@@ -995,26 +995,25 @@ function inviaNuovoMezzo() {
 
   // Rilevazione iOS (iPhone/iPad)
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-  let fotoFileName = fotoNomeFile || 'foto_targhetta_CE.jpg';
   let downloadMsg = '';
 
   if (isIOS) {
-    // Apri l'immagine in una nuova scheda per permettere il salvataggio manuale
-    window.open(fotoBase64, '_blank');
-    downloadMsg = '📸 Foto aperta in una nuova scheda. Premi a lungo sulla foto per salvarla.';
+    // Su iOS: non aprire la foto automaticamente, ma ricordare all'utente di salvarla dall'anteprima
+    downloadMsg = '📸 Premi a lungo sull\'anteprima della foto per salvarla in galleria, poi invia l\'email.';
+    showToast(downloadMsg, 5000);
   } else {
-    // Download automatico (Android, Windows, etc.)
+    // Download automatico per Android, Windows, etc.
     const link = document.createElement('a');
     link.href = fotoBase64;
-    link.download = fotoFileName;
+    link.download = fotoNomeFile || 'foto_targhetta_CE.jpg';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     downloadMsg = '📸 Foto scaricata.';
+    showToast(downloadMsg + ' Ora allega il file all\'email che si aprirà.', 4000);
   }
 
-  // Prepara email
+  // Preparazione email (stessa per tutti)
   const oggetto = `NUOVA RICHIESTA INSERIMENTO MEZZO - ${CANTIERE_NOME}`;
   let corpo = `NUOVA RICHIESTA DI INSERIMENTO MEZZO DAL CANTIERE ${CANTIERE_NOME} (${CANTIERE_COMMESSA})\n\n`;
   corpo += `CODICE COMMESSA: ${CANTIERE_COMMESSA}\n`;
@@ -1022,16 +1021,17 @@ function inviaNuovoMezzo() {
   corpo += `NOMINATIVO RICHIEDENTE: ${nominativo}\n`;
   corpo += `SOCIETÀ PROPRIETARIA DEL MEZZO: ${proprietario}\n`;
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
+  
   if (isIOS) {
-    corpo += `⚠️ La foto è stata aperta in una nuova scheda. Salvala manualmente (premi a lungo) e allegala a questa email.`;
+    corpo += `⚠️ Per allegare la foto, salvala prima dall'anteprima (tocco prolungato) e poi allegala manualmente a questa email.`;
   } else {
-    corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${fotoFileName}) ALLA PRESENTE EMAIL.`;
+    corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${fotoNomeFile || 'foto_targhetta_CE.jpg'}) ALLA PRESENTE EMAIL.`;
   }
 
   const destinatari = DESTINATARI_EMAIL.join(';');
   const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
 
-  showToast(downloadMsg + ' Ora allega il file all\'email che si aprirà.', 5000);
+  // Apri l'email dopo un ritardo (per dare tempo al download o al messaggio)
   setTimeout(() => {
     window.location.href = mailtoLink;
   }, 800);
