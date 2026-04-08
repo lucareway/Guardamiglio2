@@ -270,7 +270,7 @@
 
 <!-- NUOVO AVVISO SOPRA IL BOTTONE -->
 <div style="text-align: center; font-size: 12px; font-weight: bold; color: #000000; margin: 10px 0 10px 0; text-transform: uppercase;">
-  ⚠️ SCATTA LA FOTO.<br>SU IPHONE PREMI A LUNGO SULLA FOTO PER SALVARLA.<br>SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.
+  ⚠️ SCATTA LA FOTO.<br>🍏 SU IPHONE PREMI A LUNGO SULLA FOTO PER SALVARLA.<br>🤖 SU ANDROID VERRÀ SCARICATA AUTOMATICAMENTE.
 </div>
 
 <button class="btn-invia-richiesta" onclick="inviaNuovoMezzo()">📩 INVIA ALL'UFFICIO MEZZI</button>
@@ -1001,11 +1001,7 @@ function inviaNuovoMezzo() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   let downloadMsg = '';
 
-  if (isIOS) {
-    // Su iOS: non aprire la foto automaticamente, ma ricordare all'utente di salvarla dall'anteprima
-    downloadMsg = '📸 Premi a lungo sull\'anteprima della foto per salvarla in galleria, poi invia l\'email.';
-    showToast(downloadMsg, 5000);
-  } else {
+  if (!isIOS) {
     // Download automatico per Android, Windows, etc.
     const link = document.createElement('a');
     link.href = fotoBase64;
@@ -1027,7 +1023,7 @@ function inviaNuovoMezzo() {
   corpo += `DATA RICHIESTA: ${new Date().toLocaleString('it-IT')}\n\n`;
   
   if (isIOS) {
-    corpo += `⚠️ Per allegare la foto, salvala prima dall'anteprima (tocco prolungato) e poi allegala manualmente a questa email.`;
+    corpo += `⚠️ ALLEGA MANUALMENTE LA FOTO SALVATA DALL'ANTEPRIMA NEL MODULO (TOCCO PROLUNGATO).`;
   } else {
     corpo += `⚠️ ALLEGARE MANUALMENTE LA FOTO SCARICATA (${fotoNomeFile || 'foto_targhetta_CE.jpg'}) ALLA PRESENTE EMAIL.`;
   }
